@@ -11,6 +11,8 @@ import SDWebImageSwiftUI
 struct ListCompetitionRouteView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var footballDtRouter: FootballDtRouter
+    @EnvironmentObject var leaderboardVM: LeaderboardViewModel
+    
     var columns: [GridItem] = [GridItem(), GridItem()]
     
     var body: some View {
@@ -38,8 +40,11 @@ struct ListCompetitionRouteView: View {
     func tappedCompetition(_ competition: Competition) {
         
         listCompetitionVM.setCompetition(competition)
-        
         footballDtRouter.navigationToCompetitionDetail()
+        Task {
+            await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
+        }
+        
     }
     
 }

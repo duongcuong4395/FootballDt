@@ -110,7 +110,7 @@ struct CompetitionDetailRouteContentView: View {
             MenuOfCompetitionDetailRouteView(selected: $selected)
             
             TabView(selection: $selected) {
-                Text("Leaderboard")
+                LeaderboardView()
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 Text("Matches")
                     .tag(CompetitionDetailRouteMenu.Matches)
@@ -142,11 +142,7 @@ struct CompetitionMatchesView: View {
     }
 }
 
-struct CompetitionLeaderboardView: View {
-    var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
+
 
 
 struct MenuOfCompetitionDetailRouteView: View {

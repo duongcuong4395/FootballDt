@@ -37,6 +37,7 @@ extension View {
         self
             .environmentObject(container.footballDtRouter)
             .environmentObject(container.listCompetitionVM)
+            .environmentObject(container.leaderboardVM)
     }
 }
 
@@ -46,10 +47,15 @@ class AppDependencyContainer: ObservableObject {
     
     // MARK: Service
     private lazy var competitionAPIService = CompetitionAPIService()
+    private lazy var leaderboardAPIService = LeaderboardAPIService()
     
     // MARK: UsserCase
     private lazy var getAllCompetitionUserCase = GetAllCompetitionUserCase(repository: competitionAPIService)
+    private lazy var getLeaderboardUserCase = GetLeaderboardUserCase(repository: leaderboardAPIService)
+    
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
+    
+    lazy var leaderboardVM = LeaderboardViewModel(getLeaderboardUserCase: getLeaderboardUserCase)
 }
