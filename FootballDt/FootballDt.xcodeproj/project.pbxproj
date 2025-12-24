@@ -6,6 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FAEFAD1F2EFB929D00D38AEC /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD1E2EFB929D00D38AEC /* SDWebImageSwiftUI */; };
+		FAEFAD222EFB92AB00D38AEC /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD212EFB92AB00D38AEC /* SDWebImageSVGCoder */; };
+		FAEFAD252EFB92C000D38AEC /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD242EFB92C000D38AEC /* Kingfisher */; };
+		FAEFAD282EFB930000D38AEC /* CoreDataKit in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD272EFB930000D38AEC /* CoreDataKit */; };
+		FAEFAD2A2EFB930000D38AEC /* GlassEffect in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD292EFB930000D38AEC /* GlassEffect */; };
+		FAEFAD2C2EFB930000D38AEC /* MarkdownTypingKit in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD2B2EFB930000D38AEC /* MarkdownTypingKit */; };
+		FAEFAD2E2EFB930000D38AEC /* NavigationRouter in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD2D2EFB930000D38AEC /* NavigationRouter */; };
+		FAEFAD302EFB930000D38AEC /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD2F2EFB930000D38AEC /* Networking */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		FAEFAC7D2EFB91F600D38AEC /* FootballDt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FootballDt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +34,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAEFAD252EFB92C000D38AEC /* Kingfisher in Frameworks */,
+				FAEFAD2E2EFB930000D38AEC /* NavigationRouter in Frameworks */,
+				FAEFAD302EFB930000D38AEC /* Networking in Frameworks */,
+				FAEFAD1F2EFB929D00D38AEC /* SDWebImageSwiftUI in Frameworks */,
+				FAEFAD282EFB930000D38AEC /* CoreDataKit in Frameworks */,
+				FAEFAD2C2EFB930000D38AEC /* MarkdownTypingKit in Frameworks */,
+				FAEFAD2A2EFB930000D38AEC /* GlassEffect in Frameworks */,
+				FAEFAD222EFB92AB00D38AEC /* SDWebImageSVGCoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +84,14 @@
 			);
 			name = FootballDt;
 			packageProductDependencies = (
+				FAEFAD1E2EFB929D00D38AEC /* SDWebImageSwiftUI */,
+				FAEFAD212EFB92AB00D38AEC /* SDWebImageSVGCoder */,
+				FAEFAD242EFB92C000D38AEC /* Kingfisher */,
+				FAEFAD272EFB930000D38AEC /* CoreDataKit */,
+				FAEFAD292EFB930000D38AEC /* GlassEffect */,
+				FAEFAD2B2EFB930000D38AEC /* MarkdownTypingKit */,
+				FAEFAD2D2EFB930000D38AEC /* NavigationRouter */,
+				FAEFAD2F2EFB930000D38AEC /* Networking */,
 			);
 			productName = FootballDt;
 			productReference = FAEFAC7D2EFB91F600D38AEC /* FootballDt.app */;
@@ -94,6 +121,12 @@
 			);
 			mainGroup = FAEFAC742EFB91F600D38AEC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FAEFAD1D2EFB929D00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				FAEFAD202EFB92AB00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */,
+				FAEFAD232EFB92C000D38AEC /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FAEFAC7E2EFB91F600D38AEC /* Products */;
 			projectDirPath = "";
@@ -341,6 +374,84 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FAEFAD1D2EFB929D00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.4;
+			};
+		};
+		FAEFAD202EFB92AB00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSVGCoder.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+		FAEFAD232EFB92C000D38AEC /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
+		FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/duongcuong4395/MyPackage.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FAEFAD1E2EFB929D00D38AEC /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD1D2EFB929D00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		FAEFAD212EFB92AB00D38AEC /* SDWebImageSVGCoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD202EFB92AB00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */;
+			productName = SDWebImageSVGCoder;
+		};
+		FAEFAD242EFB92C000D38AEC /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD232EFB92C000D38AEC /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		FAEFAD272EFB930000D38AEC /* CoreDataKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = CoreDataKit;
+		};
+		FAEFAD292EFB930000D38AEC /* GlassEffect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = GlassEffect;
+		};
+		FAEFAD2B2EFB930000D38AEC /* MarkdownTypingKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = MarkdownTypingKit;
+		};
+		FAEFAD2D2EFB930000D38AEC /* NavigationRouter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = NavigationRouter;
+		};
+		FAEFAD2F2EFB930000D38AEC /* Networking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = Networking;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FAEFAC752EFB91F600D38AEC /* Project object */;
 }
