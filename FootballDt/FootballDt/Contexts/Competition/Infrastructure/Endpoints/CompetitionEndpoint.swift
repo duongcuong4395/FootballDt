@@ -13,6 +13,7 @@ enum CompetitionEndpoint<T: Decodable> {
     case GetAllCompetition
     case GetLeaderboard(competitionCode: String, season: String?)
     case GetTeams(competitionCode: String, season: String?)
+    case GetMatches(competitionID: String, season: String?)
 }
 
 extension CompetitionEndpoint: HttpRouter {
@@ -30,6 +31,8 @@ extension CompetitionEndpoint: HttpRouter {
             "competitions/\(competitionCode)/standings"
         case .GetTeams(competitionCode: let competitionCode, season: _):
             "competitions/\(competitionCode)/teams"
+        case .GetMatches(competitionID: let competitionID, season: _):
+            "competitions/\(competitionID)/matches"
         }
     }
     
@@ -40,9 +43,9 @@ extension CompetitionEndpoint: HttpRouter {
     var headers: HTTPHeaders? {
         switch self {
         case .GetAllCompetition: return nil
-        case .GetLeaderboard(competitionCode: _):
-            return ["X-Auth-Token": AppUtility.AuthTK]
-        case .GetTeams(competitionCode: _, season: _):
+        case .GetLeaderboard(competitionCode: _)
+            , .GetTeams(competitionCode: _, season: _)
+            , .GetMatches(competitionID: _, season: _):
             return ["X-Auth-Token": AppUtility.AuthTK]
         }
     }
@@ -51,17 +54,13 @@ extension CompetitionEndpoint: HttpRouter {
         switch self {
         case .GetAllCompetition: return nil
         case .GetLeaderboard(competitionCode: _, season: let season):
-            
-            guard let season = season else {
-                return nil
-            }
-            
+            guard let season = season else { return nil }
             return ["season": season]
         case .GetTeams(competitionCode: _, season: let season):
-            guard let season = season else {
-                return nil
-            }
-            
+            guard let season = season else { return nil }
+            return ["season": season]
+        case .GetMatches(competitionID: _, season: let season):
+            guard let season = season else { return nil }
             return ["season": season]
         }
     }

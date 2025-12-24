@@ -115,12 +115,16 @@ struct CompetitionDetailRouteContentView: View {
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 
-                Text("Matches")
-                    .tag(CompetitionDetailRouteMenu.Matches)
-                Text("Scorers")
-                    .tag(CompetitionDetailRouteMenu.Scorers)
                 Text("Teams")
                     .tag(CompetitionDetailRouteMenu.Teams)
+                
+                CompetitionMatchesView()
+                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
+                    .tag(CompetitionDetailRouteMenu.Matches)
+                
+                Text("Scorers")
+                    .tag(CompetitionDetailRouteMenu.Scorers)
+                
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.2), value: selected)
@@ -142,11 +146,7 @@ struct CompetitionScorersView: View {
 }
 
 
-struct CompetitionMatchesView: View {
-    var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
+
 
 
 

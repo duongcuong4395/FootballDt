@@ -114,7 +114,6 @@ struct TeamDTO: Codable {
     }
 }
 
-
 struct CoachDTO: Codable {
     var id, firstName, lastName, name: String?
     var dateOfBirth, nationality: String?

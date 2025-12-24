@@ -38,6 +38,7 @@ extension View {
             .environmentObject(container.footballDtRouter)
             .environmentObject(container.listCompetitionVM)
             .environmentObject(container.leaderboardVM)
+            .environmentObject(container.competitionMatchesVM)
     }
 }
 
@@ -48,14 +49,17 @@ class AppDependencyContainer: ObservableObject {
     // MARK: Service
     private lazy var competitionAPIService = CompetitionAPIService()
     private lazy var leaderboardAPIService = LeaderboardAPIService()
+    private lazy var competitionMatchesAPIService = CompetitionMatchesAPIService()
     
     // MARK: UsserCase
     private lazy var getAllCompetitionUserCase = GetAllCompetitionUserCase(repository: competitionAPIService)
     private lazy var getLeaderboardUserCase = GetLeaderboardUserCase(repository: leaderboardAPIService)
-    
+    private lazy var getCompetitionMatchesUserCase = GetCompetitionMatchesUserCase(repository: competitionMatchesAPIService)
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
     
     lazy var leaderboardVM = LeaderboardViewModel(getLeaderboardUserCase: getLeaderboardUserCase)
+    
+    lazy var competitionMatchesVM = CompetitionMatchesViewModel(getCompetitionMatchesUserCase: getCompetitionMatchesUserCase)
 }

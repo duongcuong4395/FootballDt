@@ -12,6 +12,7 @@ struct ListCompetitionRouteView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var footballDtRouter: FootballDtRouter
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
+    @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
     
     var columns: [GridItem] = [GridItem(), GridItem()]
     
@@ -43,6 +44,7 @@ struct ListCompetitionRouteView: View {
         footballDtRouter.navigationToCompetitionDetail()
         Task {
             await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
+            await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
         }
         
     }

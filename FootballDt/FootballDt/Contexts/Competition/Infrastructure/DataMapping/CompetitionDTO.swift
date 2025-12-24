@@ -74,7 +74,6 @@ struct AreaDTO: Codable {
     }
 }
 
-
 struct Period {
     let startDate: Date
     let endDate: Date
@@ -95,6 +94,10 @@ struct SeasonDTO: Codable {
             , winner: winner?.toDomain())
     }
 }
+
+
+
+
 
 // MARK: - Winner
 struct WinnerDTO: Codable {

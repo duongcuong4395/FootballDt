@@ -76,7 +76,31 @@ struct LeaderboardView: View {
 
 struct RankingsView: View {
     var listRank: [Rank]
+    
+    @StateObject
+    private var pagingVM: PagingViewModel<Rank>
+    
+    init(listRank: [Rank]) {
+        self.listRank = listRank
+        _pagingVM = StateObject(wrappedValue: PagingViewModel<Rank>(
+            items: listRank,
+            itemsPerPage: 11
+        ))
+    }
+
     var body: some View {
+        List(pagingVM.items, id: \.position) { rank in
+            ItemRankView(rank: rank)
+        }
+
+        PagingControlsView(
+            state: pagingVM.state,
+            onPrevious: pagingVM.previousPage,
+            onNext: pagingVM.nextPage
+        )
+        
+        
+        /*
         ScrollView(showsIndicators: false) {
             LazyVStack {
                 ForEach(listRank, id: \.position) { rank in
@@ -84,6 +108,7 @@ struct RankingsView: View {
                 }
             }
         }
+        */
     }
 }
 
@@ -94,6 +119,9 @@ struct ItemRankView: View {
     
     var body: some View {
         HStack {
+            Text("\(rank.position)")
+                .font(.caption2.bold())
+            
             KFImage(URL(string: rank.team.crest ?? ""))
                 .resizable()
                 .frame(width: 20, height: 20)
