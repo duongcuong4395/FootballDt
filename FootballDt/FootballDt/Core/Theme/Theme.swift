@@ -445,7 +445,7 @@ struct DarkModeAwareThemeModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     
     func body(content: Content) -> some View {
-        let baseConfig = ThemeResolver.glassConfiguration(for: context)
+        //let baseConfig = ThemeResolver.glassConfiguration(for: context)
         //let adjustedConfig = baseConfig.adjusted(for: colorScheme)
         let adjustedContext = context // Could create adjusted context if needed
         

@@ -77,8 +77,7 @@ struct LeaderboardView: View {
 struct RankingsView: View {
     var listRank: [Rank]
     
-    @StateObject
-    private var pagingVM: PagingViewModel<Rank>
+    @StateObject private var pagingVM: PagingViewModel<Rank>
     
     init(listRank: [Rank]) {
         self.listRank = listRank

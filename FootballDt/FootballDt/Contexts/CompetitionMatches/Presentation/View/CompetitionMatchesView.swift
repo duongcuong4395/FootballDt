@@ -11,6 +11,96 @@ struct CompetitionMatchesView: View {
     @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
     
     var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
+        switch competitionMatchesVM.competitionMatchesStatus {
+        case .idle:
+            EmptyView()
+        case .loading:
+            ProgressView()
+        case .success(let data):
+            ListCompetitionMatchView(listMatch: data.matches)
+        case .failure(_):
+            EmptyView()
+        }
+    }
+}
+
+struct ListCompetitionMatchView: View {
+    
+    var listMatch: [Match]
+    
+    @StateObject private var pagingVM: PagingViewModel<Match>
+    
+    init(listMatch: [Match]) {
+        self.listMatch = listMatch
+        _pagingVM = StateObject(wrappedValue: PagingViewModel<Match>(
+            items: listMatch,
+            itemsPerPage: 10
+        ))
+    }
+    
+    var body: some View {
+        VStack {
+            ScrollView(showsIndicators: false) {
+                LazyVStack{
+                    ForEach(pagingVM.items, id: \.id) { match in
+                        CompetitionMatchItemView(match: match)
+                    }
+                }
+            }
+            .padding(.top, 10)
+            
+            PagingControlsView(
+                state: pagingVM.state,
+                onPrevious: pagingVM.previousPage,
+                onNext: pagingVM.nextPage
+            )
+        }
+    }
+}
+
+
+struct CompetitionMatchItemView: View {
+    var match: Match
+    
+    var body: some View {
+        HStack{
+            TeamView(team: match.homeTeam)
+                .frame(width: UIScreen.main.bounds.width/2 - 100)
+            Spacer()
+            ScoreView(score: match.score)
+            Spacer()
+            TeamView(team: match.awayTeam)
+                .frame(width: UIScreen.main.bounds.width/2 - 100)
+        }
+    }
+}
+
+import Kingfisher
+
+struct TeamView: View {
+    var team: Team
+    
+    var body: some View {
+        VStack {
+            Text(team.shortName ?? "")
+                .font(.caption.bold())
+            KFImage(URL(string: team.crest ?? ""))
+                .resizable()
+                .frame(width: 30, height: 30)
+        }
+    }
+}
+
+
+struct ScoreView: View {
+    var score: Score
+    
+    var body: some View {
+        VStack {
+            Text("\(score.halfTime.home ?? 0) - \(score.halfTime.away ?? 0)")
+                .font(.caption2.bold())
+            Text("\(score.fullTime.home ?? 0) - \(score.fullTime.away ?? 0)")
+                .font(.caption2.bold())
+        }
     }
 }
