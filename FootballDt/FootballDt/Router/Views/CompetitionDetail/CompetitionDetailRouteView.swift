@@ -111,7 +111,10 @@ struct CompetitionDetailRouteContentView: View {
             
             TabView(selection: $selected) {
                 LeaderboardView()
+                    .padding(10)
+                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
+                
                 Text("Matches")
                     .tag(CompetitionDetailRouteMenu.Matches)
                 Text("Scorers")
@@ -119,7 +122,10 @@ struct CompetitionDetailRouteContentView: View {
                 Text("Teams")
                     .tag(CompetitionDetailRouteMenu.Teams)
             }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .animation(.easeInOut(duration: 0.2), value: selected)
         }
+        .padding(.bottom, 5)
     }
 }
 
