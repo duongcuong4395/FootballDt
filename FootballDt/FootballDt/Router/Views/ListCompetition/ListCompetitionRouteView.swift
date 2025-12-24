@@ -18,7 +18,6 @@ struct ListCompetitionRouteView: View {
             switch listCompetitionVM.listCompetitionStatus {
             case .success(data: let competitions):
                 ScrollView(showsIndicators: false) {
-                    
                     SmartGrid(columns: DeviceSize.current.isPad ? 5 : 2, spacing: .medium) {
                         ListCompetitionView(listCompetition: competitions, tappedCompetition: tappedCompetition)
                     }
@@ -37,8 +36,10 @@ struct ListCompetitionRouteView: View {
     }
     
     func tappedCompetition(_ competition: Competition) {
-        // navigate To Competitions Detail Teams
+        
         listCompetitionVM.setCompetition(competition)
+        
+        footballDtRouter.navigationToCompetitionDetail()
     }
     
 }
@@ -60,38 +61,44 @@ struct ListCompetitionView: View {
 
 struct CompetitionItemView: View {
     var competition: Competition
+    var isHStack: Bool = false
+    
     var body: some View {
-        VStack {
-            
-            if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-                WebImage(url: URL(string: flagUrl))
-                    .resizable()
-                    .font(.caption)
-                    .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                    .frame(width: 50, height: 50)
-            } else {
-                Image(systemName: "flag.slash.fill")
-                    .resizable()
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                    .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                    .frame(width: 50, height: 50)
-            }
-            
-            Text(competition.name)
+        if isHStack {
+            HStack { contentView }
+        } else {
+            VStack { contentView }
+        }
+    }
+    
+    @ViewBuilder
+    var contentView: some View {
+        if let flagUrl = competition.emblem, !flagUrl.isEmpty {
+            WebImage(url: URL(string: flagUrl))
+                .resizable()
                 .font(.caption)
-            HStack {
-                if let area = competition.area {
-                    AreaItemView(area: area
-                                 , axisHStack: true
-                                 , showName: false, imageSize: 15)
-                }
-                
-                Text("\(competition.currentSeason?.years ?? "")")
-                    .font(.caption2)
+                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                .frame(width: 50, height: 50)
+        } else {
+            Image(systemName: "flag.slash.fill")
+                .resizable()
+                .foregroundColor(.secondary)
+                .font(.caption)
+                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                .frame(width: 50, height: 50)
+        }
+        
+        Text(competition.name)
+            .font(.caption)
+        HStack {
+            if let area = competition.area {
+                AreaItemView(area: area
+                             , axisHStack: true
+                             , showName: false, imageSize: 15)
             }
             
-            
+            Text("\(competition.currentSeason?.years ?? "")")
+                .font(.caption2)
         }
     }
 }

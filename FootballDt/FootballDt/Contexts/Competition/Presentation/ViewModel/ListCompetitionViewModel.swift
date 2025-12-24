@@ -9,7 +9,6 @@ import SwiftUI
 
 class ListCompetitionViewModel: ObservableObject {
     @Published var listCompetitionStatus: ModelsStatus<[Competition]> = .idle
-    
     @Published var competitionSelected: ModelsStatus<Competition> = .idle
     
     /*
@@ -29,11 +28,8 @@ class ListCompetitionViewModel: ObservableObject {
     
     var availableCompetitions: [String] = ["WC", "CL", "BL1", "DED", "BSA", "PD", "FL1", "ELC", "PPL", "EC", "SA", "PL"]
     
+    // MARK: UserCase
     private var getAllCompetitionUserCase: GetAllCompetitionUserCase
-    
-    var listCompetition: [Competition] {
-        listCompetitionStatus.data ?? []
-    }
     
     init(getAllCompetitionUserCase: GetAllCompetitionUserCase) {
         self.getAllCompetitionUserCase = getAllCompetitionUserCase
@@ -51,11 +47,9 @@ class ListCompetitionViewModel: ObservableObject {
                 self.listCompetitionStatus = .success(data: dt)
             }
         } catch {
-            print("getAllCompetition.error", error.localizedDescription)
             DispatchQueue.main.async {
                 self.listCompetitionStatus = .failure(error: error.localizedDescription)
             }
-            
         }
     }
     

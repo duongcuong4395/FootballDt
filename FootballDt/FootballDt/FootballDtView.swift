@@ -16,11 +16,13 @@ struct FootballDtView: View {
         NavigationRouter(
             router: container.footballDtRouter) {
                 ListCompetitionRouteView()
+                    .backgroundOfPage(by: .Gradient)
             } destination: { route in
                 footballDtDestination(route)
             }
         .injectDependencies(container)
-        .padding()
+        
+        .padding(0)
     }
     
     @ViewBuilder
@@ -50,39 +52,4 @@ class AppDependencyContainer: ObservableObject {
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
-}
-
-
-
-// MARK: RouteGenericView
-struct RouteGenericView<HeaderView: View, ContentView: View>: View {
-    
-    private var headerView: HeaderView
-    private var contentView: ContentView
-    private var backgroundURLLink: String?
-    
-    init(headerView: HeaderView, contentView: ContentView, backgroundURLLink: String? = nil) {
-        self.headerView = headerView
-        self.contentView = contentView
-        self.backgroundURLLink = backgroundURLLink
-    }
-    
-    var body: some View {
-        if let backgroundURLLink {
-            VStack {
-                headerView
-                contentView
-                    .padding(.horizontal, 5)
-            }
-            .padding(.bottom, 45)
-            //.backgroundOfPage(by: .URLImage(url: backgroundURLLink))
-        } else {
-            VStack {
-                headerView
-                contentView
-                    .padding(.horizontal, 5)
-            }
-            .padding(.bottom, 45)
-        }
-    }
 }
