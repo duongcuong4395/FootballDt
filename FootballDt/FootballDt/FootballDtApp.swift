@@ -18,7 +18,7 @@ struct FootballDtApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            FootballDtView()
         }
     }
 }
