@@ -15,6 +15,7 @@ struct ListCompetitionRouteView: View {
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
+    @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
     
     var columns: [GridItem] = [GridItem(), GridItem()]
     
@@ -55,6 +56,11 @@ struct ListCompetitionRouteView: View {
         Task {
             await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
         }
+        
+        Task {
+            await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: nil)
+        }
+        
         
     }
     

@@ -18,9 +18,14 @@ struct GetAllCompetitionAPIResponse: Codable {
 // MARK: - Filters
 struct FiltersDTO: Codable {
     var season: String?
+    var limit: Int?
     
     enum CodingKeys: String, CodingKey {
-        case season
+        case season, limit
+    }
+    
+    func toDomain() -> Filters {
+        Filters(season: season, limit: limit)
     }
 }
 

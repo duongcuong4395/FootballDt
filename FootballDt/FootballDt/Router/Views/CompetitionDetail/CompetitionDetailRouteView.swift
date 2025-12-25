@@ -79,6 +79,7 @@ struct CompetitionDetailRouteHeaderView: View {
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
+    @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
     
     var body: some View {
         HStack {
@@ -106,6 +107,7 @@ struct CompetitionDetailRouteHeaderView: View {
         leaderboardVM.reset()
         competitionMatchesVM.reset()
         competitionsTeamsVM.reset()
+        competitionsScorersVM.reset()
     }
 }
 
@@ -131,7 +133,7 @@ struct CompetitionDetailRouteContentView: View {
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Matches)
                 
-                Text("Scorers")
+                CompetitionScorersView()
                     .tag(CompetitionDetailRouteMenu.Scorers)
                 
             }
@@ -141,20 +143,6 @@ struct CompetitionDetailRouteContentView: View {
         .padding(.bottom, 5)
     }
 }
-
-
-
-struct CompetitionScorersView: View {
-    var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
-
-
-
-
-
-
 
 struct MenuOfCompetitionDetailRouteView: View {
     @Binding var selected: CompetitionDetailRouteMenu
