@@ -17,7 +17,15 @@ struct CompetitionMatchesView: View {
         case .loading:
             ProgressView()
         case .success(let data):
-            ListCompetitionMatchView(listMatch: data.matches)
+            VStack {
+                Text("\(data.resultSet?.fromDateToDate ?? "")")
+                    .font(.caption2)
+                Text("\(data.resultSet?.played ?? 0)/\(data.resultSet?.count ?? 0)")
+                    .font(.caption2)
+                
+                ListCompetitionMatchView(listMatch: data.matches)
+            }
+            .padding(.top, 10)
         case .failure(_):
             EmptyView()
         }
@@ -67,7 +75,12 @@ struct CompetitionMatchItemView: View {
             TeamView(team: match.homeTeam)
                 .frame(width: UIScreen.main.bounds.width/2 - 100)
             Spacer()
-            ScoreView(score: match.score)
+            VStack {
+                Text("\(match.eventTime)")
+                    .font(.caption2)
+                ScoreView(score: match.score)
+            }
+            
             Spacer()
             TeamView(team: match.awayTeam)
                 .frame(width: UIScreen.main.bounds.width/2 - 100)

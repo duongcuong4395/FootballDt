@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Networking
+//import Networking
 import Alamofire
 
 enum CompetitionEndpoint<T: Decodable> {
@@ -40,6 +40,17 @@ extension CompetitionEndpoint: HttpRouter {
         .get
     }
     
+    var headers: [String : String]? {
+        switch self {
+        case .GetAllCompetition: return nil
+        case .GetLeaderboard(competitionCode: _)
+            , .GetTeams(competitionCode: _, season: _)
+            , .GetMatches(competitionID: _, season: _):
+            return ["X-Auth-Token": AppUtility.AuthTK]
+        }
+    }
+    
+    /*
     var headers: HTTPHeaders? {
         switch self {
         case .GetAllCompetition: return nil
@@ -47,6 +58,22 @@ extension CompetitionEndpoint: HttpRouter {
             , .GetTeams(competitionCode: _, season: _)
             , .GetMatches(competitionID: _, season: _):
             return ["X-Auth-Token": AppUtility.AuthTK]
+        }
+    }
+    */
+    
+    var queryParameters: [String : Any]? {
+        switch self {
+        case .GetAllCompetition: return nil
+        case .GetLeaderboard(competitionCode: _, season: let season):
+            guard let season = season else { return nil }
+            return ["season": season]
+        case .GetTeams(competitionCode: _, season: let season):
+            guard let season = season else { return nil }
+            return ["season": season]
+        case .GetMatches(competitionID: _, season: let season):
+            guard let season = season else { return nil }
+            return ["season": season]
         }
     }
     

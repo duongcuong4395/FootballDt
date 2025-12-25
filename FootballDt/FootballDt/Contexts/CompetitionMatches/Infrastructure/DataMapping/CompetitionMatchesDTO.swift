@@ -92,8 +92,8 @@ struct TimeDTO: Codable {
 // MARK: - Season
 struct SeasonSimpleDTO: Codable {
     var id: Int
-    var startDate, endDate: String
-    var currentMatchday: Int
+    var startDate, endDate: String?
+    var currentMatchday: Int?
     var winner: String?
     
     func toDomain() -> SeasonSimple {

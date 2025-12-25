@@ -11,8 +11,10 @@ import SDWebImageSwiftUI
 struct ListCompetitionRouteView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var footballDtRouter: FootballDtRouter
+    
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
+    @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     
     var columns: [GridItem] = [GridItem(), GridItem()]
     
@@ -44,7 +46,14 @@ struct ListCompetitionRouteView: View {
         footballDtRouter.navigationToCompetitionDetail()
         Task {
             await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
+        }
+        
+        Task {
             await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
+        }
+        
+        Task {
+            await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
         }
         
     }
@@ -56,7 +65,7 @@ struct ListCompetitionView: View {
     var tappedCompetition: (Competition) -> Void
     var body: some View {
         ForEach(listCompetition, id: \.id) { competition in
-            CompetitionItemView(competition: competition)
+            CompetitionItemView(competition: competition, imageSize: 100)
                 .padding(0)
                 //.modifier(RotateOnAppearModifier(angle: -60, duration: 1, direction: .leftToRight))
                 .onTapGesture {
@@ -69,10 +78,42 @@ struct ListCompetitionView: View {
 struct CompetitionItemView: View {
     var competition: Competition
     var isHStack: Bool = false
+    var imageSize: CGFloat = 50
     
     var body: some View {
         if isHStack {
-            HStack { contentView }
+            HStack {
+                if let flagUrl = competition.emblem, !flagUrl.isEmpty {
+                    WebImage(url: URL(string: flagUrl))
+                        .resizable()
+                        .font(.caption)
+                        .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                        .frame(width: imageSize, height: imageSize)
+                } else {
+                    Image(systemName: "flag.slash.fill")
+                        .resizable()
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                        .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                        .frame(width: 50, height: 50)
+                }
+                VStack(alignment: .leading) {
+                    Text(competition.name)
+                        .font(.caption.bold())
+                    HStack {
+                        if let area = competition.area {
+                            AreaItemView(area: area
+                                         , axisHStack: true
+                                         , showName: false, imageSize: 15)
+                        }
+                        
+                        Text("\(competition.currentSeason?.years ?? "")")
+                            .font(.caption2)
+                    }
+                }
+                
+                Spacer()
+            }
         } else {
             VStack { contentView }
         }
@@ -85,7 +126,7 @@ struct CompetitionItemView: View {
                 .resizable()
                 .font(.caption)
                 .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                .frame(width: 50, height: 50)
+                .frame(width: imageSize, height: imageSize)
         } else {
             Image(systemName: "flag.slash.fill")
                 .resizable()
@@ -96,7 +137,7 @@ struct CompetitionItemView: View {
         }
         
         Text(competition.name)
-            .font(.caption)
+            .font(.caption.bold())
         HStack {
             if let area = competition.area {
                 AreaItemView(area: area
@@ -134,11 +175,16 @@ struct AreaItemView: View {
     @ViewBuilder
     var itemView: some View {
         if let flagUrl = area.flag, !flagUrl.isEmpty {
+            RemoteImageView(urlString: area.flag, size: imageSize)
+                .font(.caption)
+                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+            /*
             WebImage(url: URL(string: area.flag ?? ""))
                 .resizable()
                 .font(.caption)
                 .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
                 .frame(width: imageSize, height: imageSize)
+             */
         } else {
             Image(systemName: "flag.slash.fill")
                 .resizable()
@@ -149,7 +195,7 @@ struct AreaItemView: View {
         }
         
         if showName {
-            Text(area.name)
+            Text(area.name ?? "")
                 .font(.caption)
         }
     }

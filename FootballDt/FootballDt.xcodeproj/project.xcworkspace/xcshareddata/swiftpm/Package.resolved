@@ -1,5 +1,5 @@
 {
-  "originHash" : "3029f72da6c6886f70e81b42bb641aa023efa8107fc3a61b13fd515ce7872f61",
+  "originHash" : "66fde2986ed7e41d4449a8801a8a11a0218ffa92d179cc48d89eb7ce35c92695",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -34,7 +34,7 @@
       "location" : "https://github.com/duongcuong4395/MyPackage.git",
       "state" : {
         "branch" : "main",
-        "revision" : "822a5a74abf175fb7caf136d42b2ad7dde229846"
+        "revision" : "6593e64119663748bfd9759d55bb256f9edac880"
       }
     },
     {

@@ -31,28 +31,14 @@ struct Leaderboard {
 }
 
 
-struct Team {
-    var id: Int
-    var name, shortName, tla: String?
-    var crest: String?
-    
-    var area: Area?
-    
-    var address: String?
-    var website: String?
-    var founded: Int?
-    var clubColors, venue: String?
-    var runningCompetitions: [Competition]?
-    var coach: Coach?
-    var squad, staff: [String]?
-    var lastUpdated: String?
-}
+
 
 // MARK: - Coach
 struct Coach {
-    var id, firstName, lastName, name: String?
+    var id: Int?
+    var firstName, lastName, name: String?
     var dateOfBirth, nationality: String?
-    var contract: Contract
+    var contract: Contract?
 }
 
 // MARK: - Contract

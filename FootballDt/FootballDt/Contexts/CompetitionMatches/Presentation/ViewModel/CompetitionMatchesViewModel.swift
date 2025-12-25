@@ -17,17 +17,22 @@ class CompetitionMatchesViewModel: ObservableObject {
     }
     
     func getCompetitionMatches(by competitionID: String, and season: String?) async {
+        DispatchQueue.main.async {
+            self.competitionMatchesStatus = .loading
+        }
         do {
             let data = try await getCompetitionMatchesUserCase.execute(by: competitionID, and: season)
-            print("getCompetitionMatches.success: ", data.matches.count)
             DispatchQueue.main.async {
                 self.competitionMatchesStatus = .success(data: data)
             }
         } catch {
-            print("getCompetitionMatches.error: \(competitionID)", error.localizedDescription)
             DispatchQueue.main.async {
                 self.competitionMatchesStatus = .failure(error: error.localizedDescription)
             }
         }
+    }
+    
+    func reset() {
+        self.competitionMatchesStatus = .idle
     }
 }

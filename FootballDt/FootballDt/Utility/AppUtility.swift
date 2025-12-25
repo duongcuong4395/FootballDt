@@ -15,9 +15,15 @@ class AppUtility {
 
 enum DateParser {
 
-    private static let isoFormatter: ISO8601DateFormatter = {
+    private static let isoFormatterWithFraction: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
+    private static let isoFormatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime]
         return f
     }()
 
@@ -25,27 +31,37 @@ enum DateParser {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
         f.timeZone = TimeZone(secondsFromGMT: 0)
+        f.locale = Locale(identifier: "en_US_POSIX")
         return f
     }()
 
     static func parse(_ raw: String) -> Date? {
 
-        // ISO 8601: 2023-08-01T08:40:24Z
+        if let date = isoFormatterWithFraction.date(from: raw) {
+            return date
+        }
+
         if let date = isoFormatter.date(from: raw) {
             return date
         }
 
-        // Date-only: 2021-03-13
         if let date = dateOnlyFormatter.date(from: raw) {
             return date
         }
 
         return nil
     }
-    
-    static func formatDate(_ date: Date, to format: String = "yyyy-MM-dd") -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        return formatter.string(from: date)
+
+    static func format(_ date: Date, to format: String) -> String {
+        let f = DateFormatter()
+        f.dateFormat = format
+        f.locale = Locale(identifier: "en_US_POSIX")
+        return f.string(from: date)
+    }
+
+    static func convert(_ raw: String, to format: String) -> String {
+        guard let date = parse(raw) else { return "" }
+        return self.format(date, to: format)
     }
 }
+

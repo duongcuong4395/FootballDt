@@ -17,6 +17,9 @@ class LeaderboardViewModel: ObservableObject {
     }
     
     func getLeaderboard(by competitionCode: String, and season: String?) async {
+        DispatchQueue.main.async {
+            self.leaderboardStatus = .loading
+        }
         do {
             let data = try await getLeaderboardUserCase.execute(by: competitionCode, and: season)
             DispatchQueue.main.async {
@@ -29,7 +32,7 @@ class LeaderboardViewModel: ObservableObject {
         }
     }
     
-    func resetAll() {
+    func reset() {
         self.leaderboardStatus = .idle
     }
 }

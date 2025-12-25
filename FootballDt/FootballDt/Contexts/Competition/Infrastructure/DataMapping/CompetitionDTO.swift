@@ -30,7 +30,7 @@ struct CompetitionDTO: Codable {
     var area: AreaDTO?
     var name: String
     var code: String?
-    var type: String
+    var type: String?
     var emblem: String?
     var plan: String?
     var currentSeason: SeasonDTO?
@@ -55,7 +55,7 @@ struct CompetitionDTO: Codable {
 // MARK: - Area
 struct AreaDTO: Codable {
     var id: Int
-    var name: String
+    var name: String?
     var countryCode: String?
     var code: String?
     var flag: String?
@@ -72,11 +72,6 @@ struct AreaDTO: Codable {
         Area(id: id, name: name, countryCode: countryCode,
              code: code, flag: flag, parentAreaID: parentAreaID, parentArea: parentArea)
     }
-}
-
-struct Period {
-    let startDate: Date
-    let endDate: Date
 }
 
 // MARK: - Season

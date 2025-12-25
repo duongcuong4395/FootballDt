@@ -76,55 +76,20 @@ struct RankDTO: Codable {
 
 
 
-// MARK: - Team
-struct TeamDTO: Codable {
-    var id: Int
-    var name, shortName, tla: String?
-    var crest: String?
-    
-    var area: AreaDTO?
-    
-    var address: String?
-    var website: String?
-    var founded: Int?
-    var clubColors, venue: String?
-    var runningCompetitions: [CompetitionDTO]?
-    var coach: CoachDTO?
-    var squad, staff: [String]?
-    var lastUpdated: String?
-    
-    func toDomain() -> Team {
-        Team(
-            id: id
-            , name: name
-            , shortName: shortName
-            , tla: tla
-            , crest: crest
-            , area: area?.toDomain()
-            , address: address
-            , website: website
-            , founded: founded
-            , clubColors: clubColors
-            , venue: venue
-            , runningCompetitions: runningCompetitions?.map{ $0.toDomain() }
-            , coach: coach?.toDomain()
-            , squad: squad
-            , staff: staff
-            , lastUpdated: lastUpdated)
-    }
-}
+
 
 struct CoachDTO: Codable {
-    var id, firstName, lastName, name: String?
+    var id: Int?
+    var firstName, lastName, name: String?
     var dateOfBirth, nationality: String?
-    var contract: ContractDTO
+    var contract: ContractDTO?
     
     func toDomain() -> Coach {
         Coach(
             id: id
             , firstName: firstName
             , lastName: lastName
-            , name: name, dateOfBirth: dateOfBirth, nationality: nationality, contract: contract.toDomain())
+            , name: name, dateOfBirth: dateOfBirth, nationality: nationality, contract: contract?.toDomain())
     }
 }
 

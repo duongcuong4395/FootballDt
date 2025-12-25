@@ -60,4 +60,8 @@ class ListCompetitionViewModel: ObservableObject {
     func resetAll() {
         self.competitionSelected = .idle
     }
+    
+    func resetCompetitionSelected() {
+        self.competitionSelected = .idle
+    }
 }

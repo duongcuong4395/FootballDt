@@ -10,7 +10,7 @@ struct Competition {
     var area: Area?
     var name: String
     var code: String?
-    var type: String
+    var type: String?
     var emblem: String?
     var plan: String?
     var currentSeason: Season?
@@ -22,7 +22,7 @@ struct Competition {
 
 struct Area {
     var id: Int
-    var name: String
+    var name: String?
     var countryCode: String?
     var code: String?
     var flag: String?
@@ -35,7 +35,7 @@ struct Area {
         self.name = ""
     }
     
-    init(id: Int, name: String, countryCode: String? = nil, code: String? = nil, flag: String? = nil, parentAreaID: Int? = nil, parentArea: String? = nil) {
+    init(id: Int, name: String?, countryCode: String? = nil, code: String? = nil, flag: String? = nil, parentAreaID: Int? = nil, parentArea: String? = nil) {
         self.id = id
         self.name = name
         self.countryCode = countryCode
@@ -54,34 +54,19 @@ struct Season: Codable {
     var winner: Winner?
     
     var years: String {
-        guard
-            let start = DateParser.parse(startDate),
-            let end = DateParser.parse(endDate)
-        else {
-            return ""
-        }
-
-        return DateParser.formatDate(start, to: "yyyy") + "-" + DateParser.formatDate(end, to: "yyyy")
+        return yearStart + " - " + yearEnd
     }
     
     var yearStart: String {
-        guard
-            let start = DateParser.parse(startDate)
-        else {
-            return ""
-        }
-
-        return DateParser.formatDate(start, to: "yyyy")
+        return DateParser.convert(startDate, to: "yyyy")
     }
     
     var yearEnd: String {
-        guard
-            let end = DateParser.parse(endDate)
-        else {
-            return ""
-        }
-
-        return DateParser.formatDate(end, to: "yyyy")
+        return DateParser.convert(endDate, to: "yyyy")
+    }
+    
+    var fromDateToDate: String {
+        return DateParser.convert(startDate, to: "dd/MM/yyyy") + " - " + DateParser.convert(endDate, to: "dd/MM/yyyy")
     }
 }
 

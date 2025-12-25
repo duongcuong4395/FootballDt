@@ -76,6 +76,10 @@ struct CompetitionDetailRouteHeaderView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var router: FootballDtRouter
     
+    @EnvironmentObject var leaderboardVM: LeaderboardViewModel
+    @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
+    @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
+    
     var body: some View {
         HStack {
             switch listCompetitionVM.competitionSelected {
@@ -98,6 +102,10 @@ struct CompetitionDetailRouteHeaderView: View {
     
     func backRoute() {
         router.pop()
+        listCompetitionVM.resetCompetitionSelected()
+        leaderboardVM.reset()
+        competitionMatchesVM.reset()
+        competitionsTeamsVM.reset()
     }
 }
 
@@ -115,7 +123,8 @@ struct CompetitionDetailRouteContentView: View {
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 
-                Text("Teams")
+                CompetitionTeamsView()
+                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Teams)
                 
                 CompetitionMatchesView()
@@ -133,11 +142,7 @@ struct CompetitionDetailRouteContentView: View {
     }
 }
 
-struct CompetitionTeamsView: View {
-    var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
+
 
 struct CompetitionScorersView: View {
     var body: some View {

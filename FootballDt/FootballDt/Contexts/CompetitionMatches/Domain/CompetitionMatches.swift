@@ -29,6 +29,10 @@ struct Match {
     var score: Score
     var odds: Odds
     var referees: [Referee]
+    
+    var eventTime: String {
+        DateParser.convert(utcDate, to: "dd/MM hh:mm")
+    }
 }
 
 // MARK: - Odds
@@ -58,10 +62,26 @@ struct Time: Codable {
 
 // MARK: - Season
 struct SeasonSimple {
-    var id: Int
-    var startDate, endDate: String
-    var currentMatchday: Int
+    var id: Int?
+    var startDate, endDate: String?
+    var currentMatchday: Int?
     var winner: String?
+    
+    var years: String {
+        return yearStart + " - " + yearEnd
+    }
+    
+    var yearStart: String {
+        return DateParser.convert(startDate ?? "", to: "yyyy")
+    }
+    
+    var yearEnd: String {
+        return DateParser.convert(endDate ?? "", to: "yyyy")
+    }
+    
+    var fromDateToDate: String {
+        return DateParser.convert(startDate ?? "", to: "dd/MM/yyyy") + " - " + DateParser.convert(endDate ?? "", to: "dd/MM/yyyy")
+    }
 }
 
 // MARK: - ResultSet
@@ -69,4 +89,8 @@ struct ResultSet {
     var count: Int
     var first, last: String
     var played: Int
+    
+    var fromDateToDate: String {
+        return DateParser.convert(first, to: "dd/MM/yyyy") + " - " + DateParser.convert(last, to: "dd/MM/yyyy")
+    }
 }
