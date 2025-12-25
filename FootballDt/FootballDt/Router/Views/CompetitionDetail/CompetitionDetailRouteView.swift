@@ -104,6 +104,7 @@ struct CompetitionDetailRouteHeaderView: View {
     func backRoute() {
         router.pop()
         listCompetitionVM.resetCompetitionSelected()
+        
         leaderboardVM.reset()
         competitionMatchesVM.reset()
         competitionsTeamsVM.reset()
@@ -121,19 +122,24 @@ struct CompetitionDetailRouteContentView: View {
             
             TabView(selection: $selected) {
                 LeaderboardView()
-                    .padding(10)
+                    .padding(.horizontal, 10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
+                    
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 
                 CompetitionTeamsView()
+                    .padding(.horizontal, 10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Teams)
                 
                 CompetitionMatchesView()
+                    .padding(.horizontal, 10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Matches)
                 
                 CompetitionScorersView()
+                    .padding(.horizontal, 10)
+                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Scorers)
                 
             }

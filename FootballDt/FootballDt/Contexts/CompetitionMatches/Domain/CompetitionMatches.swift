@@ -14,11 +14,12 @@ struct CompetitionMatches {
 }
 
 // MARK: - Match
-struct Match {
+struct Match: Identifiable {
+    var id: Int
     var area: Area
     var competition: Competition
     var season: SeasonSimple
-    var id: Int
+    
     var utcDate: String
     var status: String
     var matchday: Int

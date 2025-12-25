@@ -33,6 +33,10 @@ class ListCompetitionViewModel: ObservableObject {
     
     init(getAllCompetitionUserCase: GetAllCompetitionUserCase) {
         self.getAllCompetitionUserCase = getAllCompetitionUserCase
+        
+        Task {
+            await getAllCompetition()
+        }
     }
     
     func getAllCompetition() async {

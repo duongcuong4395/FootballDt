@@ -38,10 +38,11 @@ struct MatchDTO: Codable {
     
     func toDomain() -> Match {
         Match(
-            area: area.toDomain()
+            id: id
+            , area: area.toDomain()
             , competition: competition.toDomain()
             , season: season.toDomain()
-            , id: id
+            
             , utcDate: utcDate
             , status: status, matchday: matchday, stage: stage, group: group
             , lastUpdated: lastUpdated, homeTeam: homeTeam.toDomain(), awayTeam: awayTeam.toDomain()

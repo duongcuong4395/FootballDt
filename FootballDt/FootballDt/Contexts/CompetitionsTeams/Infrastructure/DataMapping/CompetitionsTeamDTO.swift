@@ -30,7 +30,7 @@ struct GetCompetitionsTeamsAPIResponse: Codable {
 // MARK: - Team
 struct TeamDTO: Codable {
     var area: AreaDTO?
-    var id: Int
+    var id: Int?
     var name: String?
     var shortName, tla: String?
     var crest: String?

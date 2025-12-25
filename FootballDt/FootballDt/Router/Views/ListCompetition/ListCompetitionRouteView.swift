@@ -17,6 +17,10 @@ struct ListCompetitionRouteView: View {
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
     
+    //@EnvironmentObject var coordinator: CompetitionDetailCoordinator
+    
+    @State var loading: Bool = false
+    
     var columns: [GridItem] = [GridItem(), GridItem()]
     
     var body: some View {
@@ -34,37 +38,41 @@ struct ListCompetitionRouteView: View {
                 EmptyView()
             }
         }
-        .onAppear{
-            Task {
-                await listCompetitionVM.getAllCompetition()
+        .overlay {
+            if loading {
+                ProgressView()
+                    .padding()
+                    .themedBackground(.card())
             }
         }
+        //.onDisappear {
+            //coordinator.cancelLoading()
+        //}
     }
     
     func tappedCompetition(_ competition: Competition) {
         
-        listCompetitionVM.setCompetition(competition)
-        footballDtRouter.navigationToCompetitionDetail()
-        Task {
-            await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
-        }
         
-        Task {
-            await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
-        }
+        self.loading = true
         
-        Task {
-            await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
-        }
+         listCompetitionVM.setCompetition(competition)
+         
+          Task {
+              await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
+              await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
+              await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
+              await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: nil)
+              self.loading = false
+              footballDtRouter.navigationToCompetitionDetail()
+          }
+         
         
-        Task {
-            await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: nil)
-        }
-        
-        
+        //coordinator.handleCompetitionTapped( competition, listCompetitionVM: listCompetitionVM, router: footballDtRouter)
     }
     
+    
 }
+
 
 struct ListCompetitionView: View {
     var listCompetition: [Competition]

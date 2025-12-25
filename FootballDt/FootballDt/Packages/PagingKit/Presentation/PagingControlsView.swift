@@ -13,19 +13,44 @@ public struct PagingControlsView: View {
     let onNext: () -> Void
 
     public var body: some View {
-        HStack {
-            Button("Previous", action: onPrevious)
+        if !state.hasPrevious && !state.hasNext {
+            EmptyView()
+        } else {
+            HStack {
+                Button(action: {
+                    withAnimation {
+                        onPrevious()
+                    }
+                    
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.title3)
+                        .padding(10)
+                        .themedBackground(.button())
+                }
                 .disabled(!state.hasPrevious)
+                
+                Spacer()
 
-            Spacer()
+                Text("\(state.currentPage) / \(state.totalPages)")
+                    .font(.body)
 
-            Text("\(state.currentPage) / \(state.totalPages)")
+                Spacer()
 
-            Spacer()
-
-            Button("Next", action: onNext)
+                Button(action: {
+                    withAnimation {
+                        onNext()
+                    }
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .padding(10)
+                        .themedBackground(.button())
+                }
                 .disabled(!state.hasNext)
+            }
+            .padding()
         }
-        .padding()
+        
     }
 }

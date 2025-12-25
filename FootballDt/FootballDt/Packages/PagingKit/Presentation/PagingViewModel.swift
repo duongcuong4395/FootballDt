@@ -72,3 +72,72 @@ public final class PagingViewModelNew<T: Identifiable>: ObservableObject {
         state = controller.state()
     }
 }
+
+
+
+struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
+    var listItem: [T]
+    var itemsPerPage: Int
+    
+    /*
+     GridItem(.fixed(100)),
+     GridItem(.flexible(minimum: 50, maximum: .infinity)),
+     GridItem(.flexible(minimum: 50, maximum: .infinity))
+     */
+    var grid: (columms: [GridItem], headerView: () -> AnyView)?
+    
+    var itemView: (T) -> ItemView
+    
+    
+    @StateObject private var pagingVM: PagingViewModelNew<T>
+    
+    
+    init(listItem: [T], itemsPerPage: Int = 10
+         , grid: (columms: [GridItem], headerView: () -> AnyView)? = nil
+         , itemView: @escaping (T) -> ItemView) {
+        
+        self.listItem = listItem
+        _pagingVM = StateObject(wrappedValue: PagingViewModelNew<T>(
+            items: listItem,
+            itemsPerPage: itemsPerPage
+        ))
+        self.itemView = itemView
+        self.itemsPerPage = itemsPerPage
+        self.grid = grid
+    }
+    
+    var body: some View {
+        VStack {
+            PagingControlsView(
+                state: pagingVM.state,
+                onPrevious: pagingVM.previousPage,
+                onNext: pagingVM.nextPage
+            )
+            
+            if let grid = grid {
+                LazyVGrid(columns: grid.columms) {
+                    grid.headerView()
+                    
+                }
+            }
+            
+            
+            ScrollView(showsIndicators: false) {
+                if let grid = grid {
+                    LazyVGrid(columns: grid.columms, spacing: 10) {
+                        ForEach(pagingVM.items, id: \.id) { item in
+                            itemView(item)
+                        }
+                    }
+                } else {
+                    LazyVStack{
+                        ForEach(pagingVM.items, id: \.id) { item in
+                            itemView(item)
+                        }
+                    }
+                }
+            }
+            .padding(.top, 10)
+        }
+    }
+}

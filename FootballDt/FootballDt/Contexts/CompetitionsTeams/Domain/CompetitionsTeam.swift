@@ -14,8 +14,8 @@ struct CompetitionsTeams {
     var teams: [Team]?
 }
 
-struct Team {
-    var id: Int
+struct Team: Identifiable {
+    var id: Int?
     var name, shortName, tla: String?
     var crest: String?
     

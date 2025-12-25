@@ -6,15 +6,20 @@
 //
 
 import Foundation
+import SwiftUI
 
-struct Rankings {
-    var stage, type: String
+struct Rankings: Identifiable {
+    var id = UUID()
+    var stage, type: String?
     var group: String?
     var rankings: [Rank]
 }
 
+import SwiftUI
+
 // MARK: - Table
-struct Rank {
+struct Rank: Identifiable {
+    var id = UUID()
     var position: Int
     var team: Team
     var playedGames: Int

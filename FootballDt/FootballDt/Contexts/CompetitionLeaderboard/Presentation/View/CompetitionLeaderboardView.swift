@@ -13,101 +13,101 @@ struct CompetitionLeaderboardView: View {
     }
 }
 
-/*
-
-struct LeaderboardRouteView: View {
-    var body: some View {
-        RouteGenericView(
-            headerView: LeaderboardHeaderView()
-            , contentView: LeaderboardView()
-            , backgroundURLLink: nil)
-    }
-}
-
-struct LeaderboardHeaderView: View {
-    @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
-    @EnvironmentObject var leaderboardVM: LeaderboardViewModel
-    @EnvironmentObject var footballDtRouter: FootballDtRouter
-    
-    var body: some View {
-        HStack(spacing: 10) {
-            Button(action: {
-                leaderboardVM.resetAll()
-                footballDtRouter.pop()
-            }, label: {
-                Image(systemName: "chevron.left")
-                    .font(.title2)
-            })
-            switch listCompetitionVM.competitionSelected {
-            case .success(data: let data):
-                CompetitionItemView(competition: data)
-            default: EmptyView()
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 70)
-        //.themedBackground(.header(height: 70))
-    }
-}
- 
-*/
 struct LeaderboardView: View {
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
+    @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     
     var body: some View {
-        switch leaderboardVM.leaderboardStatus {
-        case .idle:
-            
-            Text("LeaderboardView.idle")
-        case .loading:
-            ProgressView()
-        case .success(let data):
-            VStack {
-                RankingsView(listRank: data.rankings?[0].rankings ?? [])
+        Group {
+            switch leaderboardVM.leaderboardStatus {
+            case .idle:
+                
+                Text("LeaderboardView.idle")
+            case .loading:
+                ProgressView()
+            case .success(let data):
+                VStack {
+                    if let rankings = data.rankings {
+                        if rankings.count > 1 {
+                            TabView {
+                                ForEach (rankings, id: \.id) { ranking in
+                                    VStack {
+                                        Text(ranking.group ?? "")
+                                        RankingsView(listRank: ranking.rankings)
+                                            .id(ranking.id)
+                                            .tag(ranking.id)
+                                            //.frame(height: 300)
+                                    }
+                                }
+                            }
+                            .tabViewStyle(.page)
+                            .padding(.top, 10)
+                            
+                            /*
+                            ScrollView(showsIndicators: false) {
+                                LazyVStack {
+                                    ForEach (rankings, id: \.id) { ranking in
+                                        Section(ranking.group ?? "TOTAL") {
+                                            RankingsView(listRank: ranking.rankings)
+                                        }
+                                    }
+                                }
+                            }
+                            */
+                        } else {
+                            RankingsView(listRank: rankings[0].rankings)
+                        }
+                    }
+                    
+                }
+            case .failure(let error):
+                Text("LeaderboardView.failure: \(error)")
             }
-        case .failure(let error):
-            Text("LeaderboardView.failure: \(error)")
         }
-        
     }
 }
 
 
 struct RankingsView: View {
     var listRank: [Rank]
-    
-    @StateObject private var pagingVM: PagingViewModel<Rank>
-    
-    init(listRank: [Rank]) {
-        self.listRank = listRank
-        _pagingVM = StateObject(wrappedValue: PagingViewModel<Rank>(
-            items: listRank,
-            itemsPerPage: 11
-        ))
-    }
 
+    var columns: [GridItem] = [
+        GridItem(.fixed(30)),
+        GridItem(.flexible(minimum: 50, maximum: .infinity)),
+        GridItem(.fixed(30)),
+        GridItem(.fixed(30)),
+        GridItem(.fixed(30)),
+        GridItem(.fixed(30))
+    ]
+    
     var body: some View {
-        List(pagingVM.items, id: \.position) { rank in
-            ItemRankView(rank: rank)
+        ListItemPerPageView(listItem: listRank, grid: (columns, getHeaderView), itemView: getItemView)
+    }
+    
+    @ViewBuilder
+    func getItemView(rank: Rank) -> some View {
+        if rank.team.id != nil {
+            ItemRankView(rank: rank, hasColumns: true)
         }
+    }
+    
+    @ViewBuilder
+    func getHeaderView() -> AnyView {
+        AnyView(Group {
+            Text("Rank")
+                .font(.caption2)
+            Text("Team")
+                .font(.caption2)
+            Text("Won")
+                .font(.caption2)
+            Text("Draw")
+                .font(.caption2)
+            Text("Lost")
+                .font(.caption2)
+            Text("Point")
+                .font(.caption2)
+        })
 
-        PagingControlsView(
-            state: pagingVM.state,
-            onPrevious: pagingVM.previousPage,
-            onNext: pagingVM.nextPage
-        )
-        
-        
-        /*
-        ScrollView(showsIndicators: false) {
-            LazyVStack {
-                ForEach(listRank, id: \.position) { rank in
-                    ItemRankView(rank: rank)
-                }
-            }
-        }
-        */
     }
 }
 
@@ -115,19 +115,19 @@ import Kingfisher
 
 struct ItemRankView: View {
     let rank: Rank
+    var hasColumns: Bool = false
     
     var body: some View {
-        HStack {
+        if hasColumns {
             Text("\(rank.position)")
                 .font(.caption2.bold())
+            HStack {
+                RemoteImageView(urlString: rank.team.crest ?? "", size: 20)
+                Text(rank.team.shortName ?? "")
+                    .font(.caption)
+                Spacer()
+            }
             
-            KFImage(URL(string: rank.team.crest ?? ""))
-                .resizable()
-                .frame(width: 20, height: 20)
-            
-            Text(rank.team.shortName ?? "")
-                .font(.caption)
-            Spacer()
             Text("\(rank.won)")
                 .font(.caption2)
             Text("\(rank.draw)")
@@ -136,6 +136,27 @@ struct ItemRankView: View {
                 .font(.caption2)
             Text("\(rank.points)")
                 .font(.caption2.bold())
+        } else {
+            HStack {
+                Text("\(rank.position)")
+                    .font(.caption2.bold())
+                
+                KFImage(URL(string: rank.team.crest ?? ""))
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                
+                Text(rank.team.shortName ?? "")
+                    .font(.caption)
+                Spacer()
+                Text("\(rank.won)")
+                    .font(.caption2)
+                Text("\(rank.draw)")
+                    .font(.caption2)
+                Text("\(rank.lost)")
+                    .font(.caption2)
+                Text("\(rank.points)")
+                    .font(.caption2.bold())
+            }
         }
     }
 }

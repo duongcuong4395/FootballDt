@@ -14,14 +14,14 @@ struct GetLeaderboardAPIResponse: Codable {
     var filters: FiltersDTO?
     var area: AreaDTO?
     var competition: CompetitionDTO?
-    var season: Season?
+    var season: SeasonDTO?
     var rankings: [RankingsDTO]?
     
     func toDomain() -> Leaderboard {
         Leaderboard(
             area: area?.toDomain()
             , competition: competition?.toDomain()
-            , season: season
+            , season: season?.toDomain()
             , rankings: rankings?.map { $0.toDomain() })
     }
     
@@ -36,7 +36,7 @@ struct GetLeaderboardAPIResponse: Codable {
 
 // MARK: - Standing
 struct RankingsDTO: Codable {
-    var stage, type: String
+    var stage, type: String?
     var group: String?
     var rankings: [RankDTO]
     

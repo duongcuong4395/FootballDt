@@ -40,6 +40,8 @@ struct RemoteImageView: View {
     let urlString: String?
     let size: CGFloat
 
+    @State private var isLoading = true
+    
     var body: some View {
         switch RemoteImageResolver.resolve(from: urlString) {
 
@@ -53,11 +55,26 @@ struct RemoteImageView: View {
                 .frame(width: size, height: size)
 
         case .svg:
+            WebImage(url: URL(string: urlString ?? "")) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    ZStack {
+                        Color.gray.opacity(0.1)
+                        ProgressView()
+                            .scaleEffect(0.7)
+                    }
+                }
+                .indicator(.activity)
+                .transition(.opacity)
+                .frame(width: size, height: size)
+  /*
             WebImage(url: URL(string: urlString ?? ""))
                 .resizable()
                 .scaledToFit()
                 .frame(width: size, height: size)
-
+*/
         case .unknown:
             Image(systemName: "photo")
                 .resizable()
