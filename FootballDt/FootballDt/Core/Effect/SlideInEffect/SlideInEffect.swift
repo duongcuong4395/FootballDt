@@ -59,6 +59,7 @@ struct SlideInEffect_OldVersion: ViewModifier {
 struct SlideInEffect: ViewModifier {
     @Binding var isVisible: Bool
     var delay: Double
+    var repeatAnimationOnApear: Bool
     var direction: AnimationDirection
     
     // ✅ Use @State to track animation state
@@ -69,14 +70,19 @@ struct SlideInEffect: ViewModifier {
             .offset(x: xOffset, y: yOffset)
             .opacity(opacity)
             .onAppear {
-                // ✅ Reset animation state on appear
-                hasAppeared = false
-                // ✅ Trigger animation after delay
-                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        hasAppeared = true
+                
+                if repeatAnimationOnApear {
+                    // ✅ Reset animation state on appear
+                    hasAppeared = false
+                    // ✅ Trigger animation after delay
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            hasAppeared = true
+                        }
                     }
                 }
+                
+                
             }
             .onChange(of: isVisible) { newValue in
                 // ✅ Sync with parent state
@@ -121,8 +127,8 @@ struct SlideInEffect: ViewModifier {
 }
 
 extension View {
-    func slideInEffect(isVisible: Binding<Bool>, delay: Double, direction: AnimationDirection) -> some View {
-        return self.modifier(SlideInEffect(isVisible: isVisible, delay: delay, direction: direction))
+    func slideInEffect(isVisible: Binding<Bool>, delay: Double, repeatAnimationOnApear: Bool = true, direction: AnimationDirection) -> some View {
+        return self.modifier(SlideInEffect(isVisible: isVisible, delay: delay, repeatAnimationOnApear: repeatAnimationOnApear, direction: direction))
     }
 
     func slideInEffect_OldVersion(isVisible: Binding<Bool>, delay: Double, direction: AnimationDirection) -> some View {

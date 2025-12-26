@@ -41,21 +41,6 @@ struct LeaderboardView: View {
                                     }
                                 }
                             }
-                            
-                            /*
-                            TabView {
-                                ForEach (rankings, id: \.id) { ranking in
-                                    VStack {
-                                        Text(ranking.group ?? "")
-                                        RankingsView(listRank: ranking.rankings, hasEffectOnApear: false)
-                                    }
-                                    .id(ranking.id)
-                                    .tag(ranking.id)
-                                }
-                            }
-                            .tabViewStyle(.page)
-                            .padding(.top, 10)
-                            */
                         } else {
                             RankingsView(listRank: rankings[0].rankings, hasEffectOnApear: true)
                         }
@@ -82,18 +67,27 @@ struct RankingsView: View {
         GridItem(.fixed(35))
     ]
     
+    @State private var showModels: [Bool] = []
+    @State private var repeatAnimationOnApear = false
+    
     var body: some View {
-        ListItemPerPageViewNew2(
+        ListItemPerPageView(
             listItem: listRank
             , itemsPerPage: listRank.count
             , grid: (columns, getHeaderView)
-            , animationEnabled: true
-            , repeatAnimationOnAppear: false
-        ) { rank, isVisible, delay in
+            , hasEffectOnApear: true
+            , showModels: $showModels
+            , repeatAnimationOnApear: $repeatAnimationOnApear
+            , itemView: getItemView)
+    }
+    
+    @ViewBuilder
+    func getItemView(rank: Rank) -> some View {
+        if let index = listRank.firstIndex(where: { $0.id == rank.id }) {
             ItemRankView(
                 rank: rank, hasColumns: true
-                , isVisible: isVisible
-                , delay: delay)
+                , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
+                , delay: Double(index) * 0.03, repeatAnimationOnApear: repeatAnimationOnApear)
         }
     }
     
@@ -118,6 +112,7 @@ struct ItemRankView: View {
     
     @Binding var isVisible: Bool
     var delay: Double
+    var repeatAnimationOnApear: Bool
     
     var body: some View {
         Group {
@@ -134,6 +129,6 @@ struct ItemRankView: View {
             Text("\(rank.lost)").font(.caption2)
             Text("\(rank.points)").font(.caption2.bold())
         }
-        .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
+        .slideInEffect(isVisible: $isVisible, delay: delay, repeatAnimationOnApear: repeatAnimationOnApear, direction: .leftToRight)
     }
 }

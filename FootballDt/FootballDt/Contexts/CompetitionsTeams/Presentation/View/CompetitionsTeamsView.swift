@@ -117,7 +117,6 @@ struct TeamItemForCompetitionView<Builder: ItemBuilder>: View where Builder.T ==
 struct TeamItemView: View {
     var team: Team
     
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack {
@@ -153,8 +152,6 @@ struct TeamItemView: View {
                             ForEach(runningCompetitions, id: \.id) { competition in
                                 VStack {
                                     RemoteImageView(urlString: competition.emblem ?? "", size: 40)
-                                    //Text(competition.name)
-                                        //.font(.caption2)
                                 }
                             }
                         }

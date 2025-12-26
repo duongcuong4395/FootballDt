@@ -17,8 +17,6 @@ struct ListCompetitionRouteView: View {
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
     
-    //@EnvironmentObject var coordinator: CompetitionDetailCoordinator
-    
     @State var loading: Bool = false
     
     var columns: [GridItem] = [GridItem(), GridItem()]
@@ -87,7 +85,7 @@ struct ListCompetitionView: View {
         ForEach(listCompetition, id: \.id) { competition in
             CompetitionItemView(competition: competition, imageSize: 100)
                 .padding(0)
-                //.modifier(RotateOnAppearModifier(angle: -60, duration: 1, direction: .leftToRight))
+                .modifier(RotateOnAppearModifier_New(angle: -60, duration: 1, direction: .leftToRight))
                 .onTapGesture {
                     tappedCompetition(competition)
                 }

@@ -21,7 +21,6 @@ struct FootballDtView: View {
                 footballDtDestination(route)
             }
         .injectDependencies(container)
-        
         .padding(0)
     }
     
@@ -41,8 +40,6 @@ extension View {
             .environmentObject(container.competitionMatchesVM)
             .environmentObject(container.competitionsTeamsVM)
             .environmentObject(container.competitionsScorersVM)
-            
-            .environmentObject(container.competitionDetailCoordinator)
         
     }
 }
@@ -72,9 +69,4 @@ class AppDependencyContainer: ObservableObject {
     
     lazy var competitionsScorersVM = CompetitionsScorersViewModel(getCompetitionsScorersUserCase: getCompetitionsScorersUserCase)
     
-    lazy var competitionDetailCoordinator = CompetitionDetailCoordinator(
-        leaderboardVM: leaderboardVM
-        , competitionMatchesVM: competitionMatchesVM
-        , competitionsTeamsVM: competitionsTeamsVM
-        , competitionsScorersVM: competitionsScorersVM)
 }
