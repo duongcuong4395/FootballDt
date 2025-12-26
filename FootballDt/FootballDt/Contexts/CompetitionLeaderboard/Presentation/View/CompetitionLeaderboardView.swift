@@ -21,8 +21,7 @@ struct LeaderboardView: View {
         Group {
             switch leaderboardVM.leaderboardStatus {
             case .idle:
-                
-                Text("LeaderboardView.idle")
+                Text("LeaderboardView idle")
             case .loading:
                 ProgressView()
             case .success(let data):
@@ -43,17 +42,6 @@ struct LeaderboardView: View {
                             .tabViewStyle(.page)
                             .padding(.top, 10)
                             
-                            /*
-                            ScrollView(showsIndicators: false) {
-                                LazyVStack {
-                                    ForEach (rankings, id: \.id) { ranking in
-                                        Section(ranking.group ?? "TOTAL") {
-                                            RankingsView(listRank: ranking.rankings)
-                                        }
-                                    }
-                                }
-                            }
-                            */
                         } else {
                             RankingsView(listRank: rankings[0].rankings)
                         }
@@ -72,16 +60,16 @@ struct RankingsView: View {
     var listRank: [Rank]
 
     var columns: [GridItem] = [
-        GridItem(.fixed(30)),
+        GridItem(.fixed(35)),
         GridItem(.flexible(minimum: 50, maximum: .infinity)),
-        GridItem(.fixed(30)),
-        GridItem(.fixed(30)),
-        GridItem(.fixed(30)),
-        GridItem(.fixed(30))
+        GridItem(.fixed(35)),
+        GridItem(.fixed(35)),
+        GridItem(.fixed(35)),
+        GridItem(.fixed(35))
     ]
     
     var body: some View {
-        ListItemPerPageView(listItem: listRank, grid: (columns, getHeaderView), itemView: getItemView)
+        ListItemPerPageView(listItem: listRank, itemsPerPage: listRank.count, grid: (columns, getHeaderView), itemView: getItemView)
     }
     
     @ViewBuilder
@@ -95,17 +83,17 @@ struct RankingsView: View {
     func getHeaderView() -> AnyView {
         AnyView(Group {
             Text("Rank")
-                .font(.caption2)
+                .font(.caption2.bold())
             Text("Team")
-                .font(.caption2)
+                .font(.caption2.bold())
             Text("Won")
-                .font(.caption2)
+                .font(.caption2.bold())
             Text("Draw")
-                .font(.caption2)
+                .font(.caption2.bold())
             Text("Lost")
-                .font(.caption2)
+                .font(.caption2.bold())
             Text("Point")
-                .font(.caption2)
+                .font(.caption2.bold())
         })
 
     }

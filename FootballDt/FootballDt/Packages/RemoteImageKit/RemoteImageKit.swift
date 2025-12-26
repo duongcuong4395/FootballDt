@@ -43,44 +43,46 @@ struct RemoteImageView: View {
     @State private var isLoading = true
     
     var body: some View {
-        switch RemoteImageResolver.resolve(from: urlString) {
+        if let urlString = urlString {
+            switch RemoteImageResolver.resolve(from: urlString) {
 
-        case .png:
-            KFImage(URL(string: urlString ?? ""))
-                .placeholder {
-                    ProgressView()
-                }
-                .resizable()
-                .scaledToFit()
-                .frame(width: size, height: size)
+            case .png:
+                KFImage(URL(string: urlString))
+                    .placeholder {
+                        ProgressView()
+                    }
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size, height: size)
 
-        case .svg:
-            WebImage(url: URL(string: urlString ?? "")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    ZStack {
-                        Color.gray.opacity(0.1)
+            case .svg:
+                WebImage(url: URL(string: urlString)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
                         ProgressView()
                             .scaleEffect(0.7)
                     }
-                }
-                .indicator(.activity)
-                .transition(.opacity)
-                .frame(width: size, height: size)
-  /*
-            WebImage(url: URL(string: urlString ?? ""))
-                .resizable()
-                .scaledToFit()
-                .frame(width: size, height: size)
-*/
-        case .unknown:
-            Image(systemName: "photo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: size, height: size)
-                .foregroundColor(.gray)
+                    .indicator(.activity)
+                    .transition(.opacity)
+                    .frame(width: size, height: size)
+      /*
+                WebImage(url: URL(string: urlString ?? ""))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size, height: size)
+    */
+            case .unknown:
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size, height: size)
+                    .foregroundColor(.gray)
+            }
+        }
+        else {
+            Text("Not Found")
         }
     }
 }

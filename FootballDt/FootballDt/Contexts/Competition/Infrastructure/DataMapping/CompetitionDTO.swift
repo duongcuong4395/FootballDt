@@ -99,6 +99,8 @@ struct SeasonDTO: Codable {
 
 
 
+
+
 // MARK: - Winner
 struct WinnerDTO: Codable {
     var id: Int
@@ -122,3 +124,4 @@ struct WinnerDTO: Codable {
             , website: website, founded: founded, clubColors: clubColors, venue: venue, lastUpdated: lastUpdated)
     }
 }
+

@@ -24,7 +24,7 @@ public struct PagingControlsView: View {
                     
                 }) {
                     Image(systemName: "chevron.left")
-                        .font(.title3)
+                        .font(.body)
                         .padding(10)
                         .themedBackground(.button())
                 }
@@ -33,7 +33,7 @@ public struct PagingControlsView: View {
                 Spacer()
 
                 Text("\(state.currentPage) / \(state.totalPages)")
-                    .font(.body)
+                    .font(.caption.bold())
 
                 Spacer()
 
@@ -43,13 +43,13 @@ public struct PagingControlsView: View {
                     }
                 }) {
                     Image(systemName: "chevron.right")
-                        .font(.title3)
+                        .font(.body)
                         .padding(10)
                         .themedBackground(.button())
                 }
                 .disabled(!state.hasNext)
             }
-            .padding()
+            .padding(0)
         }
         
     }

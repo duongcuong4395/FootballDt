@@ -13,9 +13,20 @@ protocol RouteMenu: CaseIterable {
     var color: Color { get }
     @ViewBuilder
     func getIconView() -> AnyView
+    @ViewBuilder
+    func getIconView(active: Bool) -> AnyView
 }
 
 enum CompetitionDetailRouteMenu: String, RouteMenu {
+    func getIconView(active: Bool) -> AnyView {
+        switch self {
+        case .Leaderboard: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
+        case .Teams: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
+        case .Matches: return AnyView(Image(systemName: icon))
+        case .Scorers: return AnyView(Image(systemName: icon))
+        }
+    }
+    
     case Leaderboard
     case Teams
     case Matches
@@ -32,10 +43,10 @@ enum CompetitionDetailRouteMenu: String, RouteMenu {
     
     var icon: String {
         switch self {
-        case .Leaderboard: "book.fill"
-        case .Teams: "book.fill"
-        case .Matches: "book.fill"
-        case .Scorers: "book.fill"
+        case .Leaderboard: "list.bullet.clipboard"
+        case .Teams: "person.3"
+        case .Matches: "calendar"
+        case .Scorers: "figure.australian.football"
         }
     }
     var color: Color {
@@ -122,23 +133,23 @@ struct CompetitionDetailRouteContentView: View {
             
             TabView(selection: $selected) {
                 LeaderboardView()
-                    .padding(.horizontal, 10)
+                    .padding(10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 
                 CompetitionTeamsView()
-                    .padding(.horizontal, 10)
+                    .padding(10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Teams)
                 
                 CompetitionMatchesView()
-                    .padding(.horizontal, 10)
+                    .padding(10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Matches)
                 
                 CompetitionScorersView()
-                    .padding(.horizontal, 10)
+                    .padding(10)
                     .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Scorers)
                 
@@ -163,7 +174,7 @@ struct MenuOfCompetitionDetailRouteView: View {
                     isSelected: selected == it
                 )
                 .themedBackground(.itemSelected(
-                    tintColor: .orange
+                    tintColor: .white
                     , isSelected: selected == it
                     , animationID: animation, animationName: "CompetitionDetailRouteMenu"))
                 .onTapGesture {

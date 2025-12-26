@@ -107,12 +107,13 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 5) {
             PagingControlsView(
                 state: pagingVM.state,
                 onPrevious: pagingVM.previousPage,
                 onNext: pagingVM.nextPage
             )
+            .padding(0)
             
             if let grid = grid {
                 LazyVGrid(columns: grid.columms) {
@@ -137,7 +138,7 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
                     }
                 }
             }
-            .padding(.top, 10)
+            
         }
     }
 }

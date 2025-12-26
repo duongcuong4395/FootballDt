@@ -38,9 +38,8 @@ struct TeamView: View {
         VStack {
             Text(team.shortName ?? "")
                 .font(.caption.bold())
-            KFImage(URL(string: team.crest ?? ""))
-                .resizable()
-                .frame(width: 30, height: 30)
+            
+            RemoteImageView(urlString: team.crest ?? "", size: 30)
         }
     }
 }

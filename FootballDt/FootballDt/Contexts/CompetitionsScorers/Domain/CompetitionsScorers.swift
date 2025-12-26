@@ -35,6 +35,10 @@ struct Player {
     var shirtNumber: Int?
     var lastUpdated: String
     
+    
+    var birthDate: String {
+        DateParser.convert(dateOfBirth, to: "dd/MM/yyyy")
+    }
 }
 
 // MARK: - Filters

@@ -18,7 +18,7 @@ struct Match: Identifiable {
     var id: Int
     var area: Area
     var competition: Competition
-    var season: SeasonSimple
+    var season: Season
     
     var utcDate: String
     var status: String
@@ -54,6 +54,7 @@ struct Score {
     var winner: String?
     var duration: String?
     var fullTime, halfTime: Time
+    var regularTime, extraTime, penalties: Time?
 }
 
 // MARK: - Time

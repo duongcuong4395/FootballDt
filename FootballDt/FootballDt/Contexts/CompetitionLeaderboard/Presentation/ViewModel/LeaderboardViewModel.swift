@@ -24,10 +24,12 @@ class LeaderboardViewModel: ObservableObject {
             let data = try await getLeaderboardUserCase.execute(by: competitionCode, and: season)
             DispatchQueue.main.async {
                 self.leaderboardStatus = .success(data: data)
+                return
             }
         } catch {
             DispatchQueue.main.async {
                 self.leaderboardStatus = .failure(error: error.localizedDescription)
+                return
             }
         }
     }

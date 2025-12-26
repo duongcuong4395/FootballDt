@@ -12,7 +12,12 @@ struct ScorerItemView: View {
     var hasGrid: Bool = false
     var body: some View {
         if hasGrid {
-            TeamItemView(team: scorer.team)
+            VStack(alignment: .leading, spacing: 5) {
+                PlayerItemForScorerView(player: scorer.player)
+                    .padding(0)
+                TeamItemForScorerView(team: scorer.team)
+                    .padding(0)
+            }
             
             Text("\(scorer.penalties ?? 0)")
                 .font(.caption2)
@@ -34,6 +39,37 @@ struct ScorerItemView: View {
                     .font(.caption2.bold())
             }
         }
+        
+    }
+}
+
+
+struct PlayerItemForScorerView: View {
+    var player: Player
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(player.name)
+                    .font(.body.bold())
+            }
+            HStack {
+                Image(systemName: "birthday.cake")
+                    .font(.caption)
+                Text(player.nationality)
+                    .font(.caption)
+                + Text(" (\(player.birthDate))")
+                    .font(.caption)
+            }
+            HStack{
+                Image(systemName: "figure.arms.open") // figure.soccer
+                    .font(.caption)
+                Text("\(player.section)")
+                    .font(.caption)
+            }
+            
+        }
+        
         
     }
 }

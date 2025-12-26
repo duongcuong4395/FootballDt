@@ -14,7 +14,7 @@ struct GetCompetitionsTeamsAPIResponse: Codable {
     var count: Int?
     var filters: FiltersDTO?
     var competition: CompetitionDTO?
-    var season: SeasonSimpleDTO? //SeasonDTO
+    var season: SeasonDTO?
     var teams: [TeamDTO]?
     
     enum CodingKeys: String, CodingKey {

@@ -15,15 +15,37 @@ struct CompetitionTeamsView: View {
         Group {
             switch competitionsTeamsVM.competitionsTeamsStatus {
             case .idle:
-                EmptyView()
+                Text("TeamsView idle")
             case .loading:
                 ProgressView()
             case .success(let data):
-                listCompetitionTeamsView(teams: data.teams ?? [])
-            case .failure(_):
-                EmptyView()
+                if let teams = data.teams {
+                    if teams.count > 0 {
+                        listCompetitionTeamsView(teams: teams)
+                    } else {
+                        Text("TeamsView empty")
+                    }
+                } else {
+                    Text("TeamsView idle")
+                }
+                
+            case .failure(let error):
+                Text("TeamsView failure \(error)")
             }
         }
+        /*
+        .onAppear{
+            guard let competition = listCompetitionVM.competitionSelected.data else { return }
+            switch competitionsTeamsVM.competitionsTeamsStatus {
+                case .success(data: _):
+                    return
+                default:
+                    Task {
+                        await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
+                    }
+            }
+        }
+        */
     }
 }
 
@@ -42,7 +64,7 @@ struct listCompetitionTeamsView: View {
             Spacer()
             
             Image(systemName: "chevron.right")
-                .font(.title3)
+                .font(.body)
                 .padding(10)
                 .themedBackground(.button())
                 .onTapGesture {
@@ -58,7 +80,7 @@ struct TeamItemView: View {
     
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 5) {
             HStack {
                 if let area = team.area {
                     AreaItemView(area: area, showName: false, imageSize: 20)
@@ -70,13 +92,14 @@ struct TeamItemView: View {
             .padding(0)
             HStack(spacing: 10) {
                 RemoteImageView(urlString: team.crest, size: 50)
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 5) {
                     HStack {
                         Image(systemName: "mappin.and.ellipse")
                             .font(.caption2)
                         Text(team.address ?? "")
                             .font(.caption2)
                     }
+                    .padding(0)
                     
                     HStack {
                         Image(systemName: "sportscourt")
@@ -84,6 +107,7 @@ struct TeamItemView: View {
                         Text(team.venue ?? "")
                             .font(.caption2)
                     }
+                    .padding(0)
                     
                     if let runningCompetitions = team.runningCompetitions {
                         HStack(spacing: 30) {
@@ -95,14 +119,25 @@ struct TeamItemView: View {
                                 }
                             }
                         }
+                        .padding(0)
                     }
-                    
-                    
                 }
                 Spacer()
-                
             }
+            .padding(0)
         }
         
+    }
+}
+
+struct TeamItemForScorerView: View {
+    var team : Team
+    var body: some View {
+        HStack(spacing: 5) {
+            RemoteImageView(urlString: team.crest, size: 20)
+            Text(team.shortName ?? "" + "(\(team.founded ?? 0))")
+                .font(.caption.bold())
+            Spacer()
+        }
     }
 }

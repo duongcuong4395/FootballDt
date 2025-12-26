@@ -45,29 +45,35 @@ struct ListCompetitionRouteView: View {
                     .themedBackground(.card())
             }
         }
-        //.onDisappear {
-            //coordinator.cancelLoading()
-        //}
     }
     
     func tappedCompetition(_ competition: Competition) {
-        
-        
-        self.loading = true
-        
          listCompetitionVM.setCompetition(competition)
-         
-          Task {
-              await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
-              await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
-              await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
-              await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: nil)
-              self.loading = false
-              footballDtRouter.navigationToCompetitionDetail()
-          }
-         
+        Task {
+            footballDtRouter.navigationToCompetitionDetail()
+            self.loading = true
+            await withTaskGroup(of: Void.self) { group in
+
+                group.addTask {
+                    await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
+                }
+
+                group.addTask {
+                    await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
+                }
+
+                group.addTask {
+                    await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
+                }
+
+                group.addTask {
+                    await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: Filters(season: nil, limit: 500))
+                }
+            }
+            self.loading = false
+            
+        }
         
-        //coordinator.handleCompetitionTapped( competition, listCompetitionVM: listCompetitionVM, router: footballDtRouter)
     }
     
     

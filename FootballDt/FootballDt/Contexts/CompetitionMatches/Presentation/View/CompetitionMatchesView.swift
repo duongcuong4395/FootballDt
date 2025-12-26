@@ -15,7 +15,7 @@ struct CompetitionMatchesView: View {
         Group {
             switch competitionMatchesVM.competitionMatchesStatus {
             case .idle:
-                EmptyView()
+                Text("MatchesView idle")
             case .loading:
                 ProgressView()
             case .success(let data):
@@ -28,8 +28,8 @@ struct CompetitionMatchesView: View {
                     ListCompetitionMatchView(listMatch: data.matches)
                 }
                 .padding(.top, 10)
-            case .failure(_):
-                EmptyView()
+            case .failure(let error):
+                Text("MatchesView failure \(error)")
             }
         }
     }

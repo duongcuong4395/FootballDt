@@ -10,7 +10,7 @@ import Foundation
 struct CompetitionsTeams {
     var count: Int?
     var competition: Competition?
-    var season: SeasonSimple?
+    var season: Season?
     var teams: [Team]?
 }
 

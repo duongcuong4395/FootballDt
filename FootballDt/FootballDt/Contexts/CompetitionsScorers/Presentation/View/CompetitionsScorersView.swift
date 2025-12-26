@@ -9,17 +9,25 @@ import SwiftUI
 
 struct CompetitionScorersView: View {
     @EnvironmentObject var competitionScorersVM: CompetitionsScorersViewModel
+    @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     
     var body: some View {
-        switch competitionScorersVM.competitionsScorersStatus {
-        case .idle:
-            EmptyView()
-        case .loading:
-            ProgressView()
-        case .success(let data):
-            ListScorerView(scorers: data.scorers ?? [])
-        case .failure(_):
-            EmptyView()
+        Group {
+            switch competitionScorersVM.competitionsScorersStatus {
+            case .idle:
+                Text("ScorersView idle")
+            case .loading:
+                Text("ScorersView loading")
+            case .success(let data):
+                if let scorers = data.scorers {
+                    ListScorerView(scorers: scorers)
+                } else {
+                    Text("empty")
+                }
+                
+            case .failure(_):
+                Text("ScorersView failure")
+            }
         }
     }
 }
@@ -29,9 +37,9 @@ struct ListScorerView: View {
     
     var columns: [GridItem] = [
         GridItem(.flexible(minimum: 50, maximum: .infinity)),
-        GridItem(.fixed(30)),
-        GridItem(.fixed(30)),
-        GridItem(.fixed(30))
+        GridItem(.fixed(60)),
+        GridItem(.fixed(40)),
+        GridItem(.fixed(40))
     ]
     
     var body: some View {
@@ -47,13 +55,21 @@ struct ListScorerView: View {
     func getHeaderView() -> AnyView {
         AnyView(Group{
             Text("Team")
-                .font(.caption2)
-            Text("Pen")
-                .font(.caption2)
-            Text("assists")
-                .font(.caption2)
-            Text("goals")
-                .font(.caption2)
+                .font(.caption2.bold())
+            Text("Penalties")
+                .font(.caption2.bold())
+            /*
+            HStack(spacing: 0) {
+                Image(systemName: "figure.soccer")
+                    .font(.caption2)
+                Image(systemName: "figure.run")
+                    .font(.caption2)
+            }
+            */
+            Text("Assists").font(.caption2.bold())
+            
+            Text("Goals")
+                .font(.caption2.bold())
         })
     }
 }

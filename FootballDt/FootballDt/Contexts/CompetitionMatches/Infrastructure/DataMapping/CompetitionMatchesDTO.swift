@@ -23,7 +23,7 @@ struct GetCompetitionMatchesAPIResponse: Codable {
 struct MatchDTO: Codable {
     var area: AreaDTO
     var competition: CompetitionDTO
-    var season: SeasonSimpleDTO
+    var season: SeasonDTO
     var id: Int
     var utcDate: String
     var status: String
@@ -75,9 +75,13 @@ struct ScoreDTO: Codable {
     var winner: String?
     var duration: String?
     var fullTime, halfTime: TimeDTO
+    var regularTime, extraTime, penalties: TimeDTO?
     
     func toDomain() -> Score {
-        Score(winner: winner, duration: duration, fullTime: fullTime.toDomain(), halfTime: halfTime.toDomain())
+        Score(winner: winner, duration: duration, fullTime: fullTime.toDomain(), halfTime: halfTime.toDomain()
+              , regularTime: regularTime?.toDomain()
+              , extraTime: extraTime?.toDomain()
+              , penalties: penalties?.toDomain())
     }
 }
 

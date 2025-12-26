@@ -24,10 +24,12 @@ class CompetitionsTeamsViewModel: ObservableObject {
             let data = try await getCompetitionsTeamsUserCase.execute(by: competitionCode, and: season)
             DispatchQueue.main.async {
                 self.competitionsTeamsStatus = .success(data: data)
+                return
             }
         } catch {
             DispatchQueue.main.async {
                 self.competitionsTeamsStatus = .failure(error: error.localizedDescription)
+                return
             }
         }
     }
