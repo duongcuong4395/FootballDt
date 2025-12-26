@@ -10,11 +10,16 @@ import Kingfisher
 
 struct CompetitionMatchItemView: View {
     var match: Match
+    @Binding var isVisible: Bool
+    var delay: Double
+    
     
     var body: some View {
         HStack{
+            // MARK: Home Team
             TeamView(team: match.homeTeam)
                 .frame(width: UIScreen.main.bounds.width/2 - 100)
+                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
             Spacer()
             VStack {
                 Text("\(match.eventTime)")
@@ -23,8 +28,15 @@ struct CompetitionMatchItemView: View {
             }
             
             Spacer()
+            // MARK: Away Team
             TeamView(team: match.awayTeam)
                 .frame(width: UIScreen.main.bounds.width/2 - 100)
+                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
+        }
+        .onAppear{
+            withAnimation{
+                isVisible = true
+            }
         }
     }
 }

@@ -91,9 +91,14 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
     
     @StateObject private var pagingVM: PagingViewModelNew<T>
     
+    // MARK: For Animation
+    @Binding var showModels: [Bool]
+    @Binding var repeatAnimationOnApear: Bool
     
     init(listItem: [T], itemsPerPage: Int = 10
          , grid: (columms: [GridItem], headerView: () -> AnyView)? = nil
+         , showModels: Binding<[Bool]> = .constant([])
+         , repeatAnimationOnApear: Binding<Bool> = .constant(false)
          , itemView: @escaping (T) -> ItemView) {
         
         self.listItem = listItem
@@ -104,6 +109,9 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
         self.itemView = itemView
         self.itemsPerPage = itemsPerPage
         self.grid = grid
+        
+        _showModels = showModels
+        _repeatAnimationOnApear = repeatAnimationOnApear
     }
     
     var body: some View {
@@ -127,16 +135,60 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
                 if let grid = grid {
                     LazyVGrid(columns: grid.columms, spacing: 10) {
                         ForEach(pagingVM.items, id: \.id) { item in
-                            itemView(item)
+                            //itemView(item)
+                            if let index = listItem.firstIndex(where: { $0.id == item.id })  {
+                                itemView(item)
+                                    .onAppear{
+                                        guard showModels.count > 0 else { return }
+                                        guard showModels[index] == false else { return }
+                                        withAnimation {
+                                            showModels[index] = true
+                                        }
+                                    }
+                                    .onDisappear{
+                                        guard showModels.count > 0 else { return }
+                                        guard showModels[index] == true else { return }
+                                        if repeatAnimationOnApear {
+                                            self.showModels[index] = false
+                                        }
+                                        
+                                    }
+                            }
                         }
                     }
                 } else {
                     LazyVStack{
                         ForEach(pagingVM.items, id: \.id) { item in
-                            itemView(item)
+                            //itemView(item)
+                            if let index = listItem.firstIndex(where: { $0.id == item.id })  {
+                                itemView(item)
+                                    .onAppear{
+                                        guard showModels.count > 0 else { return }
+                                        guard showModels[index] == false else { return }
+                                        withAnimation {
+                                            showModels[index] = true
+                                        }
+                                    }
+                                    .onDisappear{
+                                        guard showModels.count > 0 else { return }
+                                        guard showModels[index] == true else { return }
+                                        if repeatAnimationOnApear {
+                                            self.showModels[index] = false
+                                        }
+                                        
+                                    }
+                            }
                         }
                     }
                 }
+            }
+            
+        }
+        .onAppear{
+            withAnimation {
+                if showModels.count != listItem.count {
+                    self.showModels = Array(repeating: false, count: listItem.count)
+               }
             }
             
         }

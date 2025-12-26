@@ -38,14 +38,29 @@ struct CompetitionMatchesView: View {
 struct ListCompetitionMatchView: View {
     var listMatch: [Match]
     
+    @State private var showModels: [Bool] = []
+    @State private var repeatAnimationOnApear = true
+    
     var body: some View {
-        ListItemPerPageView(listItem: listMatch, itemView: getItemView)
+        ListItemPerPageView(
+            listItem: listMatch
+            , showModels: $showModels
+            , repeatAnimationOnApear: $repeatAnimationOnApear
+            , itemView: getItemView)
     }
     
     @ViewBuilder
     func getItemView(match: Match) -> some View {
-        CompetitionMatchItemView(match: match)
+        if let index = listMatch.firstIndex(where: { $0.id == match.id })  {
+            CompetitionMatchItemView(
+                match: match
+                , isVisible: $showModels.indices.indices.contains(index) ?
+                $showModels[index] : .constant(false)
+                , delay: Double(index) * 0.01)
+        }
+
     }
 }
+
 
 

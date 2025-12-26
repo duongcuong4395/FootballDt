@@ -171,12 +171,14 @@ public class NetworkLogger {
         var output = "\n✅ RESPONSE\n"
         output += "Status Code: \(response?.statusCode ?? 0)\n"
         
+        /*
         if let data = data,
            let json = try? JSONSerialization.jsonObject(with: data),
            let prettyData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
            let prettyString = String(data: prettyData, encoding: .utf8) {
             output += "Body: \(prettyString)\n"
         }
+        */
         
         print(output)
     }
