@@ -109,7 +109,8 @@ struct CompetitionDetailRouteHeaderView: View {
             Spacer()
         }
         .padding(.horizontal, 16)
-        .themedBackground(.header(height: 70))   
+        .themedBackgroundWithDarkMode(.header(height: 70))
+        //.themedBackground(.header(height: 70))
     }
     
     func backRoute() {
@@ -178,7 +179,7 @@ struct MenuOfCompetitionDetailRouteView: View {
                     , isSelected: selected == it
                     , animationID: animation, animationName: "CompetitionDetailRouteMenu"))
                 .onTapGesture {
-                    withAnimation {
+                    withAnimation() {
                         selected = it
                     }
                 }

@@ -104,19 +104,10 @@ struct CompetitionItemView: View {
         if isHStack {
             HStack {
                 if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-                    WebImage(url: URL(string: flagUrl))
-                        .resizable()
-                        .font(.caption)
+                    RemoteImageView(urlString: flagUrl, size: imageSize)
                         .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                        .frame(width: imageSize, height: imageSize)
-                } else {
-                    Image(systemName: "flag.slash.fill")
-                        .resizable()
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                        .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                        .frame(width: 50, height: 50)
                 }
+                
                 VStack(alignment: .leading) {
                     Text(competition.name)
                         .font(.caption.bold())
@@ -142,18 +133,8 @@ struct CompetitionItemView: View {
     @ViewBuilder
     var contentView: some View {
         if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-            WebImage(url: URL(string: flagUrl))
-                .resizable()
-                .font(.caption)
+            RemoteImageView(urlString: flagUrl, size: imageSize)
                 .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                .frame(width: imageSize, height: imageSize)
-        } else {
-            Image(systemName: "flag.slash.fill")
-                .resizable()
-                .foregroundColor(.secondary)
-                .font(.caption)
-                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                .frame(width: 50, height: 50)
         }
         
         Text(competition.name)

@@ -44,6 +44,7 @@ struct ListCompetitionMatchView: View {
     var body: some View {
         ListItemPerPageView(
             listItem: listMatch
+            , hasEffectOnApear: true
             , showModels: $showModels
             , repeatAnimationOnApear: $repeatAnimationOnApear
             , itemView: getItemView)
@@ -54,11 +55,9 @@ struct ListCompetitionMatchView: View {
         if let index = listMatch.firstIndex(where: { $0.id == match.id })  {
             CompetitionMatchItemView(
                 match: match
-                , isVisible: $showModels.indices.indices.contains(index) ?
-                $showModels[index] : .constant(false)
-                , delay: Double(index) * 0.01)
+                , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
+                , delay: Double(index) * 0.03) // , delay: Double(index) * 0.01
         }
-
     }
 }
 

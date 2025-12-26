@@ -95,12 +95,6 @@ struct SeasonDTO: Codable {
     }
 }
 
-
-
-
-
-
-
 // MARK: - Winner
 struct WinnerDTO: Codable {
     var id: Int

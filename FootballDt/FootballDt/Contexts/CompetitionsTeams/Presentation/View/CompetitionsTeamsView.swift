@@ -33,19 +33,6 @@ struct CompetitionTeamsView: View {
                 Text("TeamsView failure \(error)")
             }
         }
-        /*
-        .onAppear{
-            guard let competition = listCompetitionVM.competitionSelected.data else { return }
-            switch competitionsTeamsVM.competitionsTeamsStatus {
-                case .success(data: _):
-                    return
-                default:
-                    Task {
-                        await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
-                    }
-            }
-        }
-        */
     }
 }
 
@@ -53,27 +40,79 @@ struct CompetitionTeamsView: View {
 struct listCompetitionTeamsView: View {
     var teams: [Team]
         
+    @State private var showModels: [Bool] = []
+    @State private var repeatAnimationOnApear = true
+    
     var body: some View {
-        ListItemPerPageView(listItem: teams, itemView: getItemView)
+        ListItemPerPageView(
+            listItem: teams
+            , hasEffectOnApear: true
+            , showModels: $showModels
+            , repeatAnimationOnApear: $repeatAnimationOnApear
+            , itemView: getItemView)
     }
     
     @ViewBuilder
     func getItemView(team: Team) -> some View {
-        HStack {
-            TeamItemView(team: team)
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .font(.body)
-                .padding(10)
-                .themedBackground(.button())
-                .onTapGesture {
-                    print("Navigation To Team Detail View")
-                }
+        if let index = teams.firstIndex(where: { $0.id == team.id })  {
+            TeamItemForCompetitionView(
+                team: team
+                , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
+                , delay: Double(index) * 0.03
+                , itemBuilder: ItemBuilderForCompetitionTeam()
+                , onEvent: handleEvent)
         }
-        
+    }
+    
+    func handleEvent(_ event: ItemEvent<Team>) -> Void {
+        switch event {
+        case .viewDetail(for: let team):
+            print("Navigation To Team Detail View", team.id ?? 0, team.name ?? "")
+            return
+            
+        default: return
+        }
     }
 }
+
+struct ItemBuilderForCompetitionTeam: ItemBuilder {
+    func buildOptions(for item: Team, send: @escaping (ItemEvent<Team>) -> Void) -> AnyView {
+        AnyView(Image(systemName: "chevron.right")
+            .font(.body)
+            .padding(10)
+            .themedBackground(.button())
+            .onTapGesture {
+                send(.viewDetail(for: item))
+            })
+    }
+}
+
+struct TeamItemForCompetitionView<Builder: ItemBuilder>: View where Builder.T == Team {
+    var team: Team
+    
+    @Binding var isVisible: Bool
+    var delay: Double
+    
+    var itemBuilder: Builder
+    var onEvent: (ItemEvent<Team>) -> Void
+    
+    var body: some View {
+        HStack {
+            TeamItemView(team: team)
+                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
+            Spacer()
+            itemBuilder.buildOptions(for: team, send: onEvent)
+                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
+        }
+        .onAppear{
+            withAnimation {
+                isVisible = true
+            }
+        }
+    }
+}
+
+// MARK: Item View
 
 struct TeamItemView: View {
     var team: Team
@@ -141,3 +180,5 @@ struct TeamItemForScorerView: View {
         }
     }
 }
+
+

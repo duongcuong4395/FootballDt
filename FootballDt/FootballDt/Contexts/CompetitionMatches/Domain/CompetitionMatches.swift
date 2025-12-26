@@ -22,7 +22,7 @@ struct Match: Identifiable {
     
     var utcDate: String
     var status: String
-    var matchday: Int
+    var matchday: Int?
     var stage: String?
     var group: String?
     var lastUpdated: String
@@ -43,10 +43,10 @@ struct Odds {
 
 // MARK: - Referee
 struct Referee {
-    var id: Int
-    var name: String
-    var type: String
-    var nationality: String
+    var id: Int?
+    var name: String?
+    var type: String?
+    var nationality: String?
 }
 
 // MARK: - Score

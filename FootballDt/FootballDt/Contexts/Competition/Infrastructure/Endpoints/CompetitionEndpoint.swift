@@ -45,7 +45,7 @@ extension CompetitionEndpoint: HttpRouter {
     
     var headers: [String : String]? {
         switch self {
-        case .GetAllCompetition: return nil
+        case .GetAllCompetition: return ["X-Auth-Token": AppUtility.AuthTK] // return nil
         case .GetLeaderboard(competitionCode: _)
             , .GetTeams(competitionCode: _, season: _)
             , .GetMatches(competitionID: _, season: _)

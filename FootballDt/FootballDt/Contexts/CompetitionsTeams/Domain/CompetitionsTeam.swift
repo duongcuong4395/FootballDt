@@ -14,7 +14,11 @@ struct CompetitionsTeams {
     var teams: [Team]?
 }
 
-struct Team: Identifiable {
+struct Team: Identifiable, Equatable {
+    static func == (lhs: Team, rhs: Team) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     var id: Int?
     var name, shortName, tla: String?
     var crest: String?
