@@ -68,7 +68,7 @@ struct RankingsView: View {
     ]
     
     @State private var showModels: [Bool] = []
-    @State private var repeatAnimationOnApear = false
+    @State private var repeatAnimationOnApear = true
     
     var body: some View {
         ListItemPerPageView(

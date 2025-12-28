@@ -40,6 +40,8 @@ extension View {
             .environmentObject(container.competitionMatchesVM)
             .environmentObject(container.competitionsTeamsVM)
             .environmentObject(container.competitionsScorersVM)
+            .environmentObject(container.teamVM)
+        
         
     }
 }
@@ -54,12 +56,16 @@ class AppDependencyContainer: ObservableObject {
     private lazy var competitionMatchesAPIService = CompetitionMatchesAPIService()
     private lazy var competitionsTeamsAPIService = CompetitionsTeamsAPIService()
     private lazy var competitionsScorersAPIService = CompetitionsScorersAPIService()
+    private lazy var teamAPIService = TeamAPIService()
+    
     // MARK: UsserCase
     private lazy var getAllCompetitionUserCase = GetAllCompetitionUserCase(repository: competitionAPIService)
     private lazy var getLeaderboardUserCase = GetLeaderboardUserCase(repository: leaderboardAPIService)
     private lazy var getCompetitionMatchesUserCase = GetCompetitionMatchesUserCase(repository: competitionMatchesAPIService)
     private lazy var getCompetitionsTeamsUserCase = GetCompetitionsTeamsUserCase(repository: competitionsTeamsAPIService)
     private lazy var getCompetitionsScorersUserCase = GetCompetitionsScorersUserCase(repository: competitionsScorersAPIService)
+    private lazy var getTeamDetailUserCase = GetTeamDetailUserCase(repository: teamAPIService)
+    
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
@@ -68,5 +74,7 @@ class AppDependencyContainer: ObservableObject {
     lazy var competitionsTeamsVM = CompetitionsTeamsViewModel(getCompetitionsTeamsUserCase: getCompetitionsTeamsUserCase)
     
     lazy var competitionsScorersVM = CompetitionsScorersViewModel(getCompetitionsScorersUserCase: getCompetitionsScorersUserCase)
+    
+    lazy var teamVM = TeamViewModel(getTeamDetailUserCase: getTeamDetailUserCase)
     
 }

@@ -11,6 +11,7 @@ import NavigationRouter
 enum FootballDtRoute: Hashable {
     case ListCompetition
     case CompetitionDetail
+    case TeamDetail
 }
 
 extension FootballDtRoute {
@@ -22,6 +23,8 @@ extension FootballDtRoute {
                 ListCompetitionRouteView()
             case .CompetitionDetail:
                 CompetitionDetailRouteView()
+            case .TeamDetail:
+                TeamDetailRouteView()
             }
         }
         .navigationBarHidden(true)
@@ -31,5 +34,9 @@ extension FootballDtRoute {
 class FootballDtRouter: BaseRouter<FootballDtRoute> {
     func navigationToCompetitionDetail() {
         push(.CompetitionDetail)
+    }
+    
+    func navigationTeamDetail() {
+        push(.TeamDetail)
     }
 }

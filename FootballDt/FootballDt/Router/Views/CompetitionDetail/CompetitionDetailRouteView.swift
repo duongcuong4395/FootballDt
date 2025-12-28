@@ -102,8 +102,8 @@ struct CompetitionDetailRouteHeaderView: View {
                         Image(systemName: "chevron.left")
                             .font(.title2)
                     })
-                    CompetitionItemView(competition: competition, isHStack: true)
-                    
+                    //CompetitionItemView(competition: competition, isHStack: true)
+                    getCompetitionItemHeaderView(by: competition)
                 default: EmptyView()
             }
             Spacer()
@@ -122,6 +122,21 @@ struct CompetitionDetailRouteHeaderView: View {
         competitionsTeamsVM.reset()
         competitionsScorersVM.reset()
     }
+    
+    func getCompetitionItemHeaderView(by competition: Competition) -> some View {
+        HStack {
+            if let flagUrl = competition.emblem, !flagUrl.isEmpty {
+                RemoteImageView(urlString: flagUrl, size: 40)
+                    .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+            }
+            Text(competition.name)
+                .font(.body.bold())
+            
+            Spacer()
+        }
+    }
+    
+    
 }
 
 

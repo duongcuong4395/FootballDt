@@ -43,6 +43,11 @@ struct listCompetitionTeamsView: View {
     @State private var showModels: [Bool] = []
     @State private var repeatAnimationOnApear = true
     
+    // Router
+    @EnvironmentObject var router: FootballDtRouter
+    // for navigation to Team Detail View
+    @EnvironmentObject var teamVM: TeamViewModel
+    
     var body: some View {
         ListItemPerPageView(
             listItem: teams
@@ -67,7 +72,9 @@ struct listCompetitionTeamsView: View {
     func handleEvent(_ event: ItemEvent<Team>) -> Void {
         switch event {
         case .viewDetail(for: let team):
-            print("Navigation To Team Detail View", team.id ?? 0, team.name ?? "")
+            teamVM.setTeam(by: team)
+            router.navigationTeamDetail()
+            //print("Navigation To Team Detail View", team.id ?? 0, team.name ?? "")
             return
             
         default: return
