@@ -94,23 +94,26 @@ struct CompetitionDetailRouteHeaderView: View {
     
     var body: some View {
         HStack {
-            switch listCompetitionVM.competitionSelected {
-                case .success(data: let competition):
-                    Button(action: {
-                        backRoute()
-                    }, label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                    })
-                    //CompetitionItemView(competition: competition, isHStack: true)
-                    getCompetitionItemHeaderView(by: competition)
-                default: EmptyView()
+            if case .success(data: let competition) = listCompetitionVM.competitionSelected {
+                Button(action: {
+                    backRoute()
+                }, label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title2)
+                })
+                //getCompetitionItemHeaderView(by: competition)
+                CompetitionItemView(competition: competition, imageSize: 4, isCompact: true)
+                    .transition(.asymmetric(
+                                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                                        removal: .move(edge: .leading).combined(with: .opacity)
+                                    ))
+                Spacer()
             }
-            Spacer()
+            
         }
         .padding(.horizontal, 16)
         .themedBackgroundWithDarkMode(.header(height: 70))
-        //.themedBackground(.header(height: 70))
+        
     }
     
     func backRoute() {
@@ -123,18 +126,6 @@ struct CompetitionDetailRouteHeaderView: View {
         competitionsScorersVM.reset()
     }
     
-    func getCompetitionItemHeaderView(by competition: Competition) -> some View {
-        HStack {
-            if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-                RemoteImageView(urlString: flagUrl, size: 40)
-                    .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-            }
-            Text(competition.name)
-                .font(.body.bold())
-            
-            Spacer()
-        }
-    }
     
     
 }
@@ -142,26 +133,74 @@ struct CompetitionDetailRouteHeaderView: View {
 
 struct CompetitionDetailRouteContentView: View {
     @State var selected: CompetitionDetailRouteMenu = .Leaderboard
+    @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
+    @Environment(\.colorScheme) var colorScheme
+    // Track loaded tabs
+    @State private var loadedTabs: Set<CompetitionDetailRouteMenu> = []
     
     var body: some View {
         VStack {
             MenuOfCompetitionDetailRouteView(selected: $selected)
             
             TabView(selection: $selected) {
+                LazyTabContent(
+                    menu: .Leaderboard
+                    , isSelected: selected == .Leaderboard
+                    , loadedTabs: $loadedTabs) {
+                        LeaderboardView()
+                            .padding(10)
+                            .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1) , cornerRadius: 20, material: .none))
+                    }
+                    .tag(CompetitionDetailRouteMenu.Leaderboard)
+               
+                LazyTabContent(
+                    menu: .Teams
+                    , isSelected: selected == .Teams
+                    , loadedTabs: $loadedTabs) {
+                        CompetitionTeamsView()
+                            .padding(10)
+                            .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1), cornerRadius: 20, material: .none))
+                    }
+                    .tag(CompetitionDetailRouteMenu.Teams)
+                
+                LazyTabContent(
+                    menu: .Teams
+                    , isSelected: selected == .Matches
+                    , loadedTabs: $loadedTabs) {
+                        CompetitionMatchesView()
+                            .padding(10)
+                            .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1), cornerRadius: 20, material: .none))
+                    }
+                    .tag(CompetitionDetailRouteMenu.Matches)
+                
+                LazyTabContent(
+                    menu: .Teams
+                    , isSelected: selected == .Scorers
+                    , loadedTabs: $loadedTabs) {
+                        CompetitionScorersView()
+                            .padding(10)
+                            .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
+                    }
+                    .tag(CompetitionDetailRouteMenu.Scorers)
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .animation(.easeInOut(duration: 0.2), value: selected)
+            
+            /*
+            TabView(selection: $selected) {
                 LeaderboardView()
                     .padding(10)
-                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
-                    
+                    .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1) , cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Leaderboard)
                 
                 CompetitionTeamsView()
                     .padding(10)
-                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
+                    .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1), cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Teams)
                 
                 CompetitionMatchesView()
                     .padding(10)
-                    .themedBackground(.card(tintColor: .white, cornerRadius: 20, material: .none))
+                    .themedBackground(.card(tintColor: .white.opacity(colorScheme == .dark ? 0.5 : 1), cornerRadius: 20, material: .none))
                     .tag(CompetitionDetailRouteMenu.Matches)
                 
                 CompetitionScorersView()
@@ -172,9 +211,21 @@ struct CompetitionDetailRouteContentView: View {
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.2), value: selected)
+            */
         }
         .padding(.bottom, 5)
+        .onAppear {
+            // Chỉ load tab đầu tiên
+            loadedTabs.insert(.Leaderboard)
+        }
     }
+    
+    private var competitionId: Int {
+            if case .success(let comp) = listCompetitionVM.competitionSelected {
+                return comp.id
+            }
+            return 0
+        }
 }
 
 struct MenuOfCompetitionDetailRouteView: View {
@@ -208,3 +259,33 @@ struct MenuOfCompetitionDetailRouteView: View {
         .padding(.horizontal, 5)
     }
 }
+
+
+struct LazyTabContent<Content: View>: View {
+    var menu: CompetitionDetailRouteMenu
+    let isSelected: Bool
+    @Binding var loadedTabs: Set<CompetitionDetailRouteMenu>
+    let content: () -> Content
+    
+    var body: some View {
+        Group {
+            if loadedTabs.contains(menu) {
+                content()
+            } else {
+                Color.clear
+                    .onAppear {
+                        // Load khi tab được select
+                        if isSelected {
+                            loadedTabs.insert(menu)
+                        }
+                    }
+            }
+        }
+        .onChange(of: isSelected) { ol, newValue in
+            if newValue && !loadedTabs.contains(menu) {
+                loadedTabs.insert(menu)
+            }
+        }
+    }
+}
+

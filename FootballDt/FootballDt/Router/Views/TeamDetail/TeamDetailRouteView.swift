@@ -24,20 +24,17 @@ struct TeamDetailRouteHeaderView: View {
     
     var body: some View {
         HStack {
-            switch teamVM.teamStatus {
-                case .success(data: let team):
-                    Button(action: {
-                        backRoute()
-                    }, label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                    })
+            if case .success(data: let team) = teamVM.teamStatus {
+                Button(action: {
+                    backRoute()
+                }, label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title2)
+                })
                 
-                    
                 getTeamItemHeaderView(by: team)
-                default: EmptyView()
+                Spacer()
             }
-            Spacer()
         }
         .padding(.horizontal, 16)
         .themedBackgroundWithDarkMode(.header(height: 70))
@@ -64,8 +61,10 @@ struct TeamDetailRouteHeaderView: View {
 
 struct TeamDetailRouteContentView: View {
     var body: some View {
-        VStack {
-            Text("TeamDetailRouteContentView")
+        ScrollView(showsIndicators: false) {
+            VStack {
+                Text("TeamDetailRouteContentView")
+            }
         }
     }
 }

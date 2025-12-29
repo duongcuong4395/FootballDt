@@ -15,22 +15,30 @@ struct CompetitionTeamsView: View {
         Group {
             switch competitionsTeamsVM.competitionsTeamsStatus {
             case .idle:
-                Text("TeamsView idle")
+                Color.clear.onAppear{ loadDataIfNeeded() }
             case .loading:
-                ProgressView()
+                ProgressView("Loading teams...")
             case .success(let data):
-                if let teams = data.teams {
-                    if teams.count > 0 {
-                        listCompetitionTeamsView(teams: teams)
-                    } else {
-                        Text("TeamsView empty")
-                    }
+                if let teams = data.teams, !teams.isEmpty {
+                    listCompetitionTeamsView(teams: teams)
                 } else {
-                    Text("TeamsView idle")
+                    EmptyStateView(message: "No teams found")
                 }
-                
             case .failure(let error):
-                Text("TeamsView failure \(error)")
+                //Text("TeamsView failure \(error)")
+                ErrorView(error: error) {
+                    loadDataIfNeeded()
+                }
+            }
+        }
+    }
+    
+    private func loadDataIfNeeded() {
+        guard case .success(data: let competition) = listCompetitionVM.competitionSelected else { return }
+        
+        if case .idle = competitionsTeamsVM.competitionsTeamsStatus {
+            Task {
+                await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
             }
         }
     }

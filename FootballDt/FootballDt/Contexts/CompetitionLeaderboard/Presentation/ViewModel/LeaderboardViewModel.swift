@@ -8,8 +8,10 @@
 import SwiftUI
 
 class LeaderboardViewModel: ObservableObject {
+    
     @Published var leaderboardStatus: ModelsStatus<Leaderboard> = .idle
     
+    // MARK: UserCase
     private var getLeaderboardUserCase: GetLeaderboardUserCase
     
     init(getLeaderboardUserCase: GetLeaderboardUserCase) {
@@ -20,6 +22,7 @@ class LeaderboardViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.leaderboardStatus = .loading
         }
+        
         do {
             let data = try await getLeaderboardUserCase.execute(by: competitionCode, and: season)
             DispatchQueue.main.async {

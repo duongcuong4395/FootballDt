@@ -12,15 +12,6 @@ struct ListCompetitionRouteView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var footballDtRouter: FootballDtRouter
     
-    @EnvironmentObject var leaderboardVM: LeaderboardViewModel
-    @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
-    @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
-    @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
-    
-    @State var loading: Bool = false
-    
-    var columns: [GridItem] = [GridItem(), GridItem()]
-    
     var body: some View {
         VStack {
             switch listCompetitionVM.listCompetitionStatus {
@@ -36,42 +27,11 @@ struct ListCompetitionRouteView: View {
                 EmptyView()
             }
         }
-        .overlay {
-            if loading {
-                ProgressView()
-                    .padding()
-                    .themedBackground(.card())
-            }
-        }
     }
     
     func tappedCompetition(_ competition: Competition) {
-         listCompetitionVM.setCompetition(competition)
-        Task {
-            footballDtRouter.navigationToCompetitionDetail()
-            self.loading = true
-            await withTaskGroup(of: Void.self) { group in
-
-                group.addTask {
-                    await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
-                }
-
-                group.addTask {
-                    await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
-                }
-
-                group.addTask {
-                    await competitionsTeamsVM.getCompetitionsTeams(by: competition.code ?? "", and: nil)
-                }
-
-                group.addTask {
-                    await competitionsScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: Filters(season: nil, limit: 500))
-                }
-            }
-            self.loading = false
-            
-        }
-        
+        listCompetitionVM.setCompetition(competition)
+        footballDtRouter.navigationToCompetitionDetail()
     }
     
     
@@ -79,75 +39,72 @@ struct ListCompetitionRouteView: View {
 
 
 struct ListCompetitionView: View {
+    @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     var listCompetition: [Competition]
     var tappedCompetition: (Competition) -> Void
+    
     var body: some View {
         ForEach(listCompetition, id: \.id) { competition in
             CompetitionItemView(competition: competition, imageSize: 100)
                 .padding(0)
-                .modifier(RotateOnAppearModifier_New(angle: -60, duration: 1, direction: .leftToRight))
+                //.modifier(RotateOnAppearModifier_New(angle: -60, duration: 1, direction: .leftToRight))
                 .onTapGesture {
-                    tappedCompetition(competition)
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                        tappedCompetition(competition)
+                                    }
+                    //tappedCompetition(competition)
                 }
+                
         }
     }
 }
 
 struct CompetitionItemView: View {
     var competition: Competition
-    var isHStack: Bool = false
     var imageSize: CGFloat = 50
     
+    var isCompact: Bool = false
+    
+    
     var body: some View {
-        if isHStack {
+        if isCompact {
             HStack {
                 if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-                    RemoteImageView(urlString: flagUrl, size: imageSize)
+                    RemoteImageView(urlString: flagUrl, size: 40)
                         .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                        .transition(.scale.combined(with: .opacity))
                 }
-                
-                VStack(alignment: .leading) {
-                    Text(competition.name)
-                        .font(.caption.bold())
-                    HStack {
-                        if let area = competition.area {
-                            AreaItemView(area: area
-                                         , axisHStack: true
-                                         , showName: false, imageSize: 15)
-                        }
-                        
-                        Text("\(competition.currentSeason?.years ?? "")")
-                            .font(.caption2)
-                    }
-                }
+                Text(competition.name)
+                    .font(.body.bold())
+                    .transition(.opacity.combined(with: .move(edge: .leading)))
                 
                 Spacer()
             }
         } else {
-            VStack { contentView }
+            VStack {
+                if let flagUrl = competition.emblem, !flagUrl.isEmpty {
+                    RemoteImageView(urlString: flagUrl, size: imageSize)
+                        .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                
+                Text(competition.name)
+                    .font(.caption.bold())
+                HStack {
+                    if let area = competition.area {
+                        AreaItemView(area: area
+                                     , axisHStack: true
+                                     , showName: false, imageSize: 15)
+                    }
+                    
+                    Text("\(competition.currentSeason?.years ?? "")")
+                        .font(.caption2)
+                }
+            }
+            
         }
     }
     
-    @ViewBuilder
-    var contentView: some View {
-        if let flagUrl = competition.emblem, !flagUrl.isEmpty {
-            RemoteImageView(urlString: flagUrl, size: imageSize)
-                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-        }
-        
-        Text(competition.name)
-            .font(.caption.bold())
-        HStack {
-            if let area = competition.area {
-                AreaItemView(area: area
-                             , axisHStack: true
-                             , showName: false, imageSize: 15)
-            }
-            
-            Text("\(competition.currentSeason?.years ?? "")")
-                .font(.caption2)
-        }
-    }
 }
 
 
@@ -177,13 +134,6 @@ struct AreaItemView: View {
             RemoteImageView(urlString: area.flag, size: imageSize)
                 .font(.caption)
                 .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-            /*
-            WebImage(url: URL(string: area.flag ?? ""))
-                .resizable()
-                .font(.caption)
-                .shadow(color: Color.blue, radius: 5, x: 0, y: 0)
-                .frame(width: imageSize, height: imageSize)
-             */
         } else {
             Image(systemName: "flag.slash.fill")
                 .resizable()

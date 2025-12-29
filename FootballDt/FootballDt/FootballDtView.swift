@@ -12,15 +12,19 @@ struct FootballDtView: View {
     
     @StateObject private var container = AppDependencyContainer()
     
+    @Namespace private var competitionAnimation
+    
     var body: some View {
         NavigationRouter(
             router: container.footballDtRouter) {
                 ListCompetitionRouteView()
                     .backgroundOfPage(by: .Gradient)
+                    .environment(\.competitionNamespace, competitionAnimation)
             } destination: { route in
                 footballDtDestination(route)
             }
         .injectDependencies(container)
+        .environment(\.competitionNamespace, competitionAnimation)
         .padding(0)
     }
     
@@ -77,4 +81,71 @@ class AppDependencyContainer: ObservableObject {
     
     lazy var teamVM = TeamViewModel(getTeamDetailUserCase: getTeamDetailUserCase)
     
+}
+
+
+// MARK: - Reusable Components
+struct ErrorView: View {
+    let error: String
+    let retry: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 50))
+                .foregroundColor(.orange)
+            
+            Text("Oops! Something went wrong")
+                .font(.headline)
+            
+            Text(error)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button(action: retry) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("Retry")
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+        }
+        .padding()
+    }
+}
+
+struct EmptyStateView: View {
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "tray")
+                .font(.system(size: 50))
+                .foregroundColor(.secondary)
+            
+            Text(message)
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+    }
+}
+
+
+// MARK: - Environment Key cho Namespace
+private struct CompetitionNamespaceKey: EnvironmentKey {
+    static let defaultValue: Namespace.ID? = nil
+}
+
+extension EnvironmentValues {
+    var competitionNamespace: Namespace.ID? {
+        get { self[CompetitionNamespaceKey.self] }
+        set { self[CompetitionNamespaceKey.self] = newValue }
+    }
 }

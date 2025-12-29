@@ -15,23 +15,39 @@ struct CompetitionMatchesView: View {
         Group {
             switch competitionMatchesVM.competitionMatchesStatus {
             case .idle:
-                Text("MatchesView idle")
+                Color.clear.onAppear{ loadDataIfNeeded() }
             case .loading:
-                ProgressView()
+                ProgressView("Loading matches...")
             case .success(let data):
-                VStack {
-                    Text("\(data.resultSet?.fromDateToDate ?? "")")
-                        .font(.caption2)
-                    Text("\(data.resultSet?.played ?? 0)/\(data.resultSet?.count ?? 0)")
-                        .font(.caption2)
-                    
-                    ListCompetitionMatchView(listMatch: data.matches)
+                if !data.matches.isEmpty {
+                    VStack {
+                        Text("\(data.resultSet?.fromDateToDate ?? "")")
+                            .font(.caption2)
+                        Text("\(data.resultSet?.played ?? 0)/\(data.resultSet?.count ?? 0)")
+                            .font(.caption2)
+                        ListCompetitionMatchView(listMatch: data.matches)
+                    }
+                    .padding(.top, 10)
+                } else {
+                    EmptyStateView(message: "No matches found")
                 }
-                .padding(.top, 10)
             case .failure(let error):
-                Text("MatchesView failure \(error)")
+                ErrorView(error: error) {
+                    loadDataIfNeeded()
+                }
             }
         }
+    }
+    
+    func loadDataIfNeeded() {
+        guard case .success(data: let competition) = listCompetitionVM.competitionSelected else { return }
+        
+        if case .idle = competitionMatchesVM.competitionMatchesStatus {
+            Task {
+                await competitionMatchesVM.getCompetitionMatches(by: "\(competition.id)", and: nil)
+            }
+        }
+        
     }
 }
 

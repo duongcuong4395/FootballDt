@@ -20,6 +20,7 @@ class CompetitionMatchesViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.competitionMatchesStatus = .loading
         }
+        
         do {
             let data = try await getCompetitionMatchesUserCase.execute(by: competitionID, and: season)
             DispatchQueue.main.async {

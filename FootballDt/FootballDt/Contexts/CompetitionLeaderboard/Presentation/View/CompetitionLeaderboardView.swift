@@ -7,48 +7,65 @@
 
 import SwiftUI
 
-struct CompetitionLeaderboardView: View {
-    var body: some View {
-        LeaderboardView()
-    }
-}
-
 struct LeaderboardView: View {
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
+    
+    @State private var hasInitialLoad = false
     
     var body: some View {
         Group {
             switch leaderboardVM.leaderboardStatus {
             case .idle:
-                Text("LeaderboardView idle")
+                Color.clear
+                    .onAppear {
+                        loadDataIfNeeded()
+                    }
             case .loading:
-                Text("LeaderboardView Loading")
+                ProgressView("Loading leaderboard...")
             case .success(let data):
-                VStack {
-                    if let rankings = data.rankings {
-                        if rankings.count > 1 {
-                            
-                            ScrollView(showsIndicators: false) {
-                                LazyVStack {
-                                    ForEach (rankings, id: \.id) { ranking in
-                                        VStack {
-                                            Text(ranking.group ?? "")
-                                            RankingsView(listRank: ranking.rankings, hasEffectOnApear: false)
-                                        }
-                                        .id(ranking.id)
-                                        .tag(ranking.id)
-                                    }
+                GetContentView(rankings: data.rankings)
+            case .failure(let error):
+                //Text("LeaderboardView failure: \(error)")
+                ErrorView(error: error) {
+                    loadDataIfNeeded()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func GetContentView(rankings: [Rankings]?) -> some View {
+        VStack {
+            if let rankings = rankings {
+                if rankings.count > 1 {
+                    ScrollView(showsIndicators: false) {
+                        LazyVStack {
+                            ForEach (rankings, id: \.id) { ranking in
+                                VStack {
+                                    Text(ranking.group ?? "")
+                                    RankingsView(listRank: ranking.rankings, hasEffectOnApear: false)
                                 }
+                                .id(ranking.id)
                             }
-                        } else {
-                            RankingsView(listRank: rankings[0].rankings, hasEffectOnApear: true)
                         }
                     }
-                    
+                } else {
+                    RankingsView(listRank: rankings[0].rankings, hasEffectOnApear: true)
                 }
-            case .failure(let error):
-                Text("LeaderboardView failure: \(error)")
+            }
+        }
+        .onAppear {
+            hasInitialLoad = true
+        }
+    }
+    
+    func loadDataIfNeeded() {
+        guard case .success(data: let competition) = listCompetitionVM.competitionSelected else { return }
+        
+        if case .idle = leaderboardVM.leaderboardStatus {
+            Task {
+                await leaderboardVM.getLeaderboard(by: competition.code ?? "", and: nil)
             }
         }
     }

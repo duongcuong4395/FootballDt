@@ -15,18 +15,29 @@ struct CompetitionScorersView: View {
         Group {
             switch competitionScorersVM.competitionsScorersStatus {
             case .idle:
-                Text("ScorersView idle")
+                Color.clear.onAppear{ loadDataIfNeeded() }
             case .loading:
-                Text("ScorersView loading")
+                ProgressView("Loading scorers...")
             case .success(let data):
-                if let scorers = data.scorers {
+                if let scorers = data.scorers, !scorers.isEmpty {
                     ListScorerView(scorers: scorers)
                 } else {
-                    Text("empty")
+                    EmptyStateView(message: "No scorers found")
                 }
-                
-            case .failure(_):
-                Text("ScorersView failure")
+            case .failure(let error):
+                ErrorView(error: error) {
+                    loadDataIfNeeded()
+                }
+            }
+        }
+    }
+    
+    func loadDataIfNeeded() {
+        guard case .success(data: let competition) = listCompetitionVM.competitionSelected else { return }
+        
+        if case .idle = competitionScorersVM.competitionsScorersStatus {
+            Task {
+                await competitionScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: Filters(season: nil, limit: 500))
             }
         }
     }
