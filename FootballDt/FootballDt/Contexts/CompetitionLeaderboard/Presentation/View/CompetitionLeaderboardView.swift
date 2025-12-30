@@ -26,7 +26,6 @@ struct LeaderboardView: View {
             case .success(let data):
                 GetContentView(rankings: data.rankings)
             case .failure(let error):
-                //Text("LeaderboardView failure: \(error)")
                 ErrorView(error: error) {
                     loadDataIfNeeded()
                 }
@@ -40,7 +39,7 @@ struct LeaderboardView: View {
             if let rankings = rankings {
                 if rankings.count > 1 {
                     ScrollView(showsIndicators: false) {
-                        LazyVStack {
+                        LazyVStack(spacing: 5) {
                             ForEach (rankings, id: \.id) { ranking in
                                 VStack {
                                     Text(ranking.group ?? "")
@@ -87,6 +86,9 @@ struct RankingsView: View {
     @State private var showModels: [Bool] = []
     @State private var repeatAnimationOnApear = true
     
+    @EnvironmentObject var router: FootballDtRouter
+    @EnvironmentObject var teamVM: TeamViewModel
+    
     var body: some View {
         ListItemPerPageView(
             listItem: listRank
@@ -105,6 +107,15 @@ struct RankingsView: View {
                 rank: rank, hasColumns: true
                 , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
                 , delay: Double(index) * 0.03, repeatAnimationOnApear: repeatAnimationOnApear)
+            .onTapGesture {
+                Task {
+                    await teamVM.getTeamDetail(by: rank.team.id ?? 0)
+                    withAnimation(.spring()) {
+                        router.navigationTeamDetail()
+                    }
+                    
+                }
+            }
         }
     }
     
@@ -136,9 +147,9 @@ struct ItemRankView: View {
             Text("\(rank.position)")
                 .font(.caption2.bold())
             HStack {
-                RemoteImageView(urlString: rank.team.crest ?? "", size: 20)
+                RemoteImageView(urlString: rank.team.crest ?? "", size: 35)
                 Text(rank.team.shortName ?? "")
-                    .font(.caption)
+                    .font(.caption.bold())
                 Spacer()
             }
             Text("\(rank.won)").font(.caption2)

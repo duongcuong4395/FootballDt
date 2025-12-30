@@ -19,6 +19,7 @@ struct FootballDtApp: App {
     var body: some Scene {
         WindowGroup {
             FootballDtView()
+            // EnhancedDarkModeExamples()
         }
     }
 }

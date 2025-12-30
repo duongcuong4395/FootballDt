@@ -15,24 +15,35 @@ struct MenuTabIndicatorView<Menu: RouteMenu>: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            HStack {
+            HStack(spacing: 5) {
                 // Icon với animation
                 //menu.getIconView()
-                menu.getIconView(active: isSelected)
+                menu.getIconView(active: true)
                 //Image(systemName: menu.icon)
                     .font(.title3)
                 //.font(.system(size: isSelected ? 24 : 20, weight: .semibold))
-                    .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white))
+                    .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white ))
+                    .padding(.horizontal, 5)
                     .scaleEffect(isSelected ? 1.2 : 1.0)
                     .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isSelected)
+                    //.padding(.vertical, 5)
                 
                 // Title
+                
+                
+                
                 if isSelected {
                     Text(menu.title)
                         .font(.system(size: isSelected ? 14 : 12, weight: isSelected ? .semibold : .medium))
                         .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white))
                         .animation(.easeInOut(duration: 0.3), value: isSelected)
+                } else {
+                    Text("  ")
+                        .font(.system(size: isSelected ? 14 : 12, weight: isSelected ? .semibold : .medium))
+                        .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white))
+                        .animation(.easeInOut(duration: 0.3), value: isSelected)
                 }
+                
             }
             
             
@@ -46,7 +57,49 @@ struct MenuTabIndicatorView<Menu: RouteMenu>: View {
                 .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isSelected)
                 */
         }
-        .padding(5)
+        //.padding(5)
+        //.padding(.vertical, 12)
+        //.padding(.horizontal, 16)
+        
+    }
+}
+
+
+struct MenuTabIndicatorViewNew<Menu: RouteMenu>: View {
+    var menu: Menu
+    let isSelected: Bool
+    var action: () -> Void
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
+    var body: some View {
+        Button(action: {
+            action()
+        }, label: {
+            VStack(spacing: 8) {
+                HStack(spacing: 5) {
+                    menu.getIconView(active: true)
+                        .font(.title3)
+                        .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white ))
+                        //.scaleEffect(isSelected ? 1.2 : 1.0)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isSelected)
+                    
+                    // Title
+                    
+                    
+                    /*
+                    if isSelected {
+                        Text(menu.title)
+                            .font(.system(size: isSelected ? 14 : 12, weight: isSelected ? .semibold : .medium))
+                            .foregroundColor(isSelected ? menu.color : (colorScheme == .light ? .gray : .white))
+                            .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    }
+                    */
+                }
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 10)
+        })
+        //.padding(5)
         //.padding(.vertical, 12)
         //.padding(.horizontal, 16)
         

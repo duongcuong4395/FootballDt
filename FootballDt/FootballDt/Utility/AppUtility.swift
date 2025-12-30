@@ -13,6 +13,12 @@ class AppUtility {
     static let AuthTK = envDict["AuthTK"]! as String
 }
 
+import SwiftUI
+extension Color {
+    static func backgroundColor(for scheme: ColorScheme, color: Color = .white) -> Color {
+        color.opacity(scheme == .dark ? 0.5 : 1)
+    }
+}
 enum DateParser {
 
     private static let isoFormatterWithFraction: ISO8601DateFormatter = {

@@ -12,7 +12,7 @@ struct CompetitionScorersView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     
     var body: some View {
-        Group {
+        VStack {
             switch competitionScorersVM.competitionsScorersStatus {
             case .idle:
                 Color.clear.onAppear{ loadDataIfNeeded() }
@@ -37,7 +37,7 @@ struct CompetitionScorersView: View {
         
         if case .idle = competitionScorersVM.competitionsScorersStatus {
             Task {
-                await competitionScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: Filters(season: nil, limit: 500))
+                await competitionScorersVM.getCompetitionsScorers(by: competition.code ?? "", and: Filters(season: nil, limit: 300))
             }
         }
     }
@@ -132,7 +132,7 @@ struct PlayerItemForScorerView: View {
                     .font(.caption)
             }
             HStack{
-                Image(systemName: "figure.arms.open") // figure.soccer
+                Image(systemName: "figure.arms.open") 
                     .font(.caption)
                 Text("\(player.section)")
                     .font(.caption)

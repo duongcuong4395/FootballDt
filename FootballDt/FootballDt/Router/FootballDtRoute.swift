@@ -33,10 +33,12 @@ extension FootballDtRoute {
 
 class FootballDtRouter: BaseRouter<FootballDtRoute> {
     func navigationToCompetitionDetail() {
+        
         push(.CompetitionDetail)
     }
     
     func navigationTeamDetail() {
-        push(.TeamDetail)
+        navigateToOrPush(.TeamDetail)
+        //push(.TeamDetail)
     }
 }

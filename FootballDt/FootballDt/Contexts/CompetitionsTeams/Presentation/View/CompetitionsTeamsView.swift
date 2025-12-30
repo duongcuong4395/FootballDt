@@ -10,14 +10,17 @@ import SwiftUI
 struct CompetitionTeamsView: View {
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        Group {
+        VStack {
+
             switch competitionsTeamsVM.competitionsTeamsStatus {
             case .idle:
                 Color.clear.onAppear{ loadDataIfNeeded() }
             case .loading:
-                ProgressView("Loading teams...")
+                
+                Text("Loading teams...")
             case .success(let data):
                 if let teams = data.teams, !teams.isEmpty {
                     listCompetitionTeamsView(teams: teams)
@@ -30,7 +33,9 @@ struct CompetitionTeamsView: View {
                     loadDataIfNeeded()
                 }
             }
+            
         }
+        
     }
     
     private func loadDataIfNeeded() {

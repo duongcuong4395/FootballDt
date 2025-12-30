@@ -43,4 +43,9 @@ public final class PaginationController<T> {
     public func state() -> PaginationState {
         PaginationState(currentPage: currentPage, totalPages: totalPages)
     }
+    
+    public func goToPage(_ page: Int) {
+        guard page >= 1 && page <= totalPages else { return }
+        currentPage = page
+    }
 }

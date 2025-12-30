@@ -11,6 +11,13 @@ struct CompetitionMatches {
     var resultSet: ResultSet?
     var competition: Competition?
     var matches: [Match]
+    
+    init(resultSet: ResultSet? = nil, competition: Competition? = nil, matches: [Match]) {
+        self.resultSet = resultSet
+        self.competition = competition
+        self.matches = matches
+        self.matches = self.matches.sorted { $0.utcDate > $1.utcDate }
+    }
 }
 
 // MARK: - Match
@@ -32,7 +39,7 @@ struct Match: Identifiable {
     var referees: [Referee]
     
     var eventTime: String {
-        DateParser.convert(utcDate, to: "dd/MM hh:mm")
+        DateParser.convert(utcDate, to: "hh:mm dd/MM/yyyy")
     }
 }
 
@@ -91,6 +98,11 @@ struct ResultSet {
     var count: Int
     var first, last: String
     var played: Int
+    
+    var competitions: String?
+    var wins: Int?
+    var draws: Int?
+    var losses: Int?
     
     var fromDateToDate: String {
         return DateParser.convert(first, to: "dd/MM/yyyy") + " - " + DateParser.convert(last, to: "dd/MM/yyyy")

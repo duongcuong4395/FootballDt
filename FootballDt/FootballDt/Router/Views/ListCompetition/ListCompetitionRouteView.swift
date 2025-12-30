@@ -92,13 +92,13 @@ struct CompetitionItemView: View {
                     .font(.caption.bold())
                 HStack {
                     if let area = competition.area {
-                        AreaItemView(area: area
-                                     , axisHStack: true
-                                     , showName: false, imageSize: 15)
+                        //AreaItemView(area: area, axisHStack: true, showName: false, imageSize: 15)
                     }
-                    
-                    Text("\(competition.currentSeason?.years ?? "")")
+                    Text(competition.area?.name ?? "")
                         .font(.caption2)
+                    
+                    //Text("\(competition.currentSeason?.years ?? "")")
+                        //.font(.caption2)
                 }
             }
             

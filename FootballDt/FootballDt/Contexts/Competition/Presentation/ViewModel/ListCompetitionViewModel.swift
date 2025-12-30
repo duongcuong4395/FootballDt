@@ -44,14 +44,13 @@ var availablecompetitions: [CompetitionModel] = [
     
 ]
 
+var availableCompetitionCodes: [String] =  availablecompetitions.map{ $0.code }
+
+
+
 class ListCompetitionViewModel: ObservableObject {
     @Published var listCompetitionStatus: ModelsStatus<[Competition]> = .idle
     @Published var competitionSelected: ModelsStatus<Competition> = .idle
-    
-    
-    
-    var availableCompetitions: [String] =  availablecompetitions.map{ $0.code }
-    // ["CL", "BL1", "DED", "BSA", "PD", "FL1", "ELC", "PPL", "EC", "SA", "PL"]
     
     // MARK: UserCase
     private var getAllCompetitionUserCase: GetAllCompetitionUserCase
@@ -69,7 +68,7 @@ class ListCompetitionViewModel: ObservableObject {
             let data: [Competition] = try await getAllCompetitionUserCase.execute()
             
             let dt = data.filter {
-                availableCompetitions.contains($0.code ?? "")
+                availableCompetitionCodes.contains($0.code ?? "")
             }
             
             DispatchQueue.main.async {
@@ -82,8 +81,20 @@ class ListCompetitionViewModel: ObservableObject {
         }
     }
     
+    func getListCompetition(by competitionCodes: String) -> [Competition] {
+        let competitionCodesSplit: [String] = competitionCodes.components(separatedBy: ",")
+        guard case .success(let competitions) = listCompetitionStatus else {
+            return []
+        }
+        
+        let res = competitions.filter { competitionCodesSplit.contains($0.code ?? "") }
+        return res
+    }
+    
     func setCompetition(_ competition: Competition) {
         self.competitionSelected = .success(data: competition)
+        
+
     }
     
     func resetAll() {

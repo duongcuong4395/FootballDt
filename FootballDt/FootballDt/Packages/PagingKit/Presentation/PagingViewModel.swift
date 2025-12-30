@@ -38,6 +38,11 @@ public final class PagingViewModel<T: Identifiable>: ObservableObject {
         items = controller.pageItems()
         state = controller.state()
     }
+    
+    public func goToPage(_ page: Int) {
+        controller.goToPage(page)
+        refresh()
+    }
 }
 
 struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
@@ -78,7 +83,8 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
             PagingControlsView(
                 state: pagingVM.state,
                 onPrevious: pagingVM.previousPage,
-                onNext: pagingVM.nextPage
+                onNext: pagingVM.nextPage,
+                onPageSelect: pagingVM.goToPage
             )
             .padding(0)
             

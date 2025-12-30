@@ -20,12 +20,18 @@ struct FiltersDTO: Codable {
     var season: String?
     var limit: Int?
     
+    var competitions: String?
+    var permission: String?
+    
     enum CodingKeys: String, CodingKey {
-        case season, limit
+        case season, limit, competitions, permission
     }
     
     func toDomain() -> Filters {
-        Filters(season: season, limit: limit)
+        Filters(season: season, limit: limit
+                , competitions: competitions
+                , permission: permission
+        )
     }
 }
 

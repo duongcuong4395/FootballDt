@@ -24,17 +24,15 @@ class CompetitionsScorersViewModel: ObservableObject {
             let data = try await getCompetitionsScorersUserCase.execute(by: competitionCode, and: filter)
             DispatchQueue.main.async {
                 self.competitionsScorersStatus = .success(data: data)
-                return
             }
         } catch {
             DispatchQueue.main.async {
                 self.competitionsScorersStatus = .failure(error: error.localizedDescription)
-                return
             }
         }
     }
     
     func reset() {
-        self.competitionsScorersStatus = .loading
+        self.competitionsScorersStatus = .idle
     }
 }

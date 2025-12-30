@@ -12,7 +12,7 @@ struct CompetitionMatchesView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     
     var body: some View {
-        Group {
+        VStack {
             switch competitionMatchesVM.competitionMatchesStatus {
             case .idle:
                 Color.clear.onAppear{ loadDataIfNeeded() }
@@ -57,6 +57,9 @@ struct ListCompetitionMatchView: View {
     @State private var showModels: [Bool] = []
     @State private var repeatAnimationOnApear = true
     
+    @EnvironmentObject var teamVM: TeamViewModel
+    @EnvironmentObject var router: FootballDtRouter
+    
     var body: some View {
         ListItemPerPageView(
             listItem: listMatch
@@ -69,11 +72,24 @@ struct ListCompetitionMatchView: View {
     @ViewBuilder
     func getItemView(match: Match) -> some View {
         if let index = listMatch.firstIndex(where: { $0.id == match.id })  {
-            CompetitionMatchItemView(
+            MatchItemView(
                 match: match
                 , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
-                , delay: Double(index) * 0.03) // , delay: Double(index) * 0.01
+                , delay: Double(index) * 0.03, onEvent: handleForTeam) // , delay: Double(index) * 0.01
         }
+    }
+    
+    func handleForTeam(event: ItemEvent<Team>) {
+        if case .viewDetail(let team) = event {
+            Task {
+                await teamVM.getTeamDetail(by: team.id ?? 0)
+                withAnimation(.spring()) {
+                    router.navigationTeamDetail()
+                }
+                
+            }
+        }
+        
     }
 }
 
@@ -82,34 +98,7 @@ struct ListCompetitionMatchView: View {
 
 import Kingfisher
 
-struct CompetitionMatchItemView: View {
-    var match: Match
-    @Binding var isVisible: Bool
-    var delay: Double
-    
-    
-    var body: some View {
-        HStack{
-            // MARK: Home Team
-            TeamView(team: match.homeTeam)
-                .frame(width: UIScreen.main.bounds.width/2 - 100)
-                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
-            Spacer()
-            VStack {
-                Text("\(match.eventTime)")
-                    .font(.caption2)
-                ScoreView(score: match.score)
-            }
-            .slideInEffect(isVisible: $isVisible, delay: delay, direction: .topToBottom)
-            
-            Spacer()
-            // MARK: Away Team
-            TeamView(team: match.awayTeam)
-                .frame(width: UIScreen.main.bounds.width/2 - 100)
-                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
-        }
-    }
-}
+
 
 
 

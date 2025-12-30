@@ -6,6 +6,7 @@
 //
 
 struct Competition {
+    
     var id: Int
     var area: Area?
     var name: String

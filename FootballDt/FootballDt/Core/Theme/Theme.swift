@@ -31,22 +31,22 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 struct GlassConfiguration {
     let cornerRadius: CGFloat
     var intensity: Double
-    let tintColor: Color
+    var tintColor: Color
     let gradientType: GradientType
     var borderStyle: BorderStyle
-    let effects: EffectConfiguration
+    var effects: EffectConfiguration
     
     struct BorderStyle {
         let type: BorderType
         let color: Color
-        let opacity: Double
+        var opacity: Double
         let width: Double
     }
     
     struct EffectConfiguration {
         let hasShimmer: Bool
         let hasGlow: Bool
-        let blurRadius: CGFloat
+        var blurRadius: CGFloat
         let enableAnimations: Bool
         let speeds: AnimationSpeeds
         
@@ -185,9 +185,9 @@ enum ThemeStyle {
 struct ThemeContext {
     let style: ThemeStyle
     let intensity: Double
-    let tintColor: Color?
+    var tintColor: Color?
     let cornerRadius: CGFloat?
-    let material: Material?
+    var material: Material?
     let height: CGFloat? // For header
     let animationID: (namespace: Namespace.ID, name: String)? // For selection
     let isSelected: Bool? // For selection
@@ -439,6 +439,368 @@ extension GlassConfiguration {
     }
 }
 
+
+// MARK: Dark Mode
+
+/// Cấu hình chi tiết cho Dark Mode
+struct DarkModeAdjustments {
+    let intensityMultiplier: Double
+    let borderOpacityMultiplier: Double
+    let tintColorOpacity: Double
+    let blurRadiusAdjustment: CGFloat
+    let borderWidthAdjustment: Double
+    
+    static let light = DarkModeAdjustments(
+        intensityMultiplier: 0.9,
+        borderOpacityMultiplier: 0.9,
+        tintColorOpacity: 1.0,
+        blurRadiusAdjustment: 0,
+        borderWidthAdjustment: 0
+    )
+    
+    static let dark = DarkModeAdjustments(
+        intensityMultiplier: 1.2,
+        borderOpacityMultiplier: 1.1,
+        tintColorOpacity: 0.8,
+        blurRadiusAdjustment: 1,
+        borderWidthAdjustment: 0.2
+    )
+    
+    static func forScheme(_ scheme: ColorScheme) -> DarkModeAdjustments {
+        scheme == .dark ? .dark : .light
+    }
+}
+
+// MARK: - Enhanced Theme Context với Dark Mode Support
+
+extension ThemeContext {
+    /// Thêm option để tự động adjust cho dark mode
+    struct Options {
+        var autoDarkMode: Bool = true
+        var customDarkModeAdjustments: DarkModeAdjustments?
+        var preserveTintColor: Bool = false // Giữ nguyên tint color không điều chỉnh
+        
+        static let `default` = Options()
+    }
+}
+
+// MARK: - Enhanced Glass Configuration Extension
+
+extension GlassConfiguration {
+    /// Phương thức adjust nâng cao với nhiều tuỳ chọn hơn
+    func adjusted(
+        for colorScheme: ColorScheme,
+        customAdjustments: DarkModeAdjustments? = nil,
+        preserveTintColor: Bool = false
+    ) -> GlassConfiguration {
+        let adjustments = customAdjustments ?? DarkModeAdjustments.forScheme(colorScheme)
+        var adjusted = self
+        
+        // 1. Adjust intensity
+        adjusted.intensity = intensity * adjustments.intensityMultiplier
+        
+        // 2. Adjust tint color
+        if !preserveTintColor {
+            adjusted.tintColor = tintColor.opacity(adjustments.tintColorOpacity)
+        }
+        
+        // 3. Adjust border
+        adjusted.borderStyle = BorderStyle(
+            type: borderStyle.type,
+            color: borderStyle.color,
+            opacity: borderStyle.opacity * adjustments.borderOpacityMultiplier,
+            width: borderStyle.width + adjustments.borderWidthAdjustment
+        )
+        
+        // 4. Adjust blur radius
+        var adjustedEffects = effects
+        adjustedEffects.blurRadius = effects.blurRadius + adjustments.blurRadiusAdjustment
+        adjusted.effects = adjustedEffects
+        
+        return adjusted
+    }
+    
+    /// Adjust với theme-specific logic
+    func adjustedForTheme(
+        style: ThemeStyle,
+        colorScheme: ColorScheme
+    ) -> GlassConfiguration {
+        var adjusted = self.adjusted(for: colorScheme)
+        
+        // Theme-specific adjustments
+        switch style {
+        case .header:
+            if colorScheme == .dark {
+                adjusted.intensity *= 1.15
+            }
+            
+        case .card:
+            if colorScheme == .dark {
+                adjusted.borderStyle.opacity *= 1.2
+            }
+            
+        case .button:
+            if colorScheme == .dark {
+                // Button cần nổi bật hơn trong dark mode
+                adjusted.intensity *= 1.3
+                adjusted.effects.blurRadius += 2
+            }
+            
+        case .itemSelected:
+            if colorScheme == .dark {
+                // Selected item cần contrast cao hơn
+                adjusted.intensity *= 1.4
+            }
+        }
+        
+        return adjusted
+    }
+}
+
+// MARK: - Enhanced Dark Mode Aware Modifier
+
+struct EnhancedDarkModeAwareThemeModifier: ViewModifier {
+    let context: ThemeContext
+    let options: ThemeContext.Options
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(context: ThemeContext, options: ThemeContext.Options = .default) {
+        self.context = context
+        self.options = options
+    }
+    
+    func body(content: Content) -> some View {
+        let baseConfig = ThemeResolver.glassConfiguration(for: context)
+        
+        // Apply adjustments nếu autoDarkMode được bật
+        let finalConfig = options.autoDarkMode
+            ? baseConfig.adjustedForTheme(style: context.style, colorScheme: colorScheme)
+            : baseConfig
+        
+        // Tạo adjusted context
+        var adjustedContext = context
+        
+        // Update tint color nếu cần
+        if options.autoDarkMode && !options.preserveTintColor {
+            if let tintColor = context.tintColor {
+                let adjustments = options.customDarkModeAdjustments ?? DarkModeAdjustments.forScheme(colorScheme)
+                adjustedContext.tintColor = tintColor.opacity(adjustments.tintColorOpacity)
+            }
+        }
+        
+        // Update material cho card/button trong dark mode
+        if options.autoDarkMode && (context.style == .card || context.style == .button) {
+            if colorScheme == .dark && adjustedContext.material != nil {
+                adjustedContext.material = .ultraThin
+            }
+        }
+        
+        return content.themedBackground(adjustedContext)
+    }
+}
+
+// MARK: - Convenient View Extensions
+
+extension View {
+    /// Themed background với auto dark mode support
+    func themedBackgroundWithDarkMode(
+        _ context: ThemeContext,
+        options: ThemeContext.Options = .default
+    ) -> some View {
+        self.modifier(EnhancedDarkModeAwareThemeModifier(
+            context: context,
+            options: options
+        ))
+    }
+    
+    /// Themed background với custom dark mode adjustments
+    func themedBackgroundWithCustomDarkMode(
+        _ context: ThemeContext,
+        lightAdjustments: DarkModeAdjustments = .light,
+        darkAdjustments: DarkModeAdjustments = .dark,
+        preserveTintColor: Bool = false
+    ) -> some View {
+        var options = ThemeContext.Options.default
+        options.preserveTintColor = preserveTintColor
+        
+        return self.modifier(EnhancedDarkModeAwareThemeModifier(
+            context: context,
+            options: options
+        ))
+    }
+    
+    /// Themed background KHÔNG auto-adjust cho dark mode
+    func themedBackgroundNoDarkMode(_ context: ThemeContext) -> some View {
+        var options = ThemeContext.Options.default
+        options.autoDarkMode = false
+        
+        return self.modifier(EnhancedDarkModeAwareThemeModifier(
+            context: context,
+            options: options
+        ))
+    }
+}
+
+// MARK: - Usage Examples
+
+struct EnhancedDarkModeExamples: View {
+    @Namespace private var animation
+    @State private var selectedIndex = 0
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 30) {
+                // 1. Auto Dark Mode (Default)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Auto Dark Mode")
+                        .font(.headline)
+                    
+                    Text("This card automatically adjusts for \(colorScheme == .dark ? "dark" : "light") mode")
+                        .padding()
+                        .themedBackgroundWithDarkMode(.card(
+                            tintColor: .blue,
+                            cornerRadius: 16
+                        ))
+                }
+                
+                // 2. Custom Dark Mode Adjustments
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Custom Dark Mode")
+                        .font(.headline)
+                    
+                    Text("Custom intensity adjustments")
+                        .padding()
+                        .themedBackgroundWithCustomDarkMode(
+                            .card(tintColor: .purple),
+                            darkAdjustments: DarkModeAdjustments(
+                                intensityMultiplier: 1.5,
+                                borderOpacityMultiplier: 1.3,
+                                tintColorOpacity: 0.9,
+                                blurRadiusAdjustment: 2,
+                                borderWidthAdjustment: 0.5
+                            )
+                        )
+                }
+                
+                // 3. Preserve Tint Color
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Preserve Tint Color")
+                        .font(.headline)
+                    
+                    Text("Tint color không đổi trong dark mode")
+                        .padding()
+                        .themedBackgroundWithCustomDarkMode(
+                            .card(tintColor: .orange),
+                            preserveTintColor: true
+                        )
+                }
+                
+                // 4. No Dark Mode Auto-Adjustment
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("No Auto-Adjustment")
+                        .font(.headline)
+                    
+                    Text("Giữ nguyên style trong cả 2 mode")
+                        .padding()
+                        .themedBackgroundNoDarkMode(.card(
+                            tintColor: .green
+                        ))
+                }
+                
+                // 5. Button với Auto Dark Mode
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Button Styles")
+                        .font(.headline)
+                    
+                    HStack(spacing: 15) {
+                        Button("Primary") { }
+                            .padding()
+                            .themedBackgroundWithDarkMode(.button(
+                                tintColor: .blue
+                            ))
+                        
+                        Button("Secondary") { }
+                            .padding()
+                            .themedBackgroundWithDarkMode(.button(
+                                tintColor: .gray
+                            ))
+                        
+                        Button("Danger") { }
+                            .padding()
+                            .themedBackgroundWithDarkMode(.button(
+                                tintColor: .red
+                            ))
+                    }
+                }
+                
+                // 6. Item Selection với Dark Mode
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Selection Tabs")
+                        .font(.headline)
+                    
+                    HStack(spacing: 12) {
+                        ForEach(0..<3) { index in
+                            Text("Tab \(index + 1)")
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .themedBackgroundWithDarkMode(.itemSelected(
+                                    tintColor: .purple,
+                                    isSelected: selectedIndex == index,
+                                    animationID: animation,
+                                    animationName: "selection"
+                                ))
+                                .onTapGesture {
+                                    selectedIndex = index
+                                }
+                        }
+                    }
+                }
+                
+                // 7. Header với Dark Mode
+                Text("Header with Dark Mode")
+                    .font(.title2)
+                    .bold()
+                    .themedBackgroundWithDarkMode(.header(
+                        tintColor: .indigo,
+                        height: 80
+                    ))
+                
+                // 8. Comparison View
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Comparison")
+                        .font(.headline)
+                    
+                    HStack(spacing: 15) {
+                        VStack {
+                            Text("Auto")
+                                .font(.caption)
+                            Text("Sample")
+                                .padding()
+                                .themedBackgroundWithDarkMode(.card(
+                                    tintColor: .cyan
+                                ))
+                        }
+                        
+                        VStack {
+                            Text("No Auto")
+                                .font(.caption)
+                            Text("Sample")
+                                .padding()
+                                .themedBackgroundNoDarkMode(.card(
+                                    tintColor: .cyan
+                                ))
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+/*
 // Dark mode aware modifier
 struct DarkModeAwareThemeModifier: ViewModifier {
     let context: ThemeContext
@@ -447,7 +809,9 @@ struct DarkModeAwareThemeModifier: ViewModifier {
     func body(content: Content) -> some View {
         let baseConfig = ThemeResolver.glassConfiguration(for: context)
         let adjustedConfig = baseConfig.adjusted(for: colorScheme)
-        let adjustedContext = context
+        
+        var adjustedContext = context
+        //adjustedContext.tintColor = adjustedContext.tintColor?.opacity(colorScheme == .dark ? 0.5 : 1)
         
         content.themedBackground(adjustedContext)
     }
@@ -458,3 +822,5 @@ extension View {
         self.modifier(DarkModeAwareThemeModifier(context: context))
     }
 }
+
+*/

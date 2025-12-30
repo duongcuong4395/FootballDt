@@ -116,12 +116,22 @@ struct ResultSetDTO: Codable {
     var count: Int
     var first, last: String
     var played: Int
+    
+    var competitions: String?
+    var wins: Int?
+    var draws: Int?
+    var losses: Int?
      
     func toDomain() -> ResultSet {
         ResultSet(
             count: count
             , first: first
             , last: last
-            , played: played)
+            , played: played
+            , competitions: competitions
+            , wins: wins
+            , draws: draws
+            , losses: losses
+        )
     }
 }
