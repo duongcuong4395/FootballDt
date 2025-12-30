@@ -150,19 +150,39 @@ struct MatchItemView: View {
         VStack(alignment: .leading) {
             HStack{
                 // MARK: Home Team
+                /*
                 TeamView(team: match.homeTeam)
                     .frame(width: UIScreen.main.bounds.width/2 - 100)
                     .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
                     .onTapGesture {
                         onEvent(.viewDetail(for: match.homeTeam))
                     }
+                */
+                TeamName(name: match.awayTeam.shortName ?? "", kindTeam: .HomeTeam)
+                    .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
+                    .overlay(alignment: .leading) {
+                        TeamBadgeView(teamUrl: match.homeTeam.crest ?? "")
+                        /*
+                        HStack {
+                            TeamBadgeView(teamUrl: match.homeTeam.crest ?? "")
+                            Spacer()
+                        }
+                        */
+                    }
+                    
+                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
+                    .onTapGesture {
+                        onEvent(.viewDetail(for: match.homeTeam))
+                    }
+                
                 Spacer()
                 VStack {
-                    Text("\(match.eventTime)")
-                        .font(.caption2.bold())
+                    //Text("\(match.eventTime)")
+                        //.font(.caption2.bold())
                     if let _ = match.score.winner {
                         ScoreView(score: match.score)
                             .padding(5)
+                            .padding(.horizontal, 10)
                             .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme, color: .blue), cornerRadius: 15))
                     } else {
                         Text(" - ")
@@ -176,6 +196,7 @@ struct MatchItemView: View {
                 .transition(.rotate3D())
                 
                 Spacer()
+                /*
                 // MARK: Away Team
                 TeamView(team: match.awayTeam)
                     .frame(width: UIScreen.main.bounds.width/2 - 100)
@@ -183,39 +204,57 @@ struct MatchItemView: View {
                     .onTapGesture {
                         onEvent(.viewDetail(for: match.awayTeam))
                     }
+                */
+                TeamName(name: match.awayTeam.shortName ?? "", kindTeam: .AwayTeam)
+                    .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
+                    .overlay(alignment: .trailing) {
+                        HStack {
+                            Spacer()
+                            TeamBadgeView(teamUrl: match.awayTeam.crest ?? "")
+                        }
+                    }
+                    
+                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
+                    .onTapGesture {
+                        onEvent(.viewDetail(for: match.awayTeam))
+                    }
             }
         }
+        .padding(.vertical, 20)
     }
 }
 
+enum KindTeam {
+    case AwayTeam
+    case HomeTeam
+}
 
-/*
-struct CompetitionMatchItemView: View {
-    var match: Match
-    @Binding var isVisible: Bool
-    var delay: Double
-    
-    
+struct TeamName: View {
+    var name: String
+    var kindTeam: KindTeam
     var body: some View {
-        HStack{
-            // MARK: Home Team
-            TeamView(team: match.homeTeam)
-                .frame(width: UIScreen.main.bounds.width/2 - 100)
-                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
-            Spacer()
-            VStack {
-                Text("\(match.eventTime)")
-                    .font(.caption2)
-                ScoreView(score: match.score)
+        Text(name)
+            .fontByDevice(.caption, weight: .medium)
+            .foregroundStyle(.white)
+            .lineLimit(2)
+            .paddingByDevice(.small)
+            //.frame(width: UIScreen.main.bounds.width/2 - 50.0)
+            .background {
+                ArrowShape()
+                    .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.blue, .blue, .blue, .white.opacity(0.1)]), startPoint: .trailing, endPoint: .leading))
+                    .rotation3DEffect(Angle(degrees: kindTeam == .HomeTeam ? 0 : 180), axis: (0, 1, 0))
+                    .frame(width: UIScreen.main.bounds.width/2 - 50.0)
             }
-            .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
-            
-            Spacer()
-            // MARK: Away Team
-            TeamView(team: match.awayTeam)
-                .frame(width: UIScreen.main.bounds.width/2 - 100)
-                .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
-        }
     }
 }
-*/
+
+struct TeamBadgeView: View {
+    var teamUrl: String
+    var body: some View {
+        RemoteImageView(urlString: teamUrl, size: 40)
+            .offset(y: -25)
+    }
+}
+
+
+

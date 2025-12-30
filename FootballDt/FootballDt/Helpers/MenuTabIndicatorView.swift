@@ -18,7 +18,7 @@ struct MenuTabIndicatorView<Menu: RouteMenu>: View {
             HStack(spacing: 5) {
                 // Icon với animation
                 //menu.getIconView()
-                menu.getIconView(active: true)
+                menu.getIconView(active: isSelected)
                 //Image(systemName: menu.icon)
                     .font(.title3)
                 //.font(.system(size: isSelected ? 24 : 20, weight: .semibold))

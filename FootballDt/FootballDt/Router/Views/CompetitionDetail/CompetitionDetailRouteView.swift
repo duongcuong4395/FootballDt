@@ -27,7 +27,7 @@ enum CompetitionDetailRouteMenu: String {
 extension CompetitionDetailRouteMenu: RouteMenu {
     var title: String {
         switch self {
-        case .Leaderboard: "Rankings"
+        case .Leaderboard: "Leaderboard"
         case .Teams: "Teams"
         case .Matches: "Matches"
         case .Scorers: "Scorers"

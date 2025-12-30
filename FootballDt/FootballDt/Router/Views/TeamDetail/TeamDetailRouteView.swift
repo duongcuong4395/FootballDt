@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum TeamDetailRouteMenu: String, RouteMenu {
-    case General
+    case General = "Information"
     case Match
     
     var title: String {
@@ -38,7 +38,7 @@ enum TeamDetailRouteMenu: String, RouteMenu {
     func getIconView(active: Bool) -> AnyView {
         switch self {
         case .General: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
-        case .Match: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
+        case .Match: return AnyView(Image(systemName: icon))
         }
     }
     
