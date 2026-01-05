@@ -56,7 +56,8 @@ struct ListItemPerPageView<T: Identifiable, ItemView: View>: View {
     @Binding var showModels: [Bool]
     @Binding var repeatAnimationOnApear: Bool
     
-    init(listItem: [T], itemsPerPage: Int = 10
+    init(
+        listItem: [T], itemsPerPage: Int = 10
          , grid: (columms: [GridItem], headerView: () -> AnyView)? = nil
          , hasEffectOnApear: Bool = false
          , showModels: Binding<[Bool]> = .constant([])

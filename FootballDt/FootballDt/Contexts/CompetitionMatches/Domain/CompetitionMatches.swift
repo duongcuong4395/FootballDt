@@ -21,7 +21,11 @@ struct CompetitionMatches {
 }
 
 // MARK: - Match
-struct Match: Identifiable {
+struct Match: Identifiable, Equatable {
+    static func == (lhs: Match, rhs: Match) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     var id: Int
     var area: Area
     var competition: Competition
@@ -40,6 +44,12 @@ struct Match: Identifiable {
     
     var eventTime: String {
         DateParser.convert(utcDate, to: "hh:mm dd/MM/yyyy")
+    }
+    
+    var like: Bool = false
+    // Thêm method để toggle like
+    mutating func toggleLike() {
+        like.toggle()
     }
 }
 

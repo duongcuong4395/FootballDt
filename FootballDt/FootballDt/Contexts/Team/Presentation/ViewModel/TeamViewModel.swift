@@ -46,6 +46,7 @@ class TeamViewModel: ObservableObject {
 class MatchesByTeamViewModel: ObservableObject {
     @Published var matchesByTeamStatus: ModelsStatus<MatchesByTeam> = .idle
     
+    
     private var getMatchesByTeamUserCase: GetMatchesByTeamUserCase
     
     init(getMatchesByTeamUserCase: GetMatchesByTeamUserCase) {
@@ -73,6 +74,21 @@ class MatchesByTeamViewModel: ObservableObject {
         self.matchesByTeamStatus = .idle
     }
     
+    // MARK: - Toggle Like Match
+   func toggleLike(for match: Match) {
+       guard case .success(var data) = matchesByTeamStatus else { return }
+       
+       // Tìm và cập nhật match trong array
+       if let index = data.matches?.firstIndex(where: { $0.id == match.id }) {
+           data.matches?[index].like.toggle()
+           DispatchQueue.main.async {
+               
+               self.matchesByTeamStatus = .success(data: data)
+           }
+           
+       }
+   }
+    
 }
 
 
@@ -92,4 +108,6 @@ extension Array where Element == Match {
             }
             .sorted { $0.competition.name < $1.competition.name }
     }
+    
+    
 }

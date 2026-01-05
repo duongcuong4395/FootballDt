@@ -12,8 +12,8 @@ enum ItemEvent<T: Equatable> {
     case viewDetail(for: T)
     case toggleNotify(for: T)
     case tapped(for: T)
-    case openVideo(for: T)
     case onApear(for: T)
+    case analysis(for: T)
 }
 
 enum IconItemType: String {

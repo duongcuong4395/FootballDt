@@ -58,6 +58,7 @@ struct MatchesByTeamView: View {
                         ForEach(Array(data.matchesByCompetition.enumerated()), id: \.element.id) { index, cp in
                             ListMatchByTeamView(listMatch: cp.matches ?? [])
                                 .tag(index)
+                                                        
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -99,6 +100,7 @@ struct ListMatchByTeamView: View {
     @State private var showModels: [Bool] = []
     @State private var repeatAnimationOnApear = true
     
+    @EnvironmentObject var matchesByTeamVM: MatchesByTeamViewModel
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
     
@@ -107,12 +109,14 @@ struct ListMatchByTeamView: View {
     }
     
     var body: some View {
+        
         ListItemPerPageView(
             listItem: listMatch
             , hasEffectOnApear: true
             , showModels: $showModels
             , repeatAnimationOnApear: $repeatAnimationOnApear
             , itemView: getItemView)
+        
     }
     
     @ViewBuilder
@@ -121,7 +125,10 @@ struct ListMatchByTeamView: View {
             MatchItemView(
                 match: match
                 , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
-                , delay: Double(index) * 0.03, onEvent: handleForTeam) // , delay: Double(index) * 0.01
+                , delay: Double(index) * 0.03
+                , onEventTeam: handleForTeam
+                , onEventMatch: handleForMatch
+            )
         }
     }
     
@@ -136,6 +143,23 @@ struct ListMatchByTeamView: View {
             }
         }
     }
+    
+    func handleForMatch(event: ItemEvent<Match>) {
+        switch event {
+        case .toggleLike(let match):
+            print("Like Match detail", match.homeTeam.name ?? "" , match.awayTeam.name ?? "")
+            
+            //match.like
+            matchesByTeamVM.toggleLike(for: match)
+        case .viewDetail(let match):
+            print("View Match detail", match.homeTeam.name ?? "" , match.awayTeam.name ?? "")
+        case .toggleNotify(let match):
+            print("Notification Match", match.homeTeam.name ?? "" , match.awayTeam.name ?? "")
+        case .analysis(let match):
+            print("Analysis Match", match.homeTeam.name ?? "" , match.awayTeam.name ?? "")
+        default: return
+        }
+    }
 }
 
 
@@ -143,84 +167,129 @@ struct MatchItemView: View {
     var match: Match
     @Binding var isVisible: Bool
     var delay: Double
-    var onEvent: (ItemEvent<Team>) -> Void
+    
+    var onEventTeam: (ItemEvent<Team>) -> Void
+    var onEventMatch: (ItemEvent<Match>) -> Void
+    
     @Environment(\.colorScheme) var colorScheme
+    @State private var showingTooltipMenu = false
+    
+    @Namespace var animation
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack{
                 // MARK: Home Team
-                /*
-                TeamView(team: match.homeTeam)
-                    .frame(width: UIScreen.main.bounds.width/2 - 100)
-                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
-                    .onTapGesture {
-                        onEvent(.viewDetail(for: match.homeTeam))
-                    }
-                */
                 TeamName(name: match.awayTeam.shortName ?? "", kindTeam: .HomeTeam)
                     .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
                     .overlay(alignment: .leading) {
                         TeamBadgeView(teamUrl: match.homeTeam.crest ?? "")
-                        /*
-                        HStack {
-                            TeamBadgeView(teamUrl: match.homeTeam.crest ?? "")
-                            Spacer()
-                        }
-                        */
                     }
-                    
                     .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
                     .onTapGesture {
-                        onEvent(.viewDetail(for: match.homeTeam))
+                        onEventTeam(.viewDetail(for: match.homeTeam))
                     }
                 
                 Spacer()
                 VStack {
-                    //Text("\(match.eventTime)")
-                        //.font(.caption2.bold())
+                    Image(systemName: match.like ? "heart.fill" : "heart")
+                        .font(.caption)
+                    if !showingTooltipMenu {
+                        Image(systemName: "chevron.compact.up")
+                            .font(.caption)
+                            .padding(.top, 5)
+                    }
                     if let _ = match.score.winner {
                         ScoreView(score: match.score)
                             .padding(5)
-                            .padding(.horizontal, 10)
-                            .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme, color: .blue), cornerRadius: 15))
                     } else {
                         Text(" - ")
                             .font(.caption.bold())
                             .padding(5)
-                            .padding(.horizontal, 10)
-                            .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme, color: .white), cornerRadius: 20))
                     }
-                    
                 }
+                .padding(.horizontal, 10)
+                .themedBackground(
+                    .card(
+                        tintColor: .backgroundColor(
+                            for: colorScheme
+                            , color: match.score.winner == nil ? .white : .blue)
+                          , cornerRadius: 10))
                 .transition(.rotate3D())
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        showingTooltipMenu.toggle()
+                    }
+                }
                 
                 Spacer()
-                /*
                 // MARK: Away Team
-                TeamView(team: match.awayTeam)
-                    .frame(width: UIScreen.main.bounds.width/2 - 100)
-                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
-                    .onTapGesture {
-                        onEvent(.viewDetail(for: match.awayTeam))
-                    }
-                */
                 TeamName(name: match.awayTeam.shortName ?? "", kindTeam: .AwayTeam)
                     .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
                     .overlay(alignment: .trailing) {
-                        HStack {
-                            Spacer()
-                            TeamBadgeView(teamUrl: match.awayTeam.crest ?? "")
-                        }
+                        TeamBadgeView(teamUrl: match.awayTeam.crest ?? "")
                     }
-                    
                     .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
                     .onTapGesture {
-                        onEvent(.viewDetail(for: match.awayTeam))
+                        onEventTeam(.viewDetail(for: match.awayTeam))
                     }
             }
+            .overlay(alignment: .topLeading) {
+                Text("\(match.eventTime)")
+                    .font(.caption2.bold())
+                    .offset(x: 40, y: -15)
+            }
+            .popover(isPresented: $showingTooltipMenu, arrowEdge: .top) {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "chart.xyaxis.line")
+                            .font(.caption)
+                        Text("AI analysis")
+                    }
+                    .presentationBackground(.clear)
+                    .onTapGesture {
+                        onEventMatch(.analysis(for: match))
+                    }
+                    
+                    HStack {
+                        Image(systemName: "list.bullet.clipboard")
+                            .font(.caption)
+                        Text("View Detail")
+                    }
+                    .presentationBackground(.clear)
+                    .onTapGesture {
+                        onEventMatch(.viewDetail(for: match))
+                    }
+                    
+                    HStack {
+                        Image(systemName: "bell")
+                            .font(.caption)
+                        Text("Notification")
+                    }
+                    .presentationBackground(.clear)
+                    .onTapGesture {
+                        onEventMatch(.toggleNotify(for: match))
+                    }
+                    
+                    HStack {
+                        Image(systemName: match.like ? "heart.fill" : "heart")
+                            .font(.caption)
+                        Text("Favorite")
+                    }
+                    .presentationBackground(.clear)
+                    .onTapGesture {
+                        onEventMatch(.toggleLike(for: match))
+                    }
+                }
+                .padding(10)
+                .presentationBackground(.clear)
+                .presentationCompactAdaptation(.popover)
+                .themedBackground(.card())
+            }
         }
-        .padding(.vertical, 20)
+        .padding(.top, 40)
+        
+        
     }
 }
 
@@ -238,7 +307,6 @@ struct TeamName: View {
             .foregroundStyle(.white)
             .lineLimit(2)
             .paddingByDevice(.small)
-            //.frame(width: UIScreen.main.bounds.width/2 - 50.0)
             .background {
                 ArrowShape()
                     .foregroundStyle(LinearGradient(gradient: Gradient(colors: [.blue, .blue, .blue, .white.opacity(0.1)]), startPoint: .trailing, endPoint: .leading))

@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-class CompetitionMatchesViewModel: ObservableObject {
-    @Published var competitionMatchesStatus: ModelsStatus<CompetitionMatches> = .idle
+@MainActor
+class CompetitionMatchesViewModel: StateStore<Match> {
     
     private var getCompetitionMatchesUserCase: GetCompetitionMatchesUserCase
     
@@ -16,26 +16,22 @@ class CompetitionMatchesViewModel: ObservableObject {
         self.getCompetitionMatchesUserCase = getCompetitionMatchesUserCase
     }
     
-    func getCompetitionMatches(by competitionID: String, and season: String?) async {
-        DispatchQueue.main.async {
-            self.competitionMatchesStatus = .loading
-        }
-        
-        do {
+    func loadMatches(by competitionID: String, and season: String?) async {
+        await loadPage(page: 0) { [weak self] page, pagesize in
+            guard let self = self else { throw StateError.cancelled }
             let data = try await getCompetitionMatchesUserCase.execute(by: competitionID, and: season)
-            DispatchQueue.main.async {
-                self.competitionMatchesStatus = .success(data: data)
-                return
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.competitionMatchesStatus = .failure(error: error.localizedDescription)
-                return
-            }
+            
+            return data.matches
         }
     }
     
+    func toggleLike(matchId: Int) {
+        guard let match = model(withId: matchId) else { return }
+        // Update UI
+        update(matchId, keyPath: \.like, value: !match.like)
+    }
+    
     func reset() {
-        self.competitionMatchesStatus = .idle
+        setState(.idle)
     }
 }

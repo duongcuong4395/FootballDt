@@ -49,6 +49,7 @@ extension View {
     }
 }
 
+@MainActor
 class AppDependencyContainer: ObservableObject {
     
     let footballDtRouter = FootballDtRouter()
