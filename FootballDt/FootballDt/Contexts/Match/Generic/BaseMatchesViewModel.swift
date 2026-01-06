@@ -59,7 +59,23 @@ class BaseMatchesViewModel: StateStore<Match> {
     /// Toggle like cho match
     func toggleLike(matchId: Int) {
         guard let match = model(withId: matchId) else { return }
+        
+        //Update CoreData/SwiftData
+        
+        // update UI
         update(matchId, keyPath: \.like, value: !match.like)
+    }
+    
+    
+    
+    
+    func toggleNotify(matchId: Int) {
+        guard let match = model(withId: matchId) else { return }
+        
+        //Update CoreData/SwiftData
+        
+        // update UI
+        update(matchId, keyPath: \.notify, value: !match.notify)
     }
     
     /// Select competition by index

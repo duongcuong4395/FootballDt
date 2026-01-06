@@ -350,7 +350,7 @@ struct MatchMenuView: View {
                 onEventMatch(.viewDetail(for: match))
             }
             
-            MenuButton(icon: "bell", text: "Notification") {
+            MenuButton(icon: match.notify ? "bell.fill" : "bell", text: "Notification") {
                 onEventMatch(.toggleNotify(for: match))
             }
             

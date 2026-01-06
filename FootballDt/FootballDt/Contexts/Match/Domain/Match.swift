@@ -89,6 +89,8 @@ struct Match: Identifiable, Equatable {
     }
     
     var like: Bool = false
+    var notify: Bool = false
+    
     // Thêm method để toggle like
     mutating func toggleLike() {
         like.toggle()

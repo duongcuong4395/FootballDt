@@ -66,8 +66,7 @@ struct CompetitionMatchesView: View {
             print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
             
         case .toggleNotify(let match):
-            print("Toggle notification for match", match.id)
-            
+            matchesByCompetitionVM.toggleNotify(matchId: match.id)
         default:
             break
         }
@@ -129,8 +128,8 @@ struct MatchesByTeamView: View {
             print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
             
         case .toggleNotify(let match):
-            print("Toggle notification for match", match.id)
             
+            matchesByTeamVM.toggleNotify(matchId: match.id)
         default:
             break
         }
