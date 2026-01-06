@@ -226,37 +226,15 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
     @ViewBuilder
     private func matchItemView(for match: Match) -> some View {
         if let index = matches.firstIndex(where: { $0.id == match.id }) {
-            MatchItemView_StateStore(
-                stateStoreVM: viewModel,
-                match: match,
-                isVisible: showModels.indices.contains(index) ? $showModels[index] : .constant(false),
-                delay: Double(index) * 0.03,
-                onEventTeam: onTeamEvent,
-                onEventMatch: onMatchEvent
-            )
+            UniversalMatchItemView.interactive(
+                stateStoreVM: viewModel
+                , match: match
+                , isVisible: showModels.indices.contains(index) ? $showModels[index] : .constant(false)
+                , delay: Double(index) * 0.03
+                , onEventTeam: onTeamEvent
+                , onEventMatch: onMatchEvent)
+            
         }
-    }
-}
-
-// MARK: - Match Item View with StateStore Support
-
-struct MatchItemView_StateStore<VM: BaseMatchesViewModel>: View {
-    @ObservedObject var stateStoreVM: VM
-    let match: Match
-    @Binding var isVisible: Bool
-    let delay: Double
-    
-    var onEventTeam: (ItemEvent<Team>) -> Void
-    var onEventMatch: (ItemEvent<Match>) -> Void
-    
-    var body: some View {
-        UniversalMatchItemView.interactive(
-            stateStoreVM: stateStoreVM
-            , match: match
-            , isVisible: $isVisible
-            , delay: delay
-            , onEventTeam: onEventTeam
-            , onEventMatch: onEventMatch)
     }
 }
 
