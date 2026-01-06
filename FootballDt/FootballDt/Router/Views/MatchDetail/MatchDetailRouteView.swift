@@ -36,7 +36,8 @@ struct MatchDetailRouteHeaderView: View {
             })
             
             if case .success(let match) = matchDetailVM.state {
-                MatchItemHeaderView(match: match)
+                UniversalMatchItemView.header(match: match)
+                //MatchItemHeaderView(match: match)
                     .scaleEffect(0.95)
             }
             Spacer()

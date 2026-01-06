@@ -11,7 +11,7 @@ import SwiftUI
 
 struct MatchItemContent: View {
     let match: Match
-    let currentMatch: Match? // nil for static view, mutated match for interactive view
+    let currentMatch: Match?  // nil for static view, mutated match for interactive view
     let isVisible: Binding<Bool>
     let delay: Double
     let showMenu: Bool
@@ -22,7 +22,6 @@ struct MatchItemContent: View {
     @Environment(\.colorScheme) var colorScheme
     @Namespace var animation
     
-    // Computed property để xác định match hiển thị
     private var displayMatch: Match {
         currentMatch ?? match
     }
@@ -85,7 +84,6 @@ struct TeamSection: View {
     let delay: Double
     let onTap: () -> Void
     
-    // Tính toán width dựa trên hasWinner và loại view
     private var frameWidth: CGFloat {
         UIScreen.main.bounds.width/2 - (hasWinner ? 75 : 75)
     }
@@ -157,5 +155,111 @@ struct EventTimeLabel: View {
         Text(eventTime)
             .font(.caption2.bold())
             .offset(x: 45, y: -15)
+    }
+}
+
+
+// MARK: - Configuration Struct for Customization
+
+struct MatchItemConfiguration {
+    var showMenu: Bool
+    var isInteractive: Bool
+    var padding: CGFloat
+    var frameWidthAdjustment: CGFloat
+    
+    static let interactive = MatchItemConfiguration(
+        showMenu: true,
+        isInteractive: true,
+        padding: 30,
+        frameWidthAdjustment: 60
+    )
+    
+    static let header = MatchItemConfiguration(
+        showMenu: false,
+        isInteractive: false,
+        padding: 0,
+        frameWidthAdjustment: 80
+    )
+}
+
+// MARK: - Universal Match Item View (Most Flexible)
+
+struct UniversalMatchItemView<VM: BaseMatchesViewModel>: View {
+    // Optional StateStore for interactive mode
+    var stateStoreVM: VM?
+    let match: Match
+    let configuration: MatchItemConfiguration
+    
+    @Binding var isVisible: Bool
+    let delay: Double
+    
+    var onEventTeam: ((ItemEvent<Team>) -> Void)?
+    var onEventMatch: ((ItemEvent<Match>) -> Void)?
+    
+    @State private var showingTooltipMenu = false
+    
+    var body: some View {
+        MatchItemContent(
+            match: match,
+            currentMatch: stateStoreVM?.mutatedModel(withId: match.id),
+            isVisible: $isVisible,
+            delay: delay,
+            showMenu: configuration.showMenu,
+            onEventTeam: onEventTeam,
+            onMenuTap: configuration.isInteractive ? {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    showingTooltipMenu.toggle()
+                }
+            } : nil
+        )
+        .popover(isPresented: $showingTooltipMenu, arrowEdge: .top) {
+            if configuration.showMenu, let onEventMatch = onEventMatch {
+                MatchMenuView(
+                    match: stateStoreVM?.mutatedModel(withId: match.id) ?? match,
+                    onEventMatch: onEventMatch,
+                    showingTooltipMenu: $showingTooltipMenu
+                )
+            }
+        }
+        .padding(.top, configuration.padding)
+    }
+}
+
+// MARK: - Convenience Initializers
+
+extension UniversalMatchItemView {
+    // Interactive mode with StateStore
+    static func interactive(
+        stateStoreVM: VM,
+        match: Match,
+        isVisible: Binding<Bool>,
+        delay: Double,
+        onEventTeam: @escaping (ItemEvent<Team>) -> Void,
+        onEventMatch: @escaping (ItemEvent<Match>) -> Void
+    ) -> UniversalMatchItemView {
+        UniversalMatchItemView(
+            stateStoreVM: stateStoreVM,
+            match: match,
+            configuration: .interactive,
+            isVisible: isVisible,
+            delay: delay,
+            onEventTeam: onEventTeam,
+            onEventMatch: onEventMatch
+        )
+    }
+    
+    // Static header mode
+    static func header(
+        match: Match
+    ) -> UniversalMatchItemView {
+        UniversalMatchItemView(
+            stateStoreVM: nil,
+            match: match,
+            configuration: .header,
+            isVisible: .constant(true),
+            delay: 0.03,
+            onEventTeam: nil,
+            onEventMatch: nil
+        )
     }
 }

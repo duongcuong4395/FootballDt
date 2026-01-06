@@ -249,57 +249,16 @@ struct MatchItemView_StateStore<VM: BaseMatchesViewModel>: View {
     var onEventTeam: (ItemEvent<Team>) -> Void
     var onEventMatch: (ItemEvent<Match>) -> Void
     
-    @Environment(\.colorScheme) var colorScheme
-    @State private var showingTooltipMenu = false
-    @Namespace var animation
-    
     var body: some View {
-        MatchItemContent(
-            match: match
-            , currentMatch: stateStoreVM.mutatedModel(withId: match.id) ?? match
+        UniversalMatchItemView.interactive(
+            stateStoreVM: stateStoreVM
+            , match: match
             , isVisible: $isVisible
             , delay: delay
-            , showMenu: showingTooltipMenu
             , onEventTeam: onEventTeam
-            , onMenuTap: {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                    showingTooltipMenu.toggle()
-                }
-            }
-        )
-        .popover(isPresented: $showingTooltipMenu, arrowEdge: .top) {
-            MatchMenuView(
-                match: stateStoreVM.mutatedModel(withId: match.id) ?? match,
-                onEventMatch: onEventMatch,
-                showingTooltipMenu: $showingTooltipMenu
-            )
-        }
-        .padding(.top, 30)
-        
+            , onEventMatch: onEventMatch)
     }
 }
-
-struct MatchItemHeaderView: View {
-    
-    let match: Match
-    @Environment(\.colorScheme) var colorScheme
-    
-    @Namespace var animation
-    
-    var body: some View {
-        MatchItemContent(
-            match: match,
-            currentMatch: nil,
-            isVisible: .constant(true),
-            delay: 0.03,
-            showMenu: false,
-            onEventTeam: nil,
-            onMenuTap: nil
-        )
-        
-    }
-}
-
 
 // MARK: - Match Menu View
 
