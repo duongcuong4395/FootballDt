@@ -41,10 +41,12 @@ extension View {
             .environmentObject(container.footballDtRouter)
             .environmentObject(container.listCompetitionVM)
             .environmentObject(container.leaderboardVM)
-            .environmentObject(container.competitionMatchesVM)
+            
             .environmentObject(container.competitionsTeamsVM)
             .environmentObject(container.competitionsScorersVM)
             .environmentObject(container.teamVM)
+        
+            .environmentObject(container.matchesByCompetitionVM)
             .environmentObject(container.matchesByTeamVM)
     }
 }
@@ -75,16 +77,16 @@ class AppDependencyContainer: ObservableObject {
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
     lazy var leaderboardVM = LeaderboardViewModel(getLeaderboardUserCase: getLeaderboardUserCase)
-    lazy var competitionMatchesVM = CompetitionMatchesViewModel(getCompetitionMatchesUserCase: getCompetitionMatchesUserCase)
+    
     lazy var competitionsTeamsVM = CompetitionsTeamsViewModel(getCompetitionsTeamsUserCase: getCompetitionsTeamsUserCase)
     
     lazy var competitionsScorersVM = CompetitionsScorersViewModel(getCompetitionsScorersUserCase: getCompetitionsScorersUserCase)
     
     lazy var teamVM = TeamViewModel(getTeamDetailUserCase: getTeamDetailUserCase)
-    lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUserCase: getMatchesByTeamUserCase)
     
+    lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(getCompetitionMatchesUseCase: getCompetitionMatchesUserCase)
     
-    
+    lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUserCase)
 }
 
 

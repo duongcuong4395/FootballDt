@@ -7,51 +7,10 @@
 
 import Foundation
 
-struct CompetitionMatches {
-    var resultSet: ResultSet?
-    var competition: Competition?
-    var matches: [Match]
-    
-    init(resultSet: ResultSet? = nil, competition: Competition? = nil, matches: [Match]) {
-        self.resultSet = resultSet
-        self.competition = competition
-        self.matches = matches
-        self.matches = self.matches.sorted { $0.utcDate > $1.utcDate }
-    }
-}
+
 
 // MARK: - Match
-struct Match: Identifiable, Equatable {
-    static func == (lhs: Match, rhs: Match) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    var id: Int
-    var area: Area
-    var competition: Competition
-    var season: Season
-    
-    var utcDate: String
-    var status: String
-    var matchday: Int?
-    var stage: String?
-    var group: String?
-    var lastUpdated: String
-    var homeTeam, awayTeam: Team
-    var score: Score
-    var odds: Odds
-    var referees: [Referee]
-    
-    var eventTime: String {
-        DateParser.convert(utcDate, to: "hh:mm dd/MM/yyyy")
-    }
-    
-    var like: Bool = false
-    // Thêm method để toggle like
-    mutating func toggleLike() {
-        like.toggle()
-    }
-}
+
 
 // MARK: - Odds
 struct Odds {

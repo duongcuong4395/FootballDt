@@ -106,7 +106,6 @@ struct CompetitionDetailRouteHeaderView: View {
     @EnvironmentObject var router: FootballDtRouter
     
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
-    @EnvironmentObject var competitionMatchesVM: CompetitionMatchesViewModel
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
     
@@ -139,7 +138,6 @@ struct CompetitionDetailRouteHeaderView: View {
         listCompetitionVM.resetCompetitionSelected()
         
         leaderboardVM.reset()
-        competitionMatchesVM.reset()
         competitionsTeamsVM.reset()
         competitionsScorersVM.reset()
         router.pop()

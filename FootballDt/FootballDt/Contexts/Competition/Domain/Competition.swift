@@ -17,8 +17,6 @@ struct Competition {
     var currentSeason: Season?
     var numberOfAvailableSeasons: Int?
     var lastUpdated: String?
-    
-    
 }
 
 struct Area {

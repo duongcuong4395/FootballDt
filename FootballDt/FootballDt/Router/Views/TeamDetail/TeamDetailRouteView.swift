@@ -59,7 +59,6 @@ struct TeamDetailRouteView: View {
 struct TeamDetailRouteHeaderView: View {
     @EnvironmentObject var router: FootballDtRouter
     @EnvironmentObject var teamVM: TeamViewModel
-    @EnvironmentObject var matchesByTeamVM: MatchesByTeamViewModel
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -85,7 +84,6 @@ struct TeamDetailRouteHeaderView: View {
     func backRoute() {
         router.pop()
         teamVM.resetAll()
-        matchesByTeamVM.resetAll()
     }
     
     @ViewBuilder
