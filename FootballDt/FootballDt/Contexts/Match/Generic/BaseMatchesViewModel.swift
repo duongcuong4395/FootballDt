@@ -131,6 +131,12 @@ class MatchesByTeamViewModel: BaseMatchesViewModel {
         
         await loadMatchesGrouped(dataSource: dataSource)
     }
+    
+    func resetAll() {
+        setState(.idle)
+        selectedCompetitionIndex = 0
+    }
+    
 }
 
 // MARK: - Data Source Implementations

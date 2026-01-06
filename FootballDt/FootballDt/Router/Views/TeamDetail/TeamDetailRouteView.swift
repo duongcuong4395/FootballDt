@@ -59,6 +59,8 @@ struct TeamDetailRouteView: View {
 struct TeamDetailRouteHeaderView: View {
     @EnvironmentObject var router: FootballDtRouter
     @EnvironmentObject var teamVM: TeamViewModel
+    @EnvironmentObject var matchesByTeamVM: MatchesByTeamViewModel
+    
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -78,12 +80,13 @@ struct TeamDetailRouteHeaderView: View {
         }
         .padding(.horizontal, 16)
         .themedBackground(.header(tintColor: .backgroundColor(for: colorScheme), height: 70))
-        
     }
     
     func backRoute() {
-        router.pop()
+        
+        matchesByTeamVM.resetAll()
         teamVM.resetAll()
+        router.pop()
     }
     
     @ViewBuilder
@@ -133,8 +136,6 @@ struct TeamDetailRouteContentView: View {
                         , isSelected: selected == TeamDetailRouteMenu.Match
                         , loadedTabs: $loadedTabs) {
                             MatchesByTeamView()
-                                //.padding(10)
-                                //.themedBackground(.card(tintColor: .backgroundColor(for: colorScheme)))
                         }
                         .tag(TeamDetailRouteMenu.Match)
                     

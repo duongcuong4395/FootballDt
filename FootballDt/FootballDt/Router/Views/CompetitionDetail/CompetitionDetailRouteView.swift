@@ -105,6 +105,8 @@ struct CompetitionDetailRouteHeaderView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var router: FootballDtRouter
     
+    @EnvironmentObject var matchesByCompetitionVM: MatchesByCompetitionViewModel
+    
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
@@ -136,6 +138,8 @@ struct CompetitionDetailRouteHeaderView: View {
     func backRoute() {
         
         listCompetitionVM.resetCompetitionSelected()
+        
+        matchesByCompetitionVM.setState(.idle)
         
         leaderboardVM.reset()
         competitionsTeamsVM.reset()
