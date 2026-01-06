@@ -48,6 +48,7 @@ extension View {
         
             .environmentObject(container.matchesByCompetitionVM)
             .environmentObject(container.matchesByTeamVM)
+            .environmentObject(container.matchDetailVM)
     }
 }
 
@@ -87,6 +88,8 @@ class AppDependencyContainer: ObservableObject {
     lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(getCompetitionMatchesUseCase: getCompetitionMatchesUserCase)
     
     lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUserCase)
+    
+    lazy var matchDetailVM = MatchDetailViewModel()
 }
 
 

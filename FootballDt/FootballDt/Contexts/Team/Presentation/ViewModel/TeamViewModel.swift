@@ -17,12 +17,7 @@ class TeamViewModel: ObservableObject {
     }
     
     func getTeamDetail(by teamID: Int) async {
-        DispatchQueue.main.async {
-            self.teamStatus = .loading
-        }
         do {
-            
-            
             let team = try await getTeamDetailUserCase.execute(by: teamID)
             DispatchQueue.main.async {
                 self.teamStatus = .success(data: team)

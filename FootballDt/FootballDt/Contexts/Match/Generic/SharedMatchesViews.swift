@@ -124,7 +124,7 @@ struct ResultSetInfoView: View {
                 .font(.caption2)
             
             HStack(spacing: 15) {
-                StatItem(label: "Played", value: resultSet.played)
+                //StatItem(label: "Played", value: resultSet.played)
                 if let wins = resultSet.wins {
                     StatItem(label: "Wins", value: wins)
                 }
@@ -254,100 +254,76 @@ struct MatchItemView_StateStore<VM: BaseMatchesViewModel>: View {
     @Namespace var animation
     
     var body: some View {
-        VStack(alignment: .leading) {
-            let currentMatch = stateStoreVM.mutatedModel(withId: match.id) ?? match
-            
-            HStack {
-                // Home Team
-                TeamName(name: match.homeTeam.shortName ?? "", kindTeam: .HomeTeam)
-                    .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
-                    .overlay(alignment: .leading) {
-                        TeamBadgeView(teamUrl: match.homeTeam.crest ?? "")
-                    }
-                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
-                    .onTapGesture {
-                        onEventTeam(.viewDetail(for: match.homeTeam))
-                    }
-                
-                Spacer()
-                
-                // Score/Menu Section
-                VStack {
-                    if !showingTooltipMenu {
-                        Image(systemName: "chevron.compact.up")
-                            .font(.caption)
-                            .padding(.top, 5)
-                    }
-                    
-                    if let _ = match.score.winner {
-                        ScoreView(score: match.score)
-                            .padding(5)
-                    } else {
-                        Text(" - ")
-                            .font(.caption.bold())
-                            .padding(5)
-                    }
+        MatchItemContent(
+            match: match
+            , currentMatch: stateStoreVM.mutatedModel(withId: match.id) ?? match
+            , isVisible: $isVisible
+            , delay: delay
+            , showMenu: showingTooltipMenu
+            , onEventTeam: onEventTeam
+            , onMenuTap: {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    showingTooltipMenu.toggle()
                 }
-                .padding(.horizontal, 10)
-                .themedBackground(
-                    .card(
-                        tintColor: .backgroundColor(
-                            for: colorScheme,
-                            color: match.score.winner == nil ? .white : .blue
-                        ),
-                        cornerRadius: 10
-                    )
-                )
-                .transition(.rotate3D())
-                .onTapGesture {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        showingTooltipMenu.toggle()
-                    }
-                }
-                
-                Spacer()
-                
-                // Away Team
-                TeamName(name: match.awayTeam.shortName ?? "", kindTeam: .AwayTeam)
-                    .frame(width: UIScreen.main.bounds.width/2 - (match.score.winner == nil ? 50 : 70))
-                    .overlay(alignment: .trailing) {
-                        TeamBadgeView(teamUrl: match.awayTeam.crest ?? "")
-                    }
-                    .slideInEffect(isVisible: $isVisible, delay: delay, direction: .rightToLeft)
-                    .onTapGesture {
-                        onEventTeam(.viewDetail(for: match.awayTeam))
-                    }
             }
-            .overlay(alignment: .topLeading) {
-                Text(match.eventTime)
-                    .font(.caption2.bold())
-                    .offset(x: 40, y: -15)
-            }
-            .popover(isPresented: $showingTooltipMenu, arrowEdge: .top) {
-                MatchMenuView(
-                    match: currentMatch,
-                    onEventMatch: onEventMatch
-                )
-            }
+        )
+        .popover(isPresented: $showingTooltipMenu, arrowEdge: .top) {
+            MatchMenuView(
+                match: stateStoreVM.mutatedModel(withId: match.id) ?? match,
+                onEventMatch: onEventMatch,
+                showingTooltipMenu: $showingTooltipMenu
+            )
         }
-        .padding(.top, 40)
+        .padding(.top, 30)
+        
     }
 }
+
+struct MatchItemHeaderView: View {
+    
+    let match: Match
+    @Environment(\.colorScheme) var colorScheme
+    
+    @Namespace var animation
+    
+    var body: some View {
+        MatchItemContent(
+            match: match,
+            currentMatch: nil,
+            isVisible: .constant(true),
+            delay: 0.03,
+            showMenu: false,
+            onEventTeam: nil,
+            onMenuTap: nil
+        )
+        
+    }
+}
+
 
 // MARK: - Match Menu View
 
 struct MatchMenuView: View {
     let match: Match
     var onEventMatch: (ItemEvent<Match>) -> Void
-    
+    @Binding var showingTooltipMenu: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            MenuButton(icon: "chart.xyaxis.line", text: "AI analysis") {
-                onEventMatch(.analysis(for: match))
-            }
+            /*
+             MenuButton(icon: "book.pages", text: "Previous encounters") {
+                 onEventMatch(.previousEncounters(for: match))
+             }
+            */
             
             MenuButton(icon: "list.bullet.clipboard", text: "View Detail") {
+                showingTooltipMenu = false
                 onEventMatch(.viewDetail(for: match))
+            }
+            
+            if match.status != "FINISHED" {
+                MenuButton(icon: "chart.xyaxis.line", text: "AI analysis") {
+                    onEventMatch(.analysis(for: match))
+                }
             }
             
             MenuButton(icon: match.notify ? "bell.fill" : "bell", text: "Notification") {
@@ -407,10 +383,8 @@ struct ScoreView: View {
     
     var body: some View {
         VStack {
-            Text("\(score.halfTime.home ?? 0) - \(score.halfTime.away ?? 0)")
-                .font(.caption2.bold())
             Text("\(score.fullTime.home ?? 0) - \(score.fullTime.away ?? 0)")
-                .font(.caption2.bold())
+                
         }
     }
 }

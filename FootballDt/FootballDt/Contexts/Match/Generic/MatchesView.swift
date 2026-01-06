@@ -18,6 +18,8 @@ struct CompetitionMatchesView: View {
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
     
+    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    
     var body: some View {
         MatchesContainerView(
             viewModel: matchesByCompetitionVM,
@@ -60,7 +62,10 @@ struct CompetitionMatchesView: View {
             matchesByCompetitionVM.toggleLike(matchId: match.id)
             
         case .viewDetail(let match):
-            print("View Match detail", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
+            router.navigationMatchDetail()
+            
+            matchDetailVM.setState(.success(match))
+            
             
         case .analysis(let match):
             print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
@@ -79,7 +84,7 @@ struct MatchesByTeamView: View {
     @EnvironmentObject var matchesByTeamVM: MatchesByTeamViewModel
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
-    
+    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
     var body: some View {
         MatchesContainerView(
             viewModel: matchesByTeamVM,
@@ -105,11 +110,22 @@ struct MatchesByTeamView: View {
     private func handleTeamEvent(_ event: ItemEvent<Team>) {
         switch event {
         case .viewDetail(let team):
+            guard case .success(data: let team2) = teamVM.teamStatus
+                    , team2.id != team.id
+            else { return }
+            
             Task {
-                await teamVM.getTeamDetail(by: team.id ?? 0)
-                withAnimation(.spring()) {
-                    router.navigationTeamDetail()
+                
+                withAnimation(.spring()){
+                    matchesByTeamVM.setState(.loading(previous: []))
                 }
+                await teamVM.getTeamDetail(by: team.id ?? 0)
+                withAnimation(.spring()){
+                    matchesByTeamVM.setState(.idle)
+                }
+                // withAnimation(.spring()) {
+                    //router.navigationTeamDetail()
+                //}
             }
         default:
             break
@@ -122,7 +138,8 @@ struct MatchesByTeamView: View {
             matchesByTeamVM.toggleLike(matchId: match.id)
             
         case .viewDetail(let match):
-            print("View Match detail", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
+            matchDetailVM.setState(.success(match))
+            router.navigationMatchDetail()
             
         case .analysis(let match):
             print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")

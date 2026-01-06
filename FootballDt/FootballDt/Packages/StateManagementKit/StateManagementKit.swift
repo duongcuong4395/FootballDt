@@ -346,7 +346,7 @@ public struct UserDefaultsPersistence<Model: Codable>: PersistenceProtocol {
 // MARK: ====================================================
 
 @MainActor
-public final class SingleStateStore<Model: Equatable>: ObservableObject {
+public class SingleStateStore<Model: Equatable>: ObservableObject {
     
     @Published public private(set) var state: AsyncState<Model> = .idle
     @Published public private(set) var mutation: TypeSafeMutation<Model>?
@@ -513,6 +513,8 @@ public final class SingleStateStore<Model: Equatable>: ObservableObject {
 public class StateStore<Model: Identifiable & Equatable>: ObservableObject {
     
     @Published public private(set) var state: AsyncState<[Model]> = .idle
+    @Published public private(set) var stateSelected: AsyncState<Model> = .idle
+    
     @Published public private(set) var mutations: [Model.ID: TypeSafeMutation<Model>] = [:]
     @Published public private(set) var currentPage = 0
     @Published public private(set) var hasMorePages = true
@@ -550,6 +552,13 @@ public class StateStore<Model: Identifiable & Equatable>: ObservableObject {
         cacheInvalidated = true
         currentPage = 0
         hasMorePages = true
+        if case .idle = newState {
+            stateSelected = .idle
+        }
+    }
+    
+    public func setStateSelected(_ newState: AsyncState<Model>) {
+        stateSelected = newState
     }
     
     public func model(withId id: Model.ID) -> Model? {

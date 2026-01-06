@@ -14,6 +14,7 @@ enum ItemEvent<T: Equatable> {
     case tapped(for: T)
     case onApear(for: T)
     case analysis(for: T)
+    case previousEncounters(for: T)
 }
 
 enum IconItemType: String {

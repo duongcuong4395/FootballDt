@@ -25,6 +25,8 @@ class BaseMatchesViewModel: StateStore<Match> {
     @Published var matchesByCompetition: [MatchByCompetition] = []
     @Published var selectedCompetitionIndex: Int = 0
     
+    @Published var matchSelected: Match?
+    
     // MARK: - Private Properties
     private var allMatches: [Match] = []
     
@@ -78,6 +80,10 @@ class BaseMatchesViewModel: StateStore<Match> {
         update(matchId, keyPath: \.notify, value: !match.notify)
     }
     
+    func selectMatch(_ match: Match) {
+        self.matchSelected = match
+    }
+    
     /// Select competition by index
     func selectCompetition(at index: Int) {
         guard matchesByCompetition.indices.contains(index) else { return }
@@ -90,6 +96,7 @@ class BaseMatchesViewModel: StateStore<Match> {
         resultSet = nil
         matchesByCompetition = []
         selectedCompetitionIndex = 0
+        matchSelected = nil
     }
 }
 
@@ -187,3 +194,6 @@ struct TeamMatchesDataSource: MatchesDataSource {
         )
     }
 }
+
+
+class MatchDetailViewModel: SingleStateStore<Match> {}
