@@ -30,10 +30,14 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
         VStack {
             switch viewModel.state {
             case .idle:
-                Color.clear.onAppear { loadAction() }
+                Color.clear.onAppear {
+                    print("📱 View appeared - loading...")
+                    loadAction()
+                }
                 
             case .loading(previous: let matches):
                 ProgressView("Loading matches...")
+                      .onAppear { print("⏳ Loading state") }
                 
             case .success(let matches):
                 MatchesSuccessView(
@@ -42,11 +46,14 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                     onTeamEvent: onTeamEvent,
                     onMatchEvent: onMatchEvent
                 )
+                .onAppear { print("✅ Success with \(matches.count) matches") }
                 
             case .failure(let error, previous: let matches):
                 ErrorView(error: error.localizedDescription) {
                     loadAction()
                 }
+                .onAppear { print("❌ Error: \(error.localizedDescription)") }
+
             }
         }
     }

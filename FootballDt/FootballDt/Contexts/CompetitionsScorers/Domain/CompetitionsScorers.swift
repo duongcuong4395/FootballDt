@@ -41,30 +41,4 @@ struct Player {
     }
 }
 
-// MARK: - Filters
-struct Filters {
-    var season: String?
-    var limit: Int?
-    
-    var competitions: String?
-    var permission: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case season, limit, competitions, permission
-    }
-}
 
-protocol QueryParamConvertible {
-    func toParams() -> [String: Any]
-}
-
-extension Filters: QueryParamConvertible {
-    func toParams() -> [String: Any] {
-        var params: [String: Any] = [:]
-
-        limit.map { params["limit"] = $0 }
-        season.map { params["season"] = $0 }
-
-        return params
-    }
-}

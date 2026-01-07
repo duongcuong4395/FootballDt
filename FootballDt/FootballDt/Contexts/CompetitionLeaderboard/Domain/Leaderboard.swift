@@ -38,15 +38,3 @@ struct Leaderboard {
 
 
 
-// MARK: - Coach
-struct Coach {
-    var id: Int?
-    var firstName, lastName, name: String?
-    var dateOfBirth, nationality: String?
-    var contract: Contract?
-}
-
-// MARK: - Contract
-struct Contract {
-    var start, until: String?
-}

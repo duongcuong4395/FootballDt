@@ -16,10 +16,3 @@ struct CompetitionsTeams {
 
 
 
-struct Squad {
-    var id: Int
-    var name: String?
-    var position: String?
-    var dateOfBirth: String?
-    var nationality: String?
-}

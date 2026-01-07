@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+//import StateManagementKit
 
 // MARK: - Protocol định nghĩa data source
 
@@ -19,6 +20,7 @@ protocol MatchesDataSource {
 
 @MainActor
 class BaseMatchesViewModel: StateStore<Match> {
+    
     
     // MARK: - Published Properties
     @Published var resultSet: ResultSet?
@@ -48,10 +50,15 @@ class BaseMatchesViewModel: StateStore<Match> {
             
             let data = try await dataSource.fetchMatches()
             
+            print("✅ Fetched \(data.matches.count) matches")
+            print("📊 Competitions: \(data.matchesByCompetition.count)")
+            
             // Update metadata
             await MainActor.run {
                 self.resultSet = data.resultSet
                 self.matchesByCompetition = data.matchesByCompetition
+                
+                print("🎯 State updated")
             }
             
             return data.matches// ?? []

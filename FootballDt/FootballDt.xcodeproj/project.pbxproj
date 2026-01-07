@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FAC8C2752F0E0EA800AC5F7D /* StateManagementKit in Frameworks */ = {isa = PBXBuildFile; productRef = FAC8C2742F0E0EA800AC5F7D /* StateManagementKit */; };
 		FAEFAD1F2EFB929D00D38AEC /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD1E2EFB929D00D38AEC /* SDWebImageSwiftUI */; };
 		FAEFAD222EFB92AB00D38AEC /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD212EFB92AB00D38AEC /* SDWebImageSVGCoder */; };
 		FAEFAD252EFB92C000D38AEC /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFAD242EFB92C000D38AEC /* Kingfisher */; };
@@ -52,6 +53,7 @@
 				FAEFAD302EFB930000D38AEC /* Networking in Frameworks */,
 				FAEFAD1F2EFB929D00D38AEC /* SDWebImageSwiftUI in Frameworks */,
 				FAEFAD282EFB930000D38AEC /* CoreDataKit in Frameworks */,
+				FAC8C2752F0E0EA800AC5F7D /* StateManagementKit in Frameworks */,
 				FAEFAD2C2EFB930000D38AEC /* MarkdownTypingKit in Frameworks */,
 				FAEFAD2A2EFB930000D38AEC /* GlassEffect in Frameworks */,
 				FAEFAD222EFB92AB00D38AEC /* SDWebImageSVGCoder in Frameworks */,
@@ -105,6 +107,7 @@
 				FAEFAD2B2EFB930000D38AEC /* MarkdownTypingKit */,
 				FAEFAD2D2EFB930000D38AEC /* NavigationRouter */,
 				FAEFAD2F2EFB930000D38AEC /* Networking */,
+				FAC8C2742F0E0EA800AC5F7D /* StateManagementKit */,
 			);
 			productName = FootballDt;
 			productReference = FAEFAC7D2EFB91F600D38AEC /* FootballDt.app */;
@@ -426,6 +429,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		FAC8C2742F0E0EA800AC5F7D /* StateManagementKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFAD262EFB930000D38AEC /* XCRemoteSwiftPackageReference "MyPackage" */;
+			productName = StateManagementKit;
+		};
 		FAEFAD1E2EFB929D00D38AEC /* SDWebImageSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FAEFAD1D2EFB929D00D38AEC /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
