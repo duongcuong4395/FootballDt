@@ -55,10 +55,25 @@ struct MatchDetailRouteHeaderView: View {
 struct MatchDetailRouteContentView: View {
     
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    @Environment(\.colorScheme) var colorScheme
+    
+    @StateObject var previousEncountersVM: PreviousEncountersViewModel
+    
+    init() {
+        lazy var matchAPIService = MatchAPIService()
+        lazy var getPreviousEncountersUC = GetPreviousEncountersUseCase(repository: matchAPIService)
+        self._previousEncountersVM = StateObject(wrappedValue: PreviousEncountersViewModel(getPreviousEncountersUC: getPreviousEncountersUC))
+    }
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            Text("MatchDetailRouteContentView")
+        VStack {
+            
+            //PreviousEncountersView()
+            MatchesByPreviousEncountersView()
         }
+        .padding(10)
+        .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme), cornerRadius: 20, material: .none))
+        .environmentObject(previousEncountersVM)
+        
     }
 }

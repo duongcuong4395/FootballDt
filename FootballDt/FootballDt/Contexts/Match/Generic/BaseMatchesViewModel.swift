@@ -24,6 +24,7 @@ class BaseMatchesViewModel: StateStore<Match> {
     
     // MARK: - Published Properties
     @Published var resultSet: ResultSet?
+    @Published var aggregates: Aggregates?
     @Published var matchesByCompetition: [MatchByCompetition] = []
     @Published var selectedCompetitionIndex: Int = 0
     
@@ -56,8 +57,8 @@ class BaseMatchesViewModel: StateStore<Match> {
             // Update metadata
             await MainActor.run {
                 self.resultSet = data.resultSet
-                self.matchesByCompetition = data.matchesByCompetition
-                
+                self.aggregates = data.aggregates
+                self.matchesByCompetition = data.matchesByCompetition                
                 print("🎯 State updated")
             }
             
@@ -201,6 +202,8 @@ struct TeamMatchesDataSource: MatchesDataSource {
         )
     }
 }
+
+
 
 
 class MatchDetailViewModel: SingleStateStore<Match> {}

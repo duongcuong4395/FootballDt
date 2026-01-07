@@ -20,7 +20,6 @@
 
 // MARK: Version: 2.0.0
 
-
 import SwiftUI
 import Foundation
 import Combine
@@ -859,6 +858,3 @@ open class StateContainer<Model: Identifiable & Equatable>: ObservableObject {
     public func commit() { store.commitMutations() }
     public func discard() { store.discardMutations() }
 }
-
-
-

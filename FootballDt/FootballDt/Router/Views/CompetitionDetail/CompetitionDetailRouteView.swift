@@ -82,7 +82,7 @@ extension CompetitionDetailRouteMenu {
         switch self {
         case .Leaderboard:  LeaderboardView().tag(self)
         case .Teams:        CompetitionTeamsView().tag(self)
-        case .Matches:      CompetitionMatchesView().tag(self)
+        case .Matches:      MatchesByCompetitionView().tag(self)
         case .Scorers:      CompetitionScorersView().tag(self)
         }
         

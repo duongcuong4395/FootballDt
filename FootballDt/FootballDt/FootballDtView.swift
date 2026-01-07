@@ -90,6 +90,9 @@ class AppDependencyContainer: ObservableObject {
     lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUserCase)
     
     lazy var matchDetailVM = MatchDetailViewModel()
+    
+    
+    
 }
 
 

@@ -14,11 +14,16 @@ enum KindTeam {
     case HomeTeam
 }
 
+enum KindMatchView {
+    case NoneAction
+    case FullActions
+}
+
 // MARK: - Generic Matches Container View
 
 struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
     @ObservedObject var viewModel: VM
-    
+    var kindMatchView: KindMatchView = .FullActions
     var onTeamEvent: (ItemEvent<Team>) -> Void
     var onMatchEvent: (ItemEvent<Match>) -> Void
     var loadAction: () -> Void
@@ -42,7 +47,8 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
             case .success(let matches):
                 MatchesSuccessView(
                     viewModel: viewModel,
-                    matches: matches,
+                    matches: matches
+                    , kindMatchView: kindMatchView,
                     onTeamEvent: onTeamEvent,
                     onMatchEvent: onMatchEvent
                 )
@@ -64,7 +70,7 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
 struct MatchesSuccessView<VM: BaseMatchesViewModel>: View {
     @ObservedObject var viewModel: VM
     let matches: [Match]
-    
+    var kindMatchView: KindMatchView
     var onTeamEvent: (ItemEvent<Team>) -> Void
     var onMatchEvent: (ItemEvent<Match>) -> Void
     
@@ -95,7 +101,8 @@ struct MatchesSuccessView<VM: BaseMatchesViewModel>: View {
                 // Single competition - no need for TabView
                 MatchesListView(
                     matches: viewModel.selectedMatches,
-                    viewModel: viewModel,
+                    viewModel: viewModel
+                    , kindMatchView: kindMatchView,
                     onTeamEvent: onTeamEvent,
                     onMatchEvent: onMatchEvent
                 )
@@ -105,7 +112,8 @@ struct MatchesSuccessView<VM: BaseMatchesViewModel>: View {
                     ForEach(Array(viewModel.matchesByCompetition.enumerated()), id: \.element.id) { index, competition in
                         MatchesListView(
                             matches: competition.matches ?? [],
-                            viewModel: viewModel,
+                            viewModel: viewModel
+                            , kindMatchView: kindMatchView,
                             onTeamEvent: onTeamEvent,
                             onMatchEvent: onMatchEvent
                         )
@@ -212,6 +220,8 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
     let matches: [Match]
     @ObservedObject var viewModel: VM
     
+    var kindMatchView: KindMatchView
+    
     var onTeamEvent: (ItemEvent<Team>) -> Void
     var onMatchEvent: (ItemEvent<Match>) -> Void
     
@@ -225,13 +235,20 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
             showModels: $showModels,
             repeatAnimationOnApear: $repeatAnimationOnAppear,
             itemView: { match in
-                matchItemView(for: match)
+                Group {
+                    switch kindMatchView {
+                    case .NoneAction:
+                        matchItemNoneActionView(for: match)
+                    case .FullActions:
+                        matchItemFullActionsView(for: match)
+                    }
+                }
             }
         )
     }
     
     @ViewBuilder
-    private func matchItemView(for match: Match) -> some View {
+    private func matchItemFullActionsView(for match: Match) -> some View {
         if let index = matches.firstIndex(where: { $0.id == match.id }) {
             UniversalMatchItemView.interactive(
                 stateStoreVM: viewModel
@@ -240,6 +257,14 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
                 , delay: Double(index) * 0.03
                 , onEventTeam: onTeamEvent
                 , onEventMatch: onMatchEvent)
+            
+        }
+    }
+    
+    @ViewBuilder
+    private func matchItemNoneActionView(for match: Match) -> some View {
+        if let index = matches.firstIndex(where: { $0.id == match.id }) {
+            UniversalMatchItemView.simpleMatch(match: match)
             
         }
     }

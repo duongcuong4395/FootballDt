@@ -10,9 +10,9 @@
 
 import SwiftUI
 
-// MARK: - Competition Matches View (Refactored)
+// MARK: - Matches by Competition View (Refactored)
 
-struct CompetitionMatchesView: View {
+struct MatchesByCompetitionView: View {
     @EnvironmentObject var matchesByCompetitionVM: MatchesByCompetitionViewModel
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var teamVM: TeamViewModel
@@ -81,10 +81,12 @@ struct CompetitionMatchesView: View {
 // MARK: - Matches By Team View (Refactored)
 
 struct MatchesByTeamView: View {
+    
     @EnvironmentObject var matchesByTeamVM: MatchesByTeamViewModel
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    
     var body: some View {
         MatchesContainerView(
             viewModel: matchesByTeamVM,
@@ -140,7 +142,6 @@ struct MatchesByTeamView: View {
         case .viewDetail(let match):
             matchDetailVM.setState(.success(match))
             router.navigationMatchDetail()
-            
         case .analysis(let match):
             print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
             
@@ -149,6 +150,34 @@ struct MatchesByTeamView: View {
             matchesByTeamVM.toggleNotify(matchId: match.id)
         default:
             break
+        }
+    }
+}
+
+
+
+struct MatchesByPreviousEncountersView: View {
+    
+    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
+    
+    var body: some View {
+        MatchesContainerView(
+            viewModel: previousEncountersVM,
+            kindMatchView: .FullActions,
+            onTeamEvent: { _ in },
+            onMatchEvent: { _ in },
+            loadAction: loadDataIfNeeded
+        )
+    }
+    
+    func loadDataIfNeeded() {
+        guard case .success(let match) = matchDetailVM.state else { return }
+        
+        if case .idle = previousEncountersVM.state {
+            Task {
+                await previousEncountersVM.getPreviousEncounters(by: match.id, and: nil)
+            }
         }
     }
 }

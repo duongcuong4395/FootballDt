@@ -262,4 +262,18 @@ extension UniversalMatchItemView {
             onEventMatch: nil
         )
     }
+    
+    static func simpleMatch(
+        match: Match
+    ) -> UniversalMatchItemView {
+        UniversalMatchItemView(
+            stateStoreVM: nil,
+            match: match,
+            configuration: .header,
+            isVisible: .constant(true),
+            delay: 0.03,
+            onEventTeam: nil,
+            onEventMatch: nil
+        )
+    }
 }

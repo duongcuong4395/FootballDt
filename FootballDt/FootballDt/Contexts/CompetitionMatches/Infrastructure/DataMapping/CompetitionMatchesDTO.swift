@@ -19,36 +19,7 @@ struct GetCompetitionMatchesAPIResponse: Codable {
     }
 }
 
-// MARK: - Match
-struct MatchDTO: Codable {
-    var area: AreaDTO
-    var competition: CompetitionDTO
-    var season: SeasonDTO
-    var id: Int
-    var utcDate: String
-    var status: String
-    var matchday: Int?
-    var stage: String?
-    var group: String?
-    var lastUpdated: String
-    var homeTeam, awayTeam: TeamDTO
-    var score: ScoreDTO
-    var odds: OddsDTO
-    var referees: [RefereeDTO]
-    
-    func toDomain() -> Match {
-        Match(
-            id: id
-            , area: area.toDomain()
-            , competition: competition.toDomain()
-            , season: season.toDomain()
-            
-            , utcDate: utcDate
-            , status: status, matchday: matchday, stage: stage, group: group
-            , lastUpdated: lastUpdated, homeTeam: homeTeam.toDomain(), awayTeam: awayTeam.toDomain()
-            , score: score.toDomain(), odds: odds.toDomain(), referees: referees.map { $0.toDomain() })
-    }
-}
+
 
 // MARK: - Odds
 struct OddsDTO: Codable {
@@ -115,7 +86,7 @@ struct SeasonSimpleDTO: Codable {
 struct ResultSetDTO: Codable {
     var count: Int
     var first, last: String
-    var played: Int
+    var played: Int?
     
     var competitions: String?
     var wins: Int?
