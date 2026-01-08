@@ -7,23 +7,6 @@
 
 import SwiftUI
 
-struct PreviousEncountersView: View {
-
-    @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
-    
-    var body: some View {
-        VStack {
-            Spacer()
-            //if let aggregates = previousEncountersVM.aggregates {
-                //AggregatesView(aggregates: aggregates)
-            //}
-                   
-        }
-    }
-}
-
-
-
 
 struct AggregatesView: View {
     
@@ -71,3 +54,6 @@ struct AggregatesView: View {
         }
     }
 }
+
+
+

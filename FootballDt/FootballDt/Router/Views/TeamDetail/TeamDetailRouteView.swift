@@ -7,44 +7,6 @@
 
 import SwiftUI
 
-enum TeamDetailRouteMenu: String, RouteMenu {
-    case General = "Information"
-    case Match
-    
-    var title: String {
-        return self.rawValue
-    }
-    
-    var index: Int {
-        switch self {
-        case .General: 0
-        case .Match: 1
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .General: "list.bullet.clipboard"
-        case .Match: "calendar"
-        }
-    }
-    
-    var color: Color { return .blue }
-    
-    func getIconView() -> AnyView {
-        AnyView(Image(systemName: icon))
-    }
-    
-    func getIconView(active: Bool) -> AnyView {
-        switch self {
-        case .General: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
-        case .Match: return AnyView(Image(systemName: icon))
-        }
-    }
-    
-    
-}
-
 struct TeamDetailRouteView: View {
     var body: some View {
         RouteGenericView(
@@ -54,7 +16,6 @@ struct TeamDetailRouteView: View {
         .backgroundOfPage(by: .Gradient)
     }
 }
-
 
 struct TeamDetailRouteHeaderView: View {
     @EnvironmentObject var router: FootballDtRouter
@@ -102,7 +63,6 @@ struct TeamDetailRouteHeaderView: View {
     }
 }
 
-
 struct TeamDetailRouteContentView: View {
     @EnvironmentObject var teamVM: TeamViewModel
     @Environment(\.colorScheme) var colorScheme
@@ -118,7 +78,7 @@ struct TeamDetailRouteContentView: View {
                 ProgressView("Loading team...")
             case .success(let team):
                 
-                MenuOfTeamDetailRouteView(selected: $selected)
+                MenuRouteView(menu: $selected, animationName: "TeamDetailRouteMenu")
                 
                 TabView(selection: $selected) {
                     LazyTabContent(
@@ -126,8 +86,6 @@ struct TeamDetailRouteContentView: View {
                         , isSelected: selected == TeamDetailRouteMenu.General
                         , loadedTabs: $loadedTabs) {
                             TeamGeneralView(team: team)
-                                //.padding(10)
-                                //.themedBackground(.card(tintColor: .backgroundColor(for: colorScheme)))
                         }
                         .tag(TeamDetailRouteMenu.General)
                     
@@ -138,14 +96,11 @@ struct TeamDetailRouteContentView: View {
                             MatchesByTeamView()
                         }
                         .tag(TeamDetailRouteMenu.Match)
-                    
-                    
                 }
                 .padding(10)
                 .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme)))
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.2), value: selected)
-                
                 
             case .failure(_):
                 ErrorView(error: "") {
@@ -163,41 +118,44 @@ struct TeamDetailRouteContentView: View {
     }
 }
 
-
-
-
-
-struct MenuOfTeamDetailRouteView: View {
+enum TeamDetailRouteMenu: String, RouteMenu {
+    case General = "Information"
+    case Match
     
-    @Environment(\.colorScheme) var colorScheme
-    @Binding var selected: TeamDetailRouteMenu
-    @Namespace var animation
-    
-    var body: some View {
-        HStack(spacing: 20) {
-            ForEach(TeamDetailRouteMenu.allCases, id: \.self) { it in
-                MenuTabIndicatorView(
-                    menu: TeamDetailRouteMenu.allCases[it.index],
-                    isSelected: selected == it
-                )
-                .themedBackground(.itemSelected(
-                    tintColor: .backgroundColor(for: colorScheme)
-                    , isSelected: selected == it
-                    , animationID: animation, animationName: "TeamDetailRouteMenu"))
-                .onTapGesture {
-                    withAnimation() {
-                        selected = it
-                    }
-                }
-                .id(it)
-            }
-        }
-        .padding(5)
-        .padding(.horizontal, 5)
-        .themedBackground(.card(tintColor: .backgroundColor(for: colorScheme), material: .none))
-        .padding(.horizontal, 5)
+    var title: String {
+        return self.rawValue
     }
+    
+    var index: Int {
+        switch self {
+        case .General: 0
+        case .Match: 1
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .General: "list.bullet.clipboard"
+        case .Match: "calendar"
+        }
+    }
+    
+    var color: Color { return .blue }
+    
+    func getIconView() -> AnyView {
+        AnyView(Image(systemName: icon))
+    }
+    
+    func getIconView(active: Bool) -> AnyView {
+        switch self {
+        case .General: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
+        case .Match: return AnyView(Image(systemName: icon))
+        }
+    }
+    
+    
 }
+
 
 
 

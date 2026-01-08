@@ -10,7 +10,9 @@ import SwiftUI
 @MainActor
 class PreviousEncountersViewModel: BaseMatchesViewModel {
     let getPreviousEncountersUC: GetPreviousEncountersUseCase
-    //@Published var aggregates: Aggregates?
+    
+    @Published var awayTeam: Team?
+    @Published var homeTeam: Team?
     
     init(getPreviousEncountersUC: GetPreviousEncountersUseCase) {
         self.getPreviousEncountersUC = getPreviousEncountersUC

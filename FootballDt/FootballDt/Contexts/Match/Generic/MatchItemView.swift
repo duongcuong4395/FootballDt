@@ -180,6 +180,13 @@ struct MatchItemConfiguration {
         padding: 0,
         frameWidthAdjustment: 80
     )
+    
+    static let simple = MatchItemConfiguration(
+        showMenu: false,
+        isInteractive: false,
+        padding: 30,
+        frameWidthAdjustment: 60
+    )
 }
 
 // MARK: - Universal Match Item View (Most Flexible)
@@ -269,7 +276,7 @@ extension UniversalMatchItemView {
         UniversalMatchItemView(
             stateStoreVM: nil,
             match: match,
-            configuration: .header,
+            configuration: .simple,
             isVisible: .constant(true),
             delay: 0.03,
             onEventTeam: nil,

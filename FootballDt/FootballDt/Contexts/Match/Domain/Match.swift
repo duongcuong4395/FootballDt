@@ -356,6 +356,20 @@ struct PreviousEncounters {
 struct Aggregates: Codable {
     var numberOfMatches, totalGoals: Int
     var homeTeam, awayTeam: AggregatesTeam
+    
+    init(numberOfMatches: Int, totalGoals: Int, homeTeam: AggregatesTeam, awayTeam: AggregatesTeam) {
+        self.numberOfMatches = numberOfMatches
+        self.totalGoals = totalGoals
+        self.homeTeam = homeTeam
+        self.awayTeam = awayTeam
+    }
+    
+    init() {
+        self.numberOfMatches = 0
+        self.totalGoals = 0
+        self.homeTeam = AggregatesTeam()
+        self.awayTeam = AggregatesTeam()
+    }
 }
 
 // MARK: - AggregatesAwayTeam
@@ -363,4 +377,20 @@ struct AggregatesTeam: Codable {
     var id: Int
     var name: String
     var wins, draws, losses: Int
+    
+    init(id: Int, name: String, wins: Int, draws: Int, losses: Int) {
+        self.id = id
+        self.name = name
+        self.wins = wins
+        self.draws = draws
+        self.losses = losses
+    }
+    
+    init() {
+        self.id = 0
+        self.name = ""
+        self.wins = 0
+        self.draws = 0
+        self.losses = 0
+    }
 }

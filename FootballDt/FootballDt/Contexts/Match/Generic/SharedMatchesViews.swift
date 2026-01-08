@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import StateManagementKit
 
 enum KindTeam {
     case AwayTeam
@@ -40,7 +41,7 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                     loadAction()
                 }
                 
-            case .loading(previous: let matches):
+            case .loading(previous: _):
                 ProgressView("Loading matches...")
                       .onAppear { print("⏳ Loading state") }
                 
@@ -54,7 +55,7 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                 )
                 .onAppear { print("✅ Success with \(matches.count) matches") }
                 
-            case .failure(let error, previous: let matches):
+            case .failure(let error, previous: _):
                 ErrorView(error: error.localizedDescription) {
                     loadAction()
                 }
@@ -384,6 +385,4 @@ struct TeamBadgeView: View {
             .offset(y: -25)
     }
 }
-
-
 

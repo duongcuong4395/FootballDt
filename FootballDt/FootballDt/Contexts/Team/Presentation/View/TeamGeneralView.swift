@@ -91,39 +91,35 @@ struct TeamGeneralView: View {
     }
 }
 
+enum SquadColumn {
+    case one
+    case two
+    case three
+    
+    var columns: [GridItem] {
+        switch self {
+        case .one:
+            [GridItem()]
+        case .two:
+            [GridItem(), GridItem()]
+        case .three:
+            [GridItem(), GridItem(), GridItem()]
+        }
+    }
+}
 
 struct ListSquadView: View {
     var listSquad: [Squad]
+    var columns: SquadColumn = .two
     
-    var columns: [GridItem] = [GridItem(), GridItem()]
     var body: some View {
         
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
+        LazyVGrid(columns: columns.columns, alignment: .leading, spacing: 10) {
             ForEach(listSquad, id: \.id) { squad in
                 squadView(squad: squad)
             }
         }
         .padding(0)
-        .onAppear{
-            let positions = listSquad.map { $0.position ?? "" }
-            print("positions", Array(Set(positions)))
-            
-             /*
-              ["Defence"
-              , "Goalkeeper"
-              , "Midfield"
-              , "Centre-Forward"
-              , "Right Winger"
-              , "Centre-Back"
-              , "Defensive Midfield"
-              , "Attacking Midfield"
-              , "Right-Back"
-              , "Offence"
-              , "Central Midfield"
-              , "Left Winger"
-              , "Left-Back"]
-              */
-        }
     }
 }
 

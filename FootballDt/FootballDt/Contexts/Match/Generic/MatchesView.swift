@@ -154,7 +154,7 @@ struct MatchesByTeamView: View {
     }
 }
 
-
+// MARK: Matches By Previous Encounters View
 
 struct MatchesByPreviousEncountersView: View {
     
@@ -162,13 +162,20 @@ struct MatchesByPreviousEncountersView: View {
     @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
     
     var body: some View {
-        MatchesContainerView(
-            viewModel: previousEncountersVM,
-            kindMatchView: .FullActions,
-            onTeamEvent: { _ in },
-            onMatchEvent: { _ in },
-            loadAction: loadDataIfNeeded
-        )
+        VStack {
+            /*
+            if let aggregates = previousEncountersVM.aggregates {
+                AggregatesView(aggregates: aggregates)
+            }
+            */
+            MatchesContainerView(
+                viewModel: previousEncountersVM,
+                kindMatchView: .NoneAction,
+                onTeamEvent: { _ in },
+                onMatchEvent: { _ in },
+                loadAction: loadDataIfNeeded
+            )
+        }
     }
     
     func loadDataIfNeeded() {

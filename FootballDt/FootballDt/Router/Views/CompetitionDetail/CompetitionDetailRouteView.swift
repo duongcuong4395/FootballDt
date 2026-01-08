@@ -7,15 +7,7 @@
 
 import SwiftUI
 
-protocol RouteMenu: CaseIterable, Hashable {
-    var title: String { get }
-    var icon: String { get }
-    var color: Color { get }
-    @ViewBuilder
-    func getIconView() -> AnyView
-    @ViewBuilder
-    func getIconView(active: Bool) -> AnyView
-}
+
 
 enum CompetitionDetailRouteMenu: String {
     case Leaderboard
@@ -161,8 +153,8 @@ struct CompetitionDetailRouteContentView: View {
     
     var body: some View {
         VStack {
-            MenuOfCompetitionDetailRouteView(selected: $selected)
-            
+            //MenuOfCompetitionDetailRouteView(selected: $selected)
+            MenuRouteView(menu: $selected, animationName: "CompetitionDetailRouteMenu")
             TabView(selection: $selected) {
                 ForEach(CompetitionDetailRouteMenu.allCases, id: \.self) { menu in
                     menu.getTabView()
@@ -187,6 +179,7 @@ struct CompetitionDetailRouteContentView: View {
         }
 }
 
+/*
 struct MenuOfCompetitionDetailRouteView: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var selected: CompetitionDetailRouteMenu
@@ -219,6 +212,7 @@ struct MenuOfCompetitionDetailRouteView: View {
         .padding(.horizontal, 5)
     }
 }
+*/
 
 struct LazyTabContent<Content: View, Menu: RouteMenu>: View {
     var menu: Menu
