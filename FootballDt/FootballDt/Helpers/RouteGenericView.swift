@@ -12,8 +12,6 @@ struct RouteGenericView<HeaderView: View, ContentView: View>: View {
     private var headerView: HeaderView
     private var contentView: ContentView
     
-    //@State var menuContent: (menu: MenuContent, animationName: String)?
-    
     private var backgroundURLLink: String?
     
     init(
@@ -26,7 +24,6 @@ struct RouteGenericView<HeaderView: View, ContentView: View>: View {
         self.headerView = headerView
         self.contentView = contentView
         self.backgroundURLLink = backgroundURLLink
-        //self.menuContent = menuContent
     }
     
     var body: some View {
@@ -37,6 +34,9 @@ struct RouteGenericView<HeaderView: View, ContentView: View>: View {
                     .padding(.horizontal, 5)
             }
             .padding(.bottom, 0)
+            .background{
+                RemoteImageView(urlString: backgroundURLLink, size: 100)
+            }
             
         } else {
             VStack {
@@ -115,14 +115,6 @@ struct TabViewByMenuRouteView<T: RouteMenu & RawRepresentable>: View where T.Raw
     var body: some View {
         TabView (selection: $menu) {
             ForEach(Array(T.allCases), id: \.self) { item in
-                /*
-                LazyTabContent(
-                    menu: item
-                    , isSelected: menu == item
-                    , loadedTabs: $loadedTabs) {
-                        item.getView()
-                    }
-                */
                 item.getView()
                     .tag(item)
             }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TeamGeneralView: View {
+struct TeamDetailView: View {
     var team: Team
     
     var body: some View {
