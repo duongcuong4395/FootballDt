@@ -62,4 +62,14 @@ extension MatchDetailRouteMenu {
         )
         
     }
+    
+    @ViewBuilder
+    func getContentView() -> some View {
+        switch self {
+        case .General:
+            Head2HeadDetailView()
+        case .PreviousEncounters:
+            MatchesByPreviousEncountersView()
+        }
+    }
 }

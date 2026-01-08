@@ -7,31 +7,7 @@
 
 import SwiftUI
 
-struct MatchDetailRouteContentView: View {
-    
-    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
-    @Environment(\.colorScheme) var colorScheme
-    
-    @StateObject var previousEncountersVM: PreviousEncountersViewModel
-    
-    @State var menu: MatchDetailRouteMenu = .General
-    @State private var loadedTabs: Set<MatchDetailRouteMenu> = []
-    
-    init() {
-        lazy var matchAPIService = MatchAPIService()
-        lazy var getPreviousEncountersUC = GetPreviousEncountersUseCase(repository: matchAPIService)
-        self._previousEncountersVM = StateObject(wrappedValue: PreviousEncountersViewModel(getPreviousEncountersUC: getPreviousEncountersUC))
-    }
-    
-    var body: some View {
-        VStack {
-            MenuRouteView(menu: $menu, animationName: "MatchDetailRouteMenu")
-            
-            TabViewByMenuRouteView(menu: $menu)
-        }
-        .environmentObject(previousEncountersVM)
-    }
-}
+
 
 struct Head2HeadDetailView: View {
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel

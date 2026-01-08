@@ -115,13 +115,15 @@ struct TabViewByMenuRouteView<T: RouteMenu & RawRepresentable>: View where T.Raw
     var body: some View {
         TabView (selection: $menu) {
             ForEach(Array(T.allCases), id: \.self) { item in
-                
+                /*
                 LazyTabContent(
                     menu: item
                     , isSelected: menu == item
                     , loadedTabs: $loadedTabs) {
                         item.getView()
                     }
+                */
+                item.getView()
                     .tag(item)
             }
         }
@@ -151,5 +153,32 @@ struct RouteHeaderView<Content: View>: View {
         }
         .padding(.horizontal, 16)
         .themedBackground(.header(tintColor: .backgroundColor(for: colorScheme), height: 70))
+    }
+}
+
+struct LazyTabContent<Content: View, Menu: RouteMenu>: View {
+    var menu: Menu
+    let isSelected: Bool
+    @Binding var loadedTabs: Set<Menu>
+    let content: () -> Content
+    
+    var body: some View {
+        Group {
+            if loadedTabs.contains(menu) {
+                content()
+            } else {
+                Color.clear
+                    .onAppear {
+                        if isSelected {
+                            loadedTabs.insert(menu)
+                        }
+                    }
+            }
+        }
+        .onChange(of: isSelected) { ol, newValue in
+            if newValue && !loadedTabs.contains(menu) {
+                loadedTabs.insert(menu)
+            }
+        }
     }
 }
