@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct CompetitionDetailRouteView: View {
-    
+    @State private var menu: CompetitionDetailRouteMenu = .Leaderboard
     var body: some View {
         RouteGenericView(
             headerView: CompetitionDetailRouteHeaderView()
-            , contentView: CompetitionDetailRouteContentView())
+            , contentView: RouteContentView(menu: $menu, animationMenuName: menu.name)
+        )
         .backgroundOfPage(by: .Gradient)
     }
 }
@@ -21,14 +22,10 @@ struct CompetitionDetailRouteView: View {
 struct CompetitionDetailRouteHeaderView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var router: FootballDtRouter
-    
     @EnvironmentObject var matchesByCompetitionVM: MatchesByCompetitionViewModel
-    
     @EnvironmentObject var leaderboardVM: LeaderboardViewModel
     @EnvironmentObject var competitionsTeamsVM: CompetitionsTeamsViewModel
     @EnvironmentObject var competitionsScorersVM: CompetitionsScorersViewModel
-    
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         if case .success(data: let competition) = listCompetitionVM.competitionSelected {
@@ -48,19 +45,6 @@ struct CompetitionDetailRouteHeaderView: View {
         router.pop()
     }
 }
-
-struct CompetitionDetailRouteContentView: View {
-    @State private var selected: CompetitionDetailRouteMenu = .Leaderboard
-    @EnvironmentObject private var listCompetitionVM: ListCompetitionViewModel
-
-    var body: some View {
-        VStack {
-            MenuRouteView(menu: $selected, animationName: "CompetitionDetailRouteMenu")
-            TabViewByMenuRouteView(menu: $selected)
-        }
-    }
-}
-
 
 
 

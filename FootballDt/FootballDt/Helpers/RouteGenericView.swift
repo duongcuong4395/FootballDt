@@ -18,7 +18,6 @@ struct RouteGenericView<HeaderView: View, ContentView: View>: View {
         headerView: HeaderView
         , contentView: ContentView
         , backgroundURLLink: String? = nil
-        //, menuContent: (menu: MenuContent, animationName: String)? = nil
     ) {
             
         self.headerView = headerView
@@ -126,7 +125,6 @@ struct TabViewByMenuRouteView<T: RouteMenu & RawRepresentable>: View where T.Raw
     }
 }
 
-
 struct RouteHeaderView<Content: View>: View {
     var backRouteAction: () -> Void
     var contentView: Content
@@ -148,29 +146,18 @@ struct RouteHeaderView<Content: View>: View {
     }
 }
 
-struct LazyTabContent<Content: View, Menu: RouteMenu>: View {
-    var menu: Menu
-    let isSelected: Bool
-    @Binding var loadedTabs: Set<Menu>
-    let content: () -> Content
+
+struct RouteContentView<T: RouteMenu & RawRepresentable>: View where T.RawValue == String {
+    @Binding var menu: T
+    @Environment(\.colorScheme) var colorScheme
+    @Namespace var animation
+    
+    let animationMenuName: String
     
     var body: some View {
-        Group {
-            if loadedTabs.contains(menu) {
-                content()
-            } else {
-                Color.clear
-                    .onAppear {
-                        if isSelected {
-                            loadedTabs.insert(menu)
-                        }
-                    }
-            }
-        }
-        .onChange(of: isSelected) { ol, newValue in
-            if newValue && !loadedTabs.contains(menu) {
-                loadedTabs.insert(menu)
-            }
+        VStack {
+            MenuRouteView(menu: $menu, animationName: animationMenuName)
+            TabViewByMenuRouteView(menu: $menu)
         }
     }
 }

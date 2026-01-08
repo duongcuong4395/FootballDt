@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct TeamDetailRouteView: View {
+    
+    @State var menu: TeamDetailRouteMenu = .General
+    
     var body: some View {
         RouteGenericView(
             headerView: TeamDetailRouteHeaderView()
-            , contentView: TeamDetailRouteContentView())
+            , contentView: RouteContentView(menu: $menu, animationMenuName: menu.name)
+        )
         .backgroundOfPage(by: .Gradient)
     }
 }
@@ -44,20 +48,6 @@ struct TeamDetailRouteHeaderView: View {
                     .font(.body.bold())
                 
             }
-        }
-    }
-}
-
-struct TeamDetailRouteContentView: View {
-    @EnvironmentObject var teamVM: TeamViewModel
-    @Environment(\.colorScheme) var colorScheme
-    
-    @State var selected: TeamDetailRouteMenu = .General
-    @State private var loadedTabs: Set<TeamDetailRouteMenu> = []
-    var body: some View {
-        VStack {
-            MenuRouteView(menu: $selected, animationName: "TeamDetailRouteMenu")
-            TabViewByMenuRouteView(menu: $selected)
         }
     }
 }

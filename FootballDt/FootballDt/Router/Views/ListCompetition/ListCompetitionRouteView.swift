@@ -62,9 +62,7 @@ struct ListCompetitionView: View {
 struct CompetitionItemView: View {
     var competition: Competition
     var imageSize: CGFloat = 50
-    
     var isCompact: Bool = false
-    
     
     var body: some View {
         if isCompact {

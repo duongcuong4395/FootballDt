@@ -11,6 +11,9 @@ enum TeamDetailRouteMenu: String, RouteMenu {
     case General = "Information"
     case Match
     
+    
+    var name: String { "TeamDetailRouteMenu" }
+    
     var title: String {
         return self.rawValue
     }

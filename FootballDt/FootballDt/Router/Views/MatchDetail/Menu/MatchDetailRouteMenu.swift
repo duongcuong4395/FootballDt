@@ -12,6 +12,8 @@ enum MatchDetailRouteMenu: String, RouteMenu {
     case General = "Information"
     case PreviousEncounters = "History"
     
+    var name: String { "MatchDetailRouteMenu" }
+    
     var title: String {
         return self.rawValue
     }

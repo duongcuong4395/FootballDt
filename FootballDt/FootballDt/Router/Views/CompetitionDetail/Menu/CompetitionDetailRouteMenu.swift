@@ -12,9 +12,13 @@ enum CompetitionDetailRouteMenu: String {
     case Teams
     case Matches
     case Scorers
+    
 }
 
 extension CompetitionDetailRouteMenu: RouteMenu {
+    
+    var name: String { "CompetitionDetailRouteMenu" }
+    
     var title: String {
         switch self {
         case .Leaderboard: "Leaderboard"
