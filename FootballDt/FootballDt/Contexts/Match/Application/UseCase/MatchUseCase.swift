@@ -18,7 +18,7 @@ struct MatchUseCases {
 struct FetchMatchesByCompetitionUseCase {
     let repository: MatchRepository
     
-    func execute(by competition: String, and season: String?) async throws -> CompetitionMatches {
+    func execute(by competition: String, and season: String?) async throws -> MatchesByCompetition {
         try await repository.fetchMatchesByCompetition(competitionId: competition, season: season, filters: nil)
     }
 }

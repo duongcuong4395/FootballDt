@@ -5,19 +5,7 @@
 //  Created by Macbook on 24/12/25.
 //
 
-struct MatchesByCompetitionAPIResponse: Codable {
-    var message: String?
-    var errorCode: Int?
-    
-    var filters: FiltersDTO?
-    var resultSet: ResultSetDTO?
-    var competition: CompetitionDTO?
-    var matches: [MatchDTO]
-    
-    func toDomain() -> CompetitionMatches {
-        CompetitionMatches(resultSet: resultSet?.toDomain(), competition: competition?.toDomain(), matches: matches.map{ $0.toDomain() })
-    }
-}
+
 
 
 

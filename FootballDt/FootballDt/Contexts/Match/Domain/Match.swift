@@ -7,88 +7,17 @@
 
 import Foundation
 
-struct Matches: Sendable {
+struct MatchesByHeadToHead {
+    var message: String?
+    var errorCode: Int?
+    
     var filters: Filters?
     var resultSet: ResultSet?
-    var competition: Competition?
     var aggregates: Aggregates?
-    var matches: [Match]
-    
-    
-    var matchesByCompetition: [MatchByCompetition] {
-        matches.groupedByCompetition()
-    }
-    
-    init(
-        filters: Filters? = nil, resultSet: ResultSet? = nil, competition: Competition? = nil
-        , aggregates: Aggregates? = nil
-        , matches: [Match]) {
-            
-        self.filters = filters
-        self.resultSet = resultSet
-        self.competition = competition
-        self.aggregates = aggregates
-        self.matches = matches
-        self.matches = self.matches.sorted { $0.utcDate > $1.utcDate }
-    }
-}
-
-// MARK: - ResultSet
-struct ResultSet: Sendable {
-    var count: Int
-    var first, last: String
-    var played: Int?
-    
-    var competitions: String?
-    var wins: Int?
-    var draws: Int?
-    var losses: Int?
-    
-    var fromDateToDate: String {
-        return DateParser.convert(first, to: "dd/MM/yyyy") + " - " + DateParser.convert(last, to: "dd/MM/yyyy")
-    }
-}
-
-
-
-// Reult From Get MatchesByTeam API
-struct MatchesByTeam: Sendable {
-    var filters: Filters?
-    var resultSet: ResultSet?
     var matches: [Match]?
-    
-    var matchesByCompetition: [MatchByCompetition] {
-        matches?.groupedByCompetition() ?? []
-    }
-    
-    init(filters: Filters? = nil, resultSet: ResultSet? = nil, matches: [Match]? = nil) {
-        self.filters = filters
-        self.resultSet = resultSet
-        self.matches = matches
-        self.matches = self.matches?.sorted { $0.utcDate > $1.utcDate }
-    }
 }
 
-import SwiftUI
-struct MatchByCompetition: Identifiable, Equatable, Sendable {
-    static func == (lhs: MatchByCompetition, rhs: MatchByCompetition) -> Bool {
-        lhs.competition.id == rhs.competition.id
-    }
-    
-    
-    var id = UUID()
-    var competition: Competition
-    var matches: [Match]?
-    
-    init(id: UUID = UUID(), competition: Competition, matches: [Match]? = nil) {
-        self.id = id
-        self.competition = competition
-        self.matches = matches
-        self.matches = self.matches?.sorted { $0.utcDate > $1.utcDate }
-    }
-}
-
-struct CompetitionMatches: Sendable {
+struct MatchesByCompetition: Sendable {
     var filters: Filters?
     var resultSet: ResultSet?
     var competition: Competition?
@@ -104,6 +33,23 @@ struct CompetitionMatches: Sendable {
         self.competition = competition
         self.matches = matches
         self.matches = self.matches.sorted { $0.utcDate > $1.utcDate }
+    }
+}
+
+struct MatchesByTeam: Sendable {
+    var filters: Filters?
+    var resultSet: ResultSet?
+    var matches: [Match]?
+    
+    var matchesByCompetition: [MatchByCompetition] {
+        matches?.groupedByCompetition() ?? []
+    }
+    
+    init(filters: Filters? = nil, resultSet: ResultSet? = nil, matches: [Match]? = nil) {
+        self.filters = filters
+        self.resultSet = resultSet
+        self.matches = matches
+        self.matches = self.matches?.sorted { $0.utcDate > $1.utcDate }
     }
 }
 
@@ -153,6 +99,69 @@ struct Match: Identifiable, Equatable, Sendable {
         like.toggle()
     }
 }
+
+struct Matches: Sendable {
+    var filters: Filters?
+    var resultSet: ResultSet?
+    var competition: Competition?
+    var aggregates: Aggregates?
+    var matches: [Match]
+    
+    
+    var matchesByCompetition: [MatchByCompetition] {
+        matches.groupedByCompetition()
+    }
+    
+    init(
+        filters: Filters? = nil, resultSet: ResultSet? = nil, competition: Competition? = nil
+        , aggregates: Aggregates? = nil
+        , matches: [Match]) {
+            
+        self.filters = filters
+        self.resultSet = resultSet
+        self.competition = competition
+        self.aggregates = aggregates
+        self.matches = matches
+        self.matches = self.matches.sorted { $0.utcDate > $1.utcDate }
+    }
+}
+
+// MARK: - ResultSet
+struct ResultSet: Sendable {
+    var count: Int
+    var first, last: String
+    var played: Int?
+    
+    var competitions: String?
+    var wins: Int?
+    var draws: Int?
+    var losses: Int?
+    
+    var fromDateToDate: String {
+        return DateParser.convert(first, to: "dd/MM/yyyy") + " - " + DateParser.convert(last, to: "dd/MM/yyyy")
+    }
+}
+
+import SwiftUI
+struct MatchByCompetition: Identifiable, Equatable, Sendable {
+    static func == (lhs: MatchByCompetition, rhs: MatchByCompetition) -> Bool {
+        lhs.competition.id == rhs.competition.id
+    }
+    
+    
+    var id = UUID()
+    var competition: Competition
+    var matches: [Match]?
+    
+    init(id: UUID = UUID(), competition: Competition, matches: [Match]? = nil) {
+        self.id = id
+        self.competition = competition
+        self.matches = matches
+        self.matches = self.matches?.sorted { $0.utcDate > $1.utcDate }
+    }
+}
+
+
 
 enum MatchStatus: String, Codable, Sendable {
     case finished = "FINISHED"
@@ -449,16 +458,7 @@ extension Filters: QueryParamConvertible {
     }
 }
 
-// PreviousEncounters
-struct MatchesByHeadToHead {
-    var message: String?
-    var errorCode: Int?
-    
-    var filters: Filters?
-    var resultSet: ResultSet?
-    var aggregates: Aggregates?
-    var matches: [Match]?
-}
+
 
 
 // MARK: - Aggregates

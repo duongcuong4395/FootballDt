@@ -13,7 +13,7 @@ protocol MatchRepository {
         competitionId: String,
         season: String?,
         filters: Filters?
-    ) async throws -> CompetitionMatches
+    ) async throws -> MatchesByCompetition
     
     func fetchMatchesByTeam(
         teamId: Int,

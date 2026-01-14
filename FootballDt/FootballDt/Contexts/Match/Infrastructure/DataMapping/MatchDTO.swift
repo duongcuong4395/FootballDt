@@ -5,7 +5,8 @@
 //  Created by Macbook on 7/1/26.
 //
 
-// PreviousEncountersAPIResponse
+// MARK: Matches By Head-To-Head API Response
+
 struct MatchesByHeadToHeadAPIResponse: Codable {
     var message: String?
     var errorCode: Int?
@@ -24,6 +25,38 @@ struct MatchesByHeadToHeadAPIResponse: Codable {
             , resultSet: resultSet?.toDomain()
             , aggregates: aggregates?.toDomain()
             , matches: matches?.map { $0.toDomain() })
+    }
+}
+
+// MARK: Matches By Competition API Response
+
+struct MatchesByCompetitionAPIResponse: Codable {
+    var message: String?
+    var errorCode: Int?
+    
+    var filters: FiltersDTO?
+    var resultSet: ResultSetDTO?
+    var competition: CompetitionDTO?
+    var matches: [MatchDTO]
+    
+    func toDomain() -> MatchesByCompetition {
+        MatchesByCompetition(resultSet: resultSet?.toDomain(), competition: competition?.toDomain(), matches: matches.map{ $0.toDomain() })
+    }
+}
+
+// MARK: Matches By Team API Response
+
+struct MatchesByTeamAPIResponse: Codable {
+    
+    var message: String?
+    var errorCode: Int?
+    
+    var filters: FiltersDTO?
+    var resultSet: ResultSetDTO?
+    var matches: [MatchDTO]?
+    
+    func toDomain() -> MatchesByTeam {
+        MatchesByTeam(filters: filters?.toDomain(), resultSet: resultSet?.toDomain(), matches: matches?.map{ $0.toDomain() })
     }
 }
 
