@@ -7,6 +7,7 @@
 
 
 import Alamofire
+import Networking
 
 enum MatchEndpoint<T: Decodable> {
     case getPreviousEncounters(matchID: Int, filters: Filters?)

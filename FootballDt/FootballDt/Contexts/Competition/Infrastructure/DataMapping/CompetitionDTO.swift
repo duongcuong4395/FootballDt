@@ -41,7 +41,7 @@ struct CompetitionDTO: Codable {
     var area: AreaDTO?
     var name: String
     var code: String?
-    var type: String?
+    var type: CompetitionType? //String?
     var emblem: String?
     var plan: String?
     var currentSeason: SeasonDTO?

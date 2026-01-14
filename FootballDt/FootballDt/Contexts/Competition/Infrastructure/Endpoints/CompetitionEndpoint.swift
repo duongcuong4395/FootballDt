@@ -6,7 +6,7 @@
 //
 
 import Foundation
-//import Networking
+import Networking
 import Alamofire
 
 enum CompetitionEndpoint<T: Decodable> {

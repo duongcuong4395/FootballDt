@@ -18,7 +18,7 @@ struct Rankings: Identifiable {
 import SwiftUI
 
 // MARK: - Table
-struct Rank: Identifiable {
+struct Rank: Identifiable, Equatable, Sendable {
     var id = UUID()
     var position: Int
     var team: Team

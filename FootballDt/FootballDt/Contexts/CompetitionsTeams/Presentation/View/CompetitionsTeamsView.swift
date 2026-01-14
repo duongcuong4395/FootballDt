@@ -62,12 +62,25 @@ struct listCompetitionTeamsView: View {
     @EnvironmentObject var teamVM: TeamViewModel
     
     var body: some View {
+        PaginatedList(
+            dataSource: InMemoryDataSource(items: teams)
+            , configuration: PaginationConfiguration(pageSize: 10)
+            , content: getItemView)
+        .onAppear{
+            withAnimation {
+                if showModels.count != teams.count {
+                    self.showModels = Array(repeating: false, count: teams.count)
+               }
+            }
+        }
+        /*
         ListItemPerPageView(
             listItem: teams
             , hasEffectOnApear: true
             , showModels: $showModels
             , repeatAnimationOnApear: $repeatAnimationOnApear
             , itemView: getItemView)
+        */
     }
     
     @ViewBuilder
@@ -79,6 +92,13 @@ struct listCompetitionTeamsView: View {
                 , delay: Double(index) * 0.03
                 , itemBuilder: ItemBuilderForCompetitionTeam()
                 , onEvent: handleEvent)
+            .onAppear{
+                guard showModels.count > 0 else { return }
+                guard showModels[index] == false else { return }
+                withAnimation {
+                    showModels[index] = true
+                }
+            }
         }
     }
     

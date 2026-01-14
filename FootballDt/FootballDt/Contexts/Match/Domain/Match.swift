@@ -118,7 +118,7 @@ struct Match: Identifiable, Equatable, Sendable {
     var season: Season
     
     var utcDate: String
-    var status: String
+    var status: MatchStatus
     var matchday: Int?
     var stage: String?
     var group: String?
@@ -127,6 +127,19 @@ struct Match: Identifiable, Equatable, Sendable {
     var score: Score
     var odds: Odds
     var referees: [Referee]
+    
+    // Computed properties (no storage)
+    var isLive: Bool {
+        status == .inPlay || status == .paused
+    }
+    
+    var isFinished: Bool {
+        status == .finished
+    }
+    
+    var isUpcoming: Bool {
+        status == .scheduled || status == .timed
+    }
     
     var eventTime: String {
         DateParser.convert(utcDate, to: "hh:mm dd/MM/yyyy")
@@ -138,6 +151,55 @@ struct Match: Identifiable, Equatable, Sendable {
     // Thêm method để toggle like
     mutating func toggleLike() {
         like.toggle()
+    }
+}
+
+enum MatchStatus: String, Codable, Sendable {
+    case finished = "FINISHED"
+    case postponed = "POSTPONED"
+    case scheduled = "SCHEDULED"
+    case timed = "TIMED"
+    case live = "LIVE"
+    case inPlay = "IN_PLAY"
+    case paused = "PAUSED"
+    case cancelled = "CANCELLED"
+    case suspended = "SUSPENDED"
+    case awarded = "AWARDED"
+      
+    var displayName: String {
+        switch self {
+        case .scheduled, .timed: return "Sắp diễn ra"
+        case .inPlay: return "Đang diễn ra"
+        case .paused: return "Tạm dừng"
+        case .finished: return "Kết thúc"
+        case .postponed: return "Hoãn"
+        case .cancelled: return "Hủy"
+        case .suspended: return "Tạm ngừng"
+        case .awarded: return "Đã trao giải"
+        case .live: return "Trực tiếp"
+        }
+    }
+    
+    var color: String {
+        switch self {
+        case .scheduled, .timed: return "blue"
+        case .inPlay, .paused: return "green"
+        case .finished: return "gray"
+        case .postponed, .cancelled, .suspended: return "orange"
+        case .awarded: return "purple"
+        case .live: return "red"
+        }
+    }
+    
+    var sortPriority: Int {
+        switch self {
+        case .inPlay, .paused: return 0
+        case .scheduled, .timed: return 1
+        case .finished: return 2
+        case .postponed, .suspended: return 3
+        case .cancelled, .awarded: return 4
+        case .live: return 5
+        }
     }
 }
 
@@ -163,6 +225,10 @@ struct Team: Identifiable, Equatable, Sendable {
     var staff: [String]?
     
     var lastUpdated: String?
+    
+    var displayName: String {
+        shortName ?? name ?? ""
+    }
 }
 
 struct Squad: Sendable {
@@ -202,15 +268,41 @@ struct Odds: Sendable {
 
 // MARK: - Score
 struct Score: Sendable {
-    var winner: String?
+    var winner: ScoreWinner? // String?
     var duration: String?
-    var fullTime, halfTime: Time
+    var fullTime, halfTime: TeamScore
     var regularTime, extraTime, penalties: Time?
+    
+    var totalGoals: Int {
+        (fullTime.home ?? 0) + (fullTime.away ?? 0)
+    }
+    
+    var isDecided: Bool {
+        winner != nil
+    }
 }
+
+enum ScoreWinner: String, Codable, Sendable {
+    case home = "HOME_TEAM"
+    case away = "AWAY_TEAM"
+    case draw = "DRAW"
+}
+
+
 
 // MARK: - Time
 struct Time: Codable, Sendable {
     var home, away: Int?
+}
+
+struct TeamScore: Equatable, Codable, Sendable {
+    let home: Int?
+    let away: Int?
+    
+    var isDraw: Bool {
+        guard let h = home, let a = away else { return false }
+        return h == a
+    }
 }
 
 extension Array where Element == Match {
@@ -239,12 +331,19 @@ struct Competition: Sendable {
     var area: Area?
     var name: String
     var code: String?
-    var type: String?
+    var type: CompetitionType? //  String?
     var emblem: String?
     var plan: String?
     var currentSeason: Season?
     var numberOfAvailableSeasons: Int?
     var lastUpdated: String?
+}
+
+enum CompetitionType: String, Codable, Sendable {
+    case cup = "CUP"
+    case league = "LEAGUE"
+    case playoffs = "PLAYOFFS"
+    case superCup = "SUPER_CUP"
 }
 
 struct Area: Sendable {
@@ -294,6 +393,16 @@ struct Season: Codable, Sendable {
     
     var fromDateToDate: String {
         return DateParser.convert(startDate, to: "dd/MM/yyyy") + " - " + DateParser.convert(endDate, to: "dd/MM/yyyy")
+    }
+    
+    var displayYears: String {
+        let start = yearFrom(startDate)
+        let end = yearFrom(endDate)
+        return "\(start)-\(end)"
+    }
+    
+    private func yearFrom(_ dateString: String) -> String {
+        dateString.prefix(4).description
     }
 }
 
@@ -370,6 +479,21 @@ struct Aggregates: Codable {
         self.homeTeam = AggregatesTeam()
         self.awayTeam = AggregatesTeam()
     }
+    
+    var homeWinPercentage: Double {
+        guard numberOfMatches > 0 else { return 0 }
+        return Double(homeTeam.wins) / Double(numberOfMatches) * 100
+    }
+    
+    var drawPercentage: Double {
+        guard numberOfMatches > 0 else { return 0 }
+        return Double(homeTeam.draws) / Double(numberOfMatches) * 100
+    }
+    
+    var awayWinPercentage: Double {
+        guard numberOfMatches > 0 else { return 0 }
+        return Double(awayTeam.wins) / Double(numberOfMatches) * 100
+    }
 }
 
 // MARK: - AggregatesAwayTeam
@@ -392,5 +516,14 @@ struct AggregatesTeam: Codable {
         self.wins = 0
         self.draws = 0
         self.losses = 0
+    }
+    
+    var totalMatches: Int {
+        wins + draws + losses
+    }
+    
+    var winPercentage: Double {
+        guard totalMatches > 0 else { return 0 }
+        return Double(wins) / Double(totalMatches) * 100
     }
 }

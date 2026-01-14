@@ -4,7 +4,8 @@
 //
 //  Created by Macbook on 24/12/25.
 //
-//import Networking
+
+import Networking
 
 class CompetitionsTeamsAPIService: APIExecution, CompetitionsTeamsRepository {
     func getCompetitionsTeams(by competitionCode: String, and season: String?) async throws -> CompetitionsTeams {

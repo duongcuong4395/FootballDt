@@ -55,15 +55,32 @@ struct ListScorerView: View {
     
     @State private var showModels: [Bool] = []
     @State private var repeatAnimationOnApear = true
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
+        
+        PaginatedGrid(
+            dataSource: InMemoryDataSource(items: scorers)
+            , columns: columns
+            , configuration: PaginationConfiguration(pageSize: 10)
+            , header: getHeaderView
+            , content: getItemView
+        ).onAppear{
+            withAnimation {
+                if showModels.count != scorers.count {
+                    self.showModels = Array(repeating: false, count: scorers.count)
+               }
+            }
+        }
+        
+        /*
         ListItemPerPageView(
             listItem: scorers, grid: (columns, getHeaderView)
             , hasEffectOnApear: true
             , showModels: $showModels
             , repeatAnimationOnApear: $repeatAnimationOnApear
             , itemView: getItemView)
-        
+        */
     }
     
     @ViewBuilder
@@ -74,6 +91,13 @@ struct ListScorerView: View {
                 scorer: scorer
                 , isVisible: $showModels.indices.indices.contains(index) ? $showModels[index] : .constant(false)
                 , delay: Double(index) * 0.03)
+            .onAppear{
+                guard showModels.count > 0 else { return }
+                guard showModels[index] == false else { return }
+                withAnimation {
+                    showModels[index] = true
+                }
+            }
         }
     }
     
@@ -104,10 +128,9 @@ struct ScorerItemView: View {
                     .padding(0)
             }
             
-            
-            Text("\(scorer.penalties ?? 0)").font(.caption2)
-            Text("\(scorer.assists ?? 0)").font(.caption2)
-            Text("\(scorer.goals)").font(.caption2.bold())
+            Text("\(scorer.penalties ?? 0)").font(.caption)
+            Text("\(scorer.assists ?? 0)").font(.caption)
+            Text("\(scorer.goals)").font(.caption.bold())
         }
         .slideInEffect(isVisible: $isVisible, delay: delay, direction: .leftToRight)
     }

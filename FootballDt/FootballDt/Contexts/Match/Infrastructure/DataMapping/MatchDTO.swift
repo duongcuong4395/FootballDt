@@ -33,7 +33,7 @@ struct MatchDTO: Codable {
     var season: SeasonDTO
     var id: Int
     var utcDate: String
-    var status: String
+    var status:  MatchStatus // String
     var matchday: Int?
     var stage: String?
     var group: String?

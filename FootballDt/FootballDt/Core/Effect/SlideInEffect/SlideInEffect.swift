@@ -11,6 +11,8 @@ enum AnimationDirection {
     case leftToRight, rightToLeft, topToBottom, bottomToTop
 }
 
+
+
 struct SlideInEffect: ViewModifier {
     @Binding var isVisible: Bool
     var delay: Double
@@ -86,4 +88,69 @@ extension View {
         return self.modifier(SlideInEffect(isVisible: isVisible, delay: delay, repeatAnimationOnApear: repeatAnimationOnApear, direction: direction))
     }
 
+}
+
+
+
+// MARK: New
+
+@MainActor
+final class AnimationStateManager: ObservableObject {
+    @Published private(set) var visibleIndices: Set<Int> = []
+    
+    func setVisible(_ index: Int) {
+        guard !visibleIndices.contains(index) else { return }
+        visibleIndices.insert(index)
+    }
+    
+    func reset(count: Int) {
+        visibleIndices.removeAll()
+    }
+    
+    func isVisible(_ index: Int) -> Bool {
+        visibleIndices.contains(index)
+    }
+}
+
+struct OptimizedSlideEffect: ViewModifier {
+    let index: Int
+    let delay: Double
+    let direction: AnimationDirection
+    
+    @ObservedObject var animationManager: AnimationStateManager
+    @State private var localAppeared = false
+    
+    func body(content: Content) -> some View {
+        let isVisible = animationManager.isVisible(index)
+        
+        content
+            .offset(x: xOffset(isVisible), y: yOffset(isVisible))
+            .opacity(isVisible ? 1 : 0)
+            .onAppear {
+                // ✅ Only trigger once per lifecycle
+                guard !localAppeared else { return }
+                localAppeared = true
+                
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    animationManager.setVisible(index)
+                }
+            }
+    }
+    
+    private func xOffset(_ isVisible: Bool) -> CGFloat {
+        switch direction {
+        case .leftToRight: return isVisible ? 0 : -50
+        case .rightToLeft: return isVisible ? 0 : 50
+        default: return 0
+        }
+    }
+    
+    private func yOffset(_ isVisible: Bool) -> CGFloat {
+        switch direction {
+        case .topToBottom: return isVisible ? 0 : -50
+        case .bottomToTop: return isVisible ? 0 : 50
+        default: return 0
+        }
+    }
 }

@@ -43,13 +43,13 @@ struct RefereeDTO: Codable {
 
 // MARK: - Score
 struct ScoreDTO: Codable {
-    var winner: String?
+    var winner: ScoreWinner? // String?
     var duration: String?
-    var fullTime, halfTime: TimeDTO
+    var fullTime, halfTime: TeamScore
     var regularTime, extraTime, penalties: TimeDTO?
     
     func toDomain() -> Score {
-        Score(winner: winner, duration: duration, fullTime: fullTime.toDomain(), halfTime: halfTime.toDomain()
+        Score(winner: winner, duration: duration, fullTime: fullTime, halfTime: halfTime
               , regularTime: regularTime?.toDomain()
               , extraTime: extraTime?.toDomain()
               , penalties: penalties?.toDomain())

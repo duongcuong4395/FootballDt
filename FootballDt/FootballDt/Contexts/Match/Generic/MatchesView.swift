@@ -17,16 +17,23 @@ struct MatchesByCompetitionView: View {
     @EnvironmentObject var listCompetitionVM: ListCompetitionViewModel
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
-    
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    
+    @StateObject private var aiAnalysisManager: MatchAIAnalysisManager
+    
+    init() {
+        let coordinator = AIAnalysisCoordinator()
+        _aiAnalysisManager = StateObject(wrappedValue: MatchAIAnalysisManager(aiCoordinator: coordinator))
+    }
     
     var body: some View {
         MatchesContainerView(
-            viewModel: matchesByCompetitionVM,
-            onTeamEvent: handleTeamEvent,
-            onMatchEvent: handleMatchEvent,
-            loadAction: loadDataIfNeeded
-        )
+            viewModel: matchesByCompetitionVM
+            , teamVM: teamVM
+            , router: router
+            , matchDetailVM: matchDetailVM, aiAnalysisManager: aiAnalysisManager
+            , onTeamEvent: handleTeamEvent
+            , loadAction: loadDataIfNeeded)
     }
     
     private func loadDataIfNeeded() {
@@ -55,27 +62,6 @@ struct MatchesByCompetitionView: View {
             break
         }
     }
-    
-    private func handleMatchEvent(_ event: ItemEvent<Match>) {
-        switch event {
-        case .toggleLike(let match):
-            matchesByCompetitionVM.toggleLike(matchId: match.id)
-            
-        case .viewDetail(let match):
-            router.navigationMatchDetail()
-            
-            matchDetailVM.setState(.success(match))
-            
-            
-        case .analysis(let match):
-            print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
-            
-        case .toggleNotify(let match):
-            matchesByCompetitionVM.toggleNotify(matchId: match.id)
-        default:
-            break
-        }
-    }
 }
 
 // MARK: - Matches By Team View (Refactored)
@@ -87,13 +73,21 @@ struct MatchesByTeamView: View {
     @EnvironmentObject var router: FootballDtRouter
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
     
+    @StateObject private var aiAnalysisManager: MatchAIAnalysisManager
+    
+    init() {
+        let coordinator = AIAnalysisCoordinator()
+        _aiAnalysisManager = StateObject(wrappedValue: MatchAIAnalysisManager(aiCoordinator: coordinator))
+    }
+    
     var body: some View {
         MatchesContainerView(
-            viewModel: matchesByTeamVM,
-            onTeamEvent: handleTeamEvent,
-            onMatchEvent: handleMatchEvent,
-            loadAction: loadDataIfNeeded
-        )
+            viewModel: matchesByTeamVM
+            , teamVM: teamVM
+            , router: router
+            , matchDetailVM: matchDetailVM, aiAnalysisManager: aiAnalysisManager
+            , onTeamEvent: handleTeamEvent
+            , loadAction: loadDataIfNeeded)
     }
     
     private func loadDataIfNeeded() {
@@ -133,33 +127,22 @@ struct MatchesByTeamView: View {
             break
         }
     }
-    
-    private func handleMatchEvent(_ event: ItemEvent<Match>) {
-        switch event {
-        case .toggleLike(let match):
-            matchesByTeamVM.toggleLike(matchId: match.id)
-            
-        case .viewDetail(let match):
-            matchDetailVM.setState(.success(match))
-            router.navigationMatchDetail()
-        case .analysis(let match):
-            print("Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
-            
-        case .toggleNotify(let match):
-            
-            matchesByTeamVM.toggleNotify(matchId: match.id)
-        default:
-            break
-        }
-    }
 }
 
 // MARK: Matches By Previous Encounters View
 
 struct MatchesByPreviousEncountersView: View {
-    
-    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
     @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
+    @EnvironmentObject var teamVM: TeamViewModel
+    @EnvironmentObject var router: FootballDtRouter
+    @EnvironmentObject var matchDetailVM: MatchDetailViewModel
+    
+    @StateObject private var aiAnalysisManager: MatchAIAnalysisManager
+    
+    init() {
+        let coordinator = AIAnalysisCoordinator()
+        _aiAnalysisManager = StateObject(wrappedValue: MatchAIAnalysisManager(aiCoordinator: coordinator))
+    }
     
     var body: some View {
         VStack {
@@ -169,12 +152,15 @@ struct MatchesByPreviousEncountersView: View {
             }
             */
             MatchesContainerView(
-                viewModel: previousEncountersVM,
-                kindMatchView: .NoneAction,
-                onTeamEvent: { _ in },
-                onMatchEvent: { _ in },
-                loadAction: loadDataIfNeeded
-            )
+                viewModel: previousEncountersVM
+                , teamVM: teamVM
+                , router: router
+                , matchDetailVM: matchDetailVM
+                , aiAnalysisManager: aiAnalysisManager
+                , kindMatchView: .NoneAction
+                , onTeamEvent: { _ in }
+                , loadAction: loadDataIfNeeded)
+            
         }
     }
     
@@ -189,3 +175,49 @@ struct MatchesByPreviousEncountersView: View {
     }
 }
 
+struct AggregatesView: View {
+    
+    var aggregates: Aggregates
+    
+    var columns: [GridItem] = [
+        GridItem(.flexible(minimum: 50, maximum: .infinity)),
+        GridItem(.fixed(35)),
+        GridItem(.fixed(35)),
+        GridItem(.fixed(35))
+    ]
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Number of matches: \(aggregates.numberOfMatches)")
+                    .font(.caption.bold())
+            }
+            HStack {
+                Text("Total goals: \(aggregates.totalGoals)")
+                    .font(.caption.bold())
+            }
+            
+            LazyVGrid(columns: columns, alignment: .leading) {
+                Group {
+                    Text("Team")
+                    Text("Wins")
+                    Text("Draws")
+                    Text("Losses")
+                }.font(.caption2.bold())
+                
+                Group {
+                    Text(aggregates.homeTeam.name).font(.caption.bold())
+                    Text("\(aggregates.homeTeam.wins)").font(.caption2)
+                    Text("\(aggregates.homeTeam.draws)").font(.caption2)
+                    Text("\(aggregates.homeTeam.losses)").font(.caption2)
+                }
+                Group {
+                    Text(aggregates.awayTeam.name).font(.caption.bold())
+                    Text("\(aggregates.awayTeam.wins)").font(.caption2)
+                    Text("\(aggregates.awayTeam.draws)").font(.caption2)
+                    Text("\(aggregates.awayTeam.losses)").font(.caption2)
+                }
+            }
+        }
+    }
+}

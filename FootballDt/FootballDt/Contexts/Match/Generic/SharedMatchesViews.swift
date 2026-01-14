@@ -24,9 +24,18 @@ enum KindMatchView {
 
 struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
     @ObservedObject var viewModel: VM
+    
+    @ObservedObject var teamVM: TeamViewModel
+    @ObservedObject var router: FootballDtRouter
+    @ObservedObject var matchDetailVM: MatchDetailViewModel
+    
+    //let teamEventHandler: (ItemEvent<Team>) -> Void
+    
+    @StateObject var aiAnalysisManager: MatchAIAnalysisManager
+    
     var kindMatchView: KindMatchView = .FullActions
     var onTeamEvent: (ItemEvent<Team>) -> Void
-    var onMatchEvent: (ItemEvent<Match>) -> Void
+    //var onMatchEvent: (ItemEvent<Match>) -> Void
     var loadAction: () -> Void
     
     @Environment(\.colorScheme) var colorScheme
@@ -51,8 +60,37 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                     matches: matches
                     , kindMatchView: kindMatchView,
                     onTeamEvent: onTeamEvent,
-                    onMatchEvent: onMatchEvent
+                    onMatchEvent: handleMatchEvent // onMatchEvent
                 )
+                .sheet(isPresented: $aiAnalysisManager.showAnalysisView) {
+                    aiAnalysisManager.selectedMatchForAnalysis = nil
+                    aiAnalysisManager.previousEncounters = nil
+                } content: {
+                    if let match = aiAnalysisManager.selectedMatchForAnalysis {
+                        if #available(iOS 17.0, *) {
+                            UnifiedAnalysisView(
+                                match: match,
+                                previousEncounters: aiAnalysisManager.previousEncounters,
+                                coordinator: aiAnalysisManager.aiCoordinator
+                            )
+                        } else {
+                            aiAnalysisManager.iOSVersionWarningView
+                        }
+                    }
+                }
+                .sheet(isPresented: $aiAnalysisManager.showAIConfigSheet) {
+                    if #available(iOS 17.0, *) {
+                        AIConfigurationSheet(coordinator: aiAnalysisManager.aiCoordinator)
+                    }
+                }
+                .overlay {
+                    if aiAnalysisManager.isLoadingEncounters {
+                        aiAnalysisManager.loadingOverlay
+                    }
+                }
+                .toolbar {
+                    aiAnalysisManager.aiToolbarMenu
+                }
                 .onAppear { print("✅ Success with \(matches.count) matches") }
                 
             case .failure(let error, previous: _):
@@ -62,6 +100,29 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                 .onAppear { print("❌ Error: \(error.localizedDescription)") }
 
             }
+        }
+    }
+    
+    private func handleMatchEvent(_ event: ItemEvent<Match>) {
+        switch event {
+        case .toggleLike(let match):
+            viewModel.toggleLike(matchId: match.id)
+            
+        case .viewDetail(let match):
+            matchDetailVM.setState(.success(match))
+            router.navigationMatchDetail()
+            
+        case .analysis(let match):
+            //Task { try await aiAnalysisManager.aiCoordinator.aiManager.deleteAPIKey() }
+            
+            print("AI Analysis Match", match.homeTeam.name ?? "", match.awayTeam.name ?? "")
+            aiAnalysisManager.handleAnalysisRequest(for: match)
+            
+        case .toggleNotify(let match):
+            viewModel.toggleNotify(matchId: match.id)
+            
+        default:
+            break
         }
     }
 }
@@ -230,6 +291,27 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
     @State private var repeatAnimationOnAppear = true
     
     var body: some View {
+        PaginatedList(
+            dataSource: InMemoryDataSource(items: matches)
+            , configuration: PaginationConfiguration(pageSize: 10)) { match in
+                Group {
+                    switch kindMatchView {
+                    case .NoneAction:
+                        matchItemNoneActionView(for: match)
+                    case .FullActions:
+                        matchItemFullActionsView(for: match)
+                    }
+                }
+            }
+            .onAppear{
+                withAnimation {
+                    if showModels.count != matches.count {
+                        self.showModels = Array(repeating: false, count: matches.count)
+                   }
+                }
+            }
+        
+        /*
         ListItemPerPageView(
             listItem: matches,
             hasEffectOnApear: true,
@@ -246,6 +328,7 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
                 }
             }
         )
+        */
     }
     
     @ViewBuilder
@@ -258,6 +341,13 @@ struct MatchesListView<VM: BaseMatchesViewModel>: View {
                 , delay: Double(index) * 0.03
                 , onEventTeam: onTeamEvent
                 , onEventMatch: onMatchEvent)
+            .onAppear{
+                guard showModels.count > 0 else { return }
+                guard showModels[index] == false else { return }
+                withAnimation {
+                    showModels[index] = true
+                }
+            }
             
         }
     }
@@ -290,7 +380,8 @@ struct MatchMenuView: View {
                 onEventMatch(.viewDetail(for: match))
             }
             
-            if match.status != "FINISHED" {
+            //if match.status != "FINISHED" {
+            if match.status != .finished {
                 MenuButton(icon: "chart.xyaxis.line", text: "AI analysis") {
                     onEventMatch(.analysis(for: match))
                 }

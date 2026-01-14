@@ -58,9 +58,11 @@ class AppDependencyContainer: ObservableObject {
     let footballDtRouter = FootballDtRouter()
     
     // MARK: Service
+    
+    private lazy var matchAPIService = MatchAPIService()
     private lazy var competitionAPIService = CompetitionAPIService()
     private lazy var leaderboardAPIService = LeaderboardAPIService()
-    private lazy var competitionMatchesAPIService = CompetitionMatchesAPIService()
+    //private lazy var competitionMatchesAPIService = CompetitionMatchesAPIService()
     private lazy var competitionsTeamsAPIService = CompetitionsTeamsAPIService()
     private lazy var competitionsScorersAPIService = CompetitionsScorersAPIService()
     private lazy var teamAPIService = TeamAPIService()
@@ -69,11 +71,13 @@ class AppDependencyContainer: ObservableObject {
     // MARK: UsserCase
     private lazy var getAllCompetitionUserCase = GetAllCompetitionUserCase(repository: competitionAPIService)
     private lazy var getLeaderboardUserCase = GetLeaderboardUserCase(repository: leaderboardAPIService)
-    private lazy var getCompetitionMatchesUserCase = GetCompetitionMatchesUserCase(repository: competitionMatchesAPIService)
+    
     private lazy var getCompetitionsTeamsUserCase = GetCompetitionsTeamsUserCase(repository: competitionsTeamsAPIService)
     private lazy var getCompetitionsScorersUserCase = GetCompetitionsScorersUserCase(repository: competitionsScorersAPIService)
     private lazy var getTeamDetailUserCase = GetTeamDetailUserCase(repository: teamAPIService)
-    private lazy var getMatchesByTeamUserCase = GetMatchesByTeamUserCase(repository: teamAPIService)
+    
+    private lazy var getCompetitionMatchesUseCase = GetCompetitionMatchesUseCase(repository: matchAPIService)
+    private lazy var getMatchesByTeamUseCase = GetMatchesByTeamUseCase(repository: matchAPIService)
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
@@ -85,14 +89,10 @@ class AppDependencyContainer: ObservableObject {
     
     lazy var teamVM = TeamViewModel(getTeamDetailUserCase: getTeamDetailUserCase)
     
-    lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(getCompetitionMatchesUseCase: getCompetitionMatchesUserCase)
-    
-    lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUserCase)
+    lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(getCompetitionMatchesUseCase: getCompetitionMatchesUseCase)
+    lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUseCase)
     
     lazy var matchDetailVM = MatchDetailViewModel()
-    
-    
-    
 }
 
 
