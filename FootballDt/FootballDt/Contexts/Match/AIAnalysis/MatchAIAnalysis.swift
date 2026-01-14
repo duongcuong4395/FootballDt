@@ -13,7 +13,7 @@ protocol MatchAIAnalysis: AnyObject {
     // State management
     var showAnalysisView: Bool { get set }
     var selectedMatchForAnalysis: Match?  { get set }
-    var previousEncounters: PreviousEncounters?  { get set }
+    var matchesByHeadToHead: MatchesByHeadToHead?  { get set }
     var isLoadingEncounters: Bool  { get set }
     var showAIConfigSheet: Bool  { get set }
 }
@@ -39,12 +39,12 @@ extension MatchAIAnalysis {
             // Step 2: Set selected match
             selectedMatchForAnalysis = match
             
-            // Step 3: Load previous encounters
-            loadPreviousEncounters(for: match)
+            // Step 3: Load matches By Head To Head
+            loadMatchesByHeadToHead(for: match)
         }
     }
     
-    private func loadPreviousEncounters(for match: Match) {
+    private func loadMatchesByHeadToHead(for match: Match) {
         guard match.homeTeam.id != nil,
             match.awayTeam.id != nil else {
           showAnalysisView = true
@@ -56,20 +56,20 @@ extension MatchAIAnalysis {
         Task { @MainActor in
             do {
                 let matchAPIService = MatchAPIService()
-                let useCase = GetPreviousEncountersUseCase(repository: matchAPIService)
-                let encounters = try await useCase.execute(by: match.id, and: nil)
+                let useCase = FetchMatchesByHeadToHeadUseCase(repository: matchAPIService)
+                let headToHead = try await useCase.execute(by: match.id, and: nil)
                 
-                print("loadPreviousEncounters encounters.count: ", encounters.matches?.count ?? 0)
+                print("load matchesByHeadToHead encounters.count: ", headToHead.matches?.count ?? 0)
                 
-                previousEncounters = encounters
+                matchesByHeadToHead = headToHead
                 isLoadingEncounters = false
                 showAnalysisView = true
                 
             } catch {
-                print("Error loading previous encounters: \(error)")
+                print("Error loading matches By Head To Head: \(error)")
                 
                 // Continue with analysis even without encounters
-                previousEncounters = nil
+                matchesByHeadToHead = nil
                 isLoadingEncounters = false
                 showAnalysisView = true
             }
@@ -162,7 +162,7 @@ class MatchAIAnalysisManager: ObservableObject, MatchAIAnalysis {
     
     @Published var showAnalysisView = false
     @Published var selectedMatchForAnalysis: Match?
-    @Published var previousEncounters: PreviousEncounters?
+    @Published var matchesByHeadToHead: MatchesByHeadToHead?
     @Published var isLoadingEncounters = false
     @Published var showAIConfigSheet = false
     
@@ -184,13 +184,13 @@ struct AIMatchAnalysisModifier: ViewModifier {
         content
             .sheet(isPresented: $manager.showAnalysisView) {
                 manager.selectedMatchForAnalysis = nil
-                manager.previousEncounters = nil
+                manager.matchesByHeadToHead = nil
             } content: {
                 if let match = manager.selectedMatchForAnalysis {
                     if #available(iOS 17.0, *) {
                         UnifiedAnalysisView(
                             match: match,
-                            previousEncounters: manager.previousEncounters,
+                            matchesByHeadToHead: manager.matchesByHeadToHead,
                             coordinator: manager.aiCoordinator
                         )
                     } else {

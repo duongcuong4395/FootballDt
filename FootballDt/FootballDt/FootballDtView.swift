@@ -76,8 +76,8 @@ class AppDependencyContainer: ObservableObject {
     private lazy var getCompetitionsScorersUserCase = GetCompetitionsScorersUserCase(repository: competitionsScorersAPIService)
     private lazy var getTeamDetailUserCase = GetTeamDetailUserCase(repository: teamAPIService)
     
-    private lazy var getCompetitionMatchesUseCase = GetCompetitionMatchesUseCase(repository: matchAPIService)
-    private lazy var getMatchesByTeamUseCase = GetMatchesByTeamUseCase(repository: matchAPIService)
+    private lazy var fetchMatchesByCompetitionUseCase = FetchMatchesByCompetitionUseCase(repository: matchAPIService)
+    private lazy var fetchMatchesByTeamUseCase = FetchMatchesByTeamUseCase(repository: matchAPIService)
     
     // MARK: ViewModel
     lazy var listCompetitionVM = ListCompetitionViewModel(getAllCompetitionUserCase: getAllCompetitionUserCase)
@@ -89,8 +89,8 @@ class AppDependencyContainer: ObservableObject {
     
     lazy var teamVM = TeamViewModel(getTeamDetailUserCase: getTeamDetailUserCase)
     
-    lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(getCompetitionMatchesUseCase: getCompetitionMatchesUseCase)
-    lazy var matchesByTeamVM = MatchesByTeamViewModel(getMatchesByTeamUseCase: getMatchesByTeamUseCase)
+    lazy var matchesByCompetitionVM = MatchesByCompetitionViewModel(fetchMatchesByCompetitionUseCase: fetchMatchesByCompetitionUseCase)
+    lazy var matchesByTeamVM = MatchesByTeamViewModel(fetchMatchesByTeamUseCase: fetchMatchesByTeamUseCase)
     
     lazy var matchDetailVM = MatchDetailViewModel()
 }

@@ -10,7 +10,7 @@ import SwiftUI
 enum MatchDetailRouteMenu: String, RouteMenu {
     
     case General = "Information"
-    case PreviousEncounters = "History"
+    case HeadToHead = "History"
     
     var name: String { "MatchDetailRouteMenu" }
     
@@ -21,14 +21,14 @@ enum MatchDetailRouteMenu: String, RouteMenu {
     var index: Int {
         switch self {
         case .General: 0
-        case .PreviousEncounters: 1
+        case .HeadToHead: 1
         }
     }
     
     var icon: String {
         switch self {
         case .General: "list.bullet.clipboard"
-        case .PreviousEncounters: "calendar"
+        case .HeadToHead: "calendar"
         }
     }
     
@@ -41,7 +41,7 @@ enum MatchDetailRouteMenu: String, RouteMenu {
     func getIconView(active: Bool) -> AnyView {
         switch self {
         case .General: return AnyView(Image(systemName: icon + "\(active ? ".fill" : "")"))
-        case .PreviousEncounters: return AnyView(Image(systemName: icon))
+        case .HeadToHead: return AnyView(Image(systemName: icon))
         }
     }
     
@@ -57,8 +57,8 @@ extension MatchDetailRouteMenu {
                 switch self {
                 case .General:
                     Head2HeadDetailView()
-                case .PreviousEncounters:
-                    MatchesByPreviousEncountersView()
+                case .HeadToHead:
+                    MatchesByHeadToHeadView()
                 }
             }
         )
@@ -70,8 +70,8 @@ extension MatchDetailRouteMenu {
         switch self {
         case .General:
             Head2HeadDetailView()
-        case .PreviousEncounters:
-            MatchesByPreviousEncountersView()
+        case .HeadToHead:
+            MatchesByHeadToHeadView()
         }
     }
 }

@@ -11,20 +11,20 @@ import SwiftUI
 
 struct Head2HeadDetailView: View {
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
-    @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
+    @EnvironmentObject var matchesByHeadToHeadVM: MatchesByHeadToHeadViewModel
     
     var body: some View {
         HStack {
-            if let homeTeam = previousEncountersVM.homeTeam {
+            if let homeTeam = matchesByHeadToHeadVM.homeTeam {
                 TeamDetailByMatch(team: homeTeam)
             }
                 
-            if let awayTeam = previousEncountersVM.awayTeam {
+            if let awayTeam = matchesByHeadToHeadVM.awayTeam {
                 TeamDetailByMatch(team: awayTeam)
             }
         }
         .onAppear{
-            guard previousEncountersVM.homeTeam == nil && previousEncountersVM.awayTeam == nil else { return }
+            guard matchesByHeadToHeadVM.homeTeam == nil && matchesByHeadToHeadVM.awayTeam == nil else { return }
             
             guard case .success(let match) = matchDetailVM.state else { return }
             
@@ -34,8 +34,8 @@ struct Head2HeadDetailView: View {
             guard let homeTeamId = match.homeTeam.id else { return }
             guard let awayTeamId = match.awayTeam.id else { return }
             Task {
-                previousEncountersVM.homeTeam = try await getTeamDetailUserCase.execute(by: homeTeamId)
-                previousEncountersVM.awayTeam = try await getTeamDetailUserCase.execute(by: awayTeamId)
+                matchesByHeadToHeadVM.homeTeam = try await getTeamDetailUserCase.execute(by: homeTeamId)
+                matchesByHeadToHeadVM.awayTeam = try await getTeamDetailUserCase.execute(by: awayTeamId)
             }
             
         }

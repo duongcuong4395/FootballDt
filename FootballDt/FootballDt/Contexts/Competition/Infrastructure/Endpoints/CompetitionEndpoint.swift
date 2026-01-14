@@ -13,7 +13,7 @@ enum CompetitionEndpoint<T: Decodable> {
     case GetAllCompetition
     case GetLeaderboard(competitionCode: String, season: String?)
     case GetTeams(competitionCode: String, season: String?)
-    case GetMatches(competitionID: String, season: String?)
+    
     case GetScores(competitionCode: String, filters: Filters?)
 }
 
@@ -32,8 +32,6 @@ extension CompetitionEndpoint: HttpRouter {
             "competitions/\(competitionCode)/standings"
         case .GetTeams(competitionCode: let competitionCode, season: _):
             "competitions/\(competitionCode)/teams"
-        case .GetMatches(competitionID: let competitionID, season: _):
-            "competitions/\(competitionID)/matches"
         case .GetScores(competitionCode: let competitionCode, filters: let filters):
             "competitions/\(competitionCode)/scorers"
         }
@@ -48,7 +46,6 @@ extension CompetitionEndpoint: HttpRouter {
         case .GetAllCompetition: return ["X-Auth-Token": AppUtility.AuthTK] // return nil
         case .GetLeaderboard(competitionCode: _)
             , .GetTeams(competitionCode: _, season: _)
-            , .GetMatches(competitionID: _, season: _)
             , .GetScores(competitionCode: _, filters: _):
             return ["X-Auth-Token": AppUtility.AuthTK]
         
@@ -74,9 +71,6 @@ extension CompetitionEndpoint: HttpRouter {
             guard let season = season else { return nil }
             return ["season": season]
         case .GetTeams(competitionCode: _, season: let season):
-            guard let season = season else { return nil }
-            return ["season": season]
-        case .GetMatches(competitionID: _, season: let season):
             guard let season = season else { return nil }
             return ["season": season]
         case .GetScores(competitionCode: let competitionCode, filters: let filters):

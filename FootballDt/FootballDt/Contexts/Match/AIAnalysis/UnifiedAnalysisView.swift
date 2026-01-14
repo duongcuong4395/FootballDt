@@ -12,14 +12,14 @@ import MarkdownTypingKit
 /// View with complete integration of AIManageKit + MarkdownTypingKit
 struct UnifiedAnalysisView: View {
     let match: Match
-    let previousEncounters: PreviousEncounters?
+    let matchesByHeadToHead: MatchesByHeadToHead?
     
     @StateObject private var coordinator: AIAnalysisCoordinator
     @Environment(\.dismiss) var dismiss
     
-    init(match: Match, previousEncounters: PreviousEncounters?, coordinator: AIAnalysisCoordinator? = nil) {
+    init(match: Match, matchesByHeadToHead: MatchesByHeadToHead?, coordinator: AIAnalysisCoordinator? = nil) {
         self.match = match
-        self.previousEncounters = previousEncounters
+        self.matchesByHeadToHead = matchesByHeadToHead
         
         if let coordinator = coordinator {
             _coordinator = StateObject(wrappedValue: coordinator)
@@ -575,7 +575,7 @@ struct UnifiedAnalysisView: View {
     
     private func startAnalysis() {
         Task {
-            await coordinator.analyzeMatch(match, previousEncounters: previousEncounters)
+            await coordinator.analyzeMatch(match, matchesByHeadToHead: matchesByHeadToHead)
         }
     }
     

@@ -9,19 +9,19 @@
 
 protocol MatchRepository {
     
-    func fetchMatches(
+    func fetchMatchesByCompetition(
         competitionId: String,
         season: String?,
         filters: Filters?
     ) async throws -> CompetitionMatches
     
-    func fetchTeamMatches(
+    func fetchMatchesByTeam(
         teamId: Int,
         filters: Filters?
     ) async throws -> MatchesByTeam
     
-    func fetchPreviousEncounters(
+    func fetchMatchesByHeadToHead(
         matchId: Int,
         filters: Filters?
-    ) async throws -> PreviousEncounters
+    ) async throws -> MatchesByHeadToHead
 }

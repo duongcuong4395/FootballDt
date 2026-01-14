@@ -13,12 +13,12 @@ import StateManagementKit
 @MainActor
 class MatchesByCompetitionViewModel: BaseMatchesViewModel {
     
-    private var getCompetitionMatchesUseCase: GetCompetitionMatchesUseCase
+    private var fetchMatchesByCompetitionUseCase: FetchMatchesByCompetitionUseCase
     private var currentCompetitionID: String?
     private var currentSeason: String?
     
-    init(getCompetitionMatchesUseCase: GetCompetitionMatchesUseCase) {
-        self.getCompetitionMatchesUseCase = getCompetitionMatchesUseCase
+    init(fetchMatchesByCompetitionUseCase: FetchMatchesByCompetitionUseCase) {
+        self.fetchMatchesByCompetitionUseCase = fetchMatchesByCompetitionUseCase
         super.init()
     }
     
@@ -27,7 +27,7 @@ class MatchesByCompetitionViewModel: BaseMatchesViewModel {
         self.currentSeason = season
         
         let dataSource = CompetitionMatchesDataSource(
-            useCase: getCompetitionMatchesUseCase,
+            useCase: fetchMatchesByCompetitionUseCase,
             competitionID: competitionID,
             season: season
         )
@@ -41,12 +41,12 @@ class MatchesByCompetitionViewModel: BaseMatchesViewModel {
 @MainActor
 class MatchesByTeamViewModel: BaseMatchesViewModel {
     
-    private var getMatchesByTeamUseCase: GetMatchesByTeamUseCase
+    private var fetchMatchesByTeamUseCase: FetchMatchesByTeamUseCase
     private var currentTeamID: Int?
     private var currentFilters: Filters?
     
-    init(getMatchesByTeamUseCase: GetMatchesByTeamUseCase) {
-        self.getMatchesByTeamUseCase = getMatchesByTeamUseCase
+    init(fetchMatchesByTeamUseCase: FetchMatchesByTeamUseCase) {
+        self.fetchMatchesByTeamUseCase = fetchMatchesByTeamUseCase
         super.init()
     }
     
@@ -55,7 +55,7 @@ class MatchesByTeamViewModel: BaseMatchesViewModel {
         self.currentFilters = filters
         
         let dataSource = TeamMatchesDataSource(
-            useCase: getMatchesByTeamUseCase,
+            useCase: fetchMatchesByTeamUseCase,
             teamID: teamID,
             filters: filters
         )
@@ -74,7 +74,7 @@ class MatchesByTeamViewModel: BaseMatchesViewModel {
 
 struct CompetitionMatchesDataSource: MatchesDataSource {
     
-    let useCase: GetCompetitionMatchesUseCase
+    let useCase: FetchMatchesByCompetitionUseCase
     let competitionID: String
     let season: String?
     
@@ -90,7 +90,7 @@ struct CompetitionMatchesDataSource: MatchesDataSource {
 }
 
 struct TeamMatchesDataSource: MatchesDataSource {
-    let useCase: GetMatchesByTeamUseCase
+    let useCase: FetchMatchesByTeamUseCase
     let teamID: Int
     let filters: Filters?
     
@@ -109,20 +109,19 @@ struct TeamMatchesDataSource: MatchesDataSource {
 class MatchDetailViewModel: SingleStateStore<Match> {}
 
 @MainActor
-class PreviousEncountersViewModel: BaseMatchesViewModel {
-    let getPreviousEncountersUC: GetPreviousEncountersUseCase
+class MatchesByHeadToHeadViewModel: BaseMatchesViewModel {
+    let fetchMatchesByHeadToHeadUC: FetchMatchesByHeadToHeadUseCase
     
     @Published var awayTeam: Team?
     @Published var homeTeam: Team?
     
-    init(getPreviousEncountersUC: GetPreviousEncountersUseCase) {
-        self.getPreviousEncountersUC = getPreviousEncountersUC
+    init(fetchMatchesByHeadToHeadUC: FetchMatchesByHeadToHeadUseCase) {
+        self.fetchMatchesByHeadToHeadUC = fetchMatchesByHeadToHeadUC
     }
     
-    func getPreviousEncounters(by matchID: Int, and filters: Filters?) async {
-        
-        let dataSource = PreviousEncountersMatchesDataSource(
-            useCase: getPreviousEncountersUC,
+    func getMatchesByHeadToHead(by matchID: Int, and filters: Filters?) async {
+        let dataSource = MatchesByHeadToHeadDataSource(
+            useCase: fetchMatchesByHeadToHeadUC,
             matchID: matchID,
             filters: filters
         )
@@ -131,8 +130,8 @@ class PreviousEncountersViewModel: BaseMatchesViewModel {
     }
 }
 
-struct PreviousEncountersMatchesDataSource: MatchesDataSource {
-    let useCase: GetPreviousEncountersUseCase
+struct MatchesByHeadToHeadDataSource: MatchesDataSource {
+    let useCase: FetchMatchesByHeadToHeadUseCase
     let matchID: Int
     let filters: Filters?
     

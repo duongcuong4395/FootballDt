@@ -131,8 +131,8 @@ struct MatchesByTeamView: View {
 
 // MARK: Matches By Previous Encounters View
 
-struct MatchesByPreviousEncountersView: View {
-    @EnvironmentObject var previousEncountersVM: PreviousEncountersViewModel
+struct MatchesByHeadToHeadView: View {
+    @EnvironmentObject var matchesByHeadToHeadVM: MatchesByHeadToHeadViewModel
     @EnvironmentObject var teamVM: TeamViewModel
     @EnvironmentObject var router: FootballDtRouter
     @EnvironmentObject var matchDetailVM: MatchDetailViewModel
@@ -152,7 +152,7 @@ struct MatchesByPreviousEncountersView: View {
             }
             */
             MatchesContainerView(
-                viewModel: previousEncountersVM
+                viewModel: matchesByHeadToHeadVM
                 , teamVM: teamVM
                 , router: router
                 , matchDetailVM: matchDetailVM
@@ -167,9 +167,9 @@ struct MatchesByPreviousEncountersView: View {
     func loadDataIfNeeded() {
         guard case .success(let match) = matchDetailVM.state else { return }
         
-        if case .idle = previousEncountersVM.state {
+        if case .idle = matchesByHeadToHeadVM.state {
             Task {
-                await previousEncountersVM.getPreviousEncounters(by: match.id, and: nil)
+                await matchesByHeadToHeadVM.getMatchesByHeadToHead(by: match.id, and: nil)
             }
         }
     }

@@ -449,8 +449,8 @@ extension Filters: QueryParamConvertible {
     }
 }
 
-
-struct PreviousEncounters {
+// PreviousEncounters
+struct MatchesByHeadToHead {
     var message: String?
     var errorCode: Int?
     

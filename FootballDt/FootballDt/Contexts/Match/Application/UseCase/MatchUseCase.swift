@@ -15,30 +15,27 @@ struct MatchUseCases {
     let repository: MatchRepository
 }
 
-struct GetCompetitionMatchesUseCase {
+struct FetchMatchesByCompetitionUseCase {
     let repository: MatchRepository
-    init(repository: MatchRepository) {
-        self.repository = repository
-    }
     
     func execute(by competition: String, and season: String?) async throws -> CompetitionMatches {
-        try await repository.fetchMatches(competitionId: competition, season: season, filters: nil)
+        try await repository.fetchMatchesByCompetition(competitionId: competition, season: season, filters: nil)
     }
 }
 
-struct GetPreviousEncountersUseCase {
+struct FetchMatchesByHeadToHeadUseCase {
     let repository: MatchRepository
     
-    func execute(by matchID: Int, and filters: Filters?) async throws -> PreviousEncounters {
-        try await repository.fetchPreviousEncounters(matchId: matchID, filters: filters)
+    func execute(by matchID: Int, and filters: Filters?) async throws -> MatchesByHeadToHead {
+        try await repository.fetchMatchesByHeadToHead(matchId: matchID, filters: filters)
     }
 }
 
-struct GetMatchesByTeamUseCase {
+struct FetchMatchesByTeamUseCase {
     let repository: MatchRepository
     
     func execute(by teamID: Int, and filter: Filters?) async throws -> MatchesByTeam {
-        try await repository.fetchTeamMatches(teamId: teamID, filters: filter)
+        try await repository.fetchMatchesByTeam(teamId: teamID, filters: filter)
     }
 }
 

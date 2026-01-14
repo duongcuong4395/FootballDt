@@ -5,7 +5,8 @@
 //  Created by Macbook on 7/1/26.
 //
 
-struct PreviousEncountersAPIResponse: Codable {
+// PreviousEncountersAPIResponse
+struct MatchesByHeadToHeadAPIResponse: Codable {
     var message: String?
     var errorCode: Int?
     
@@ -15,8 +16,8 @@ struct PreviousEncountersAPIResponse: Codable {
     var matches: [MatchDTO]?
     
     
-    func toDomain() -> PreviousEncounters {
-        PreviousEncounters(
+    func toDomain() -> MatchesByHeadToHead {
+        MatchesByHeadToHead(
             message: message
             , errorCode: errorCode
             , filters: filters?.toDomain()

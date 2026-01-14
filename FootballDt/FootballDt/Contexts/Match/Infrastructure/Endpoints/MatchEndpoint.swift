@@ -10,7 +10,9 @@ import Alamofire
 import Networking
 
 enum MatchEndpoint<T: Decodable> {
-    case getPreviousEncounters(matchID: Int, filters: Filters?)
+    case fetchMatchesByCompetition(competitionID: String, season: String?)
+    case fetchMatchesByTeam(teamID: Int, filters: Filters?)
+    case fetchMatchesByHeadToHead(matchID: Int, filters: Filters?)
 }
 
 
@@ -23,8 +25,12 @@ extension MatchEndpoint: HttpRouter {
     
     var path: String {
         switch self {
-        case .getPreviousEncounters(let matchID, _):
+        case .fetchMatchesByHeadToHead(let matchID, _):
             "matches/\(matchID)/head2head"
+        case .fetchMatchesByTeam(teamID: let teamID, filters: _):
+            "teams/\(teamID)/matches"
+        case .fetchMatchesByCompetition(competitionID: let competitionID, season: _):
+            "competitions/\(competitionID)/matches"
         }
     }
     
@@ -34,17 +40,27 @@ extension MatchEndpoint: HttpRouter {
     
     var queryParameters: [String : Any]? {
         switch self {
-        case .getPreviousEncounters(_, let filters):
+        case .fetchMatchesByHeadToHead(_, let filters):
             guard let filters = filters else { return nil }
             
             let params = filters.toParams()
             return params.isEmpty ? nil : params
+        case .fetchMatchesByTeam(teamID: _, filters: let filters):
+            guard let filters = filters else { return nil }
+            
+            let params = filters.toParams()
+            return params.isEmpty ? nil : params
+        case .fetchMatchesByCompetition(competitionID: _, season: let season):
+            guard let season = season else { return nil }
+            return ["season": season]
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getPreviousEncounters(_, _):
+        case .fetchMatchesByHeadToHead(_, _)
+            , .fetchMatchesByTeam(teamID: _, filters: _)
+            , .fetchMatchesByCompetition(competitionID: _, season: _):
             return ["X-Auth-Token": AppUtility.AuthTK]
         }
     }

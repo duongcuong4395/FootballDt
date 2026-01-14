@@ -55,7 +55,7 @@ class AIAnalysisCoordinator: ObservableObject {
     /// Match analysis with full validation
     func analyzeMatch(
         _ match: Match,
-        previousEncounters: PreviousEncounters? = nil
+        matchesByHeadToHead: MatchesByHeadToHead? = nil
     ) async {
         // Step 1: Check Configuration
         guard await validateConfiguration() else {
@@ -66,7 +66,7 @@ class AIAnalysisCoordinator: ObservableObject {
         await prepareAnalysis()
         
         // Step 3: Execute Analysis với Streaming
-        await executeStreamingAnalysis(match: match, previousEncounters: previousEncounters)
+        await executeStreamingAnalysis(match: match, matchesByHeadToHead: matchesByHeadToHead)
     }
     
     // MARK: - Configuration Validation
@@ -162,7 +162,7 @@ class AIAnalysisCoordinator: ObservableObject {
     
     private func executeStreamingAnalysis(
         match: Match,
-        previousEncounters: PreviousEncounters?
+        matchesByHeadToHead: MatchesByHeadToHead?
     ) async {
         do {
             await setState(.analyzing(progress: 0.0))
@@ -170,7 +170,7 @@ class AIAnalysisCoordinator: ObservableObject {
             // Build prompt
             let prompt = buildComprehensivePrompt(
                 match: match,
-                previousEncounters: previousEncounters
+                matchesByHeadToHead: matchesByHeadToHead
             )
             
             // Execute streaming request
@@ -227,7 +227,7 @@ class AIAnalysisCoordinator: ObservableObject {
     
     private func buildComprehensivePrompt(
         match: Match,
-        previousEncounters: PreviousEncounters?
+        matchesByHeadToHead: MatchesByHeadToHead?
     ) -> String {
         var sections: [String] = []
         
@@ -318,7 +318,7 @@ class AIAnalysisCoordinator: ObservableObject {
         */
         
         // Previous Encounters
-        if let encounters = previousEncounters,
+        if let encounters = matchesByHeadToHead,
            let matches = encounters.matches,
            !matches.isEmpty {
             

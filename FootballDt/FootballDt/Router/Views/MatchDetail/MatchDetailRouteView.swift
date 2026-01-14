@@ -9,16 +9,16 @@ import SwiftUI
 
 struct MatchDetailRouteView: View {
     
-    @StateObject private var previousEncountersVM: PreviousEncountersViewModel
+    @StateObject private var matchesByHeadToHeadVM: MatchesByHeadToHeadViewModel
     @State private var menu: MatchDetailRouteMenu = .General
     
     init() {
         lazy var matchAPIService = MatchAPIService()
-        lazy var getPreviousEncountersUC = GetPreviousEncountersUseCase(repository: matchAPIService)
+        lazy var fetchMatchesByHeadToHeadUC = FetchMatchesByHeadToHeadUseCase(repository: matchAPIService)
         
-        self._previousEncountersVM = StateObject(
-            wrappedValue: PreviousEncountersViewModel(
-                getPreviousEncountersUC: getPreviousEncountersUC)
+        self._matchesByHeadToHeadVM = StateObject(
+            wrappedValue: MatchesByHeadToHeadViewModel(
+                fetchMatchesByHeadToHeadUC: fetchMatchesByHeadToHeadUC)
         )
     }
     
@@ -26,7 +26,7 @@ struct MatchDetailRouteView: View {
         RouteGenericView(
             headerView: MatchDetailRouteHeaderView()
             , contentView: RouteContentView(menu: $menu, animationMenuName: menu.name)
-                .environmentObject(previousEncountersVM)
+                .environmentObject(matchesByHeadToHeadVM)
         )
         .backgroundOfPage(by: .Gradient)
     }

@@ -5,7 +5,7 @@
 //  Created by Macbook on 24/12/25.
 //
 
-struct GetCompetitionMatchesAPIResponse: Codable {
+struct MatchesByCompetitionAPIResponse: Codable {
     var message: String?
     var errorCode: Int?
     

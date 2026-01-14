@@ -29,13 +29,10 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
     @ObservedObject var router: FootballDtRouter
     @ObservedObject var matchDetailVM: MatchDetailViewModel
     
-    //let teamEventHandler: (ItemEvent<Team>) -> Void
-    
     @StateObject var aiAnalysisManager: MatchAIAnalysisManager
     
     var kindMatchView: KindMatchView = .FullActions
     var onTeamEvent: (ItemEvent<Team>) -> Void
-    //var onMatchEvent: (ItemEvent<Match>) -> Void
     var loadAction: () -> Void
     
     @Environment(\.colorScheme) var colorScheme
@@ -64,13 +61,13 @@ struct MatchesContainerView<VM: BaseMatchesViewModel>: View {
                 )
                 .sheet(isPresented: $aiAnalysisManager.showAnalysisView) {
                     aiAnalysisManager.selectedMatchForAnalysis = nil
-                    aiAnalysisManager.previousEncounters = nil
+                    aiAnalysisManager.matchesByHeadToHead = nil
                 } content: {
                     if let match = aiAnalysisManager.selectedMatchForAnalysis {
                         if #available(iOS 17.0, *) {
                             UnifiedAnalysisView(
                                 match: match,
-                                previousEncounters: aiAnalysisManager.previousEncounters,
+                                matchesByHeadToHead: aiAnalysisManager.matchesByHeadToHead,
                                 coordinator: aiAnalysisManager.aiCoordinator
                             )
                         } else {
